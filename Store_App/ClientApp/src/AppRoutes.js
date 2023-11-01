@@ -1,7 +1,10 @@
 import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
-import Home from './components/Home';
+import Product from './components/Product';
 
+
+import Home from './components/Home';
+let id = 0;
 const AppRoutes = [
   {
     index: true,
@@ -10,6 +13,10 @@ const AppRoutes = [
   {
     path: '/counter',
     element: <Counter />
+  },
+  {
+    path: `/product/${id}`,
+    element: <Product productId={id}/>
   },
   {
     path: '/fetch-data',
