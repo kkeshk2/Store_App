@@ -7,6 +7,8 @@ function Product({ productId }) {
     // Replace this with your actual API call
     fetch(`/api/product/getone/${productId}`) 
       .then((response) => {
+        console.log(productId);
+        console.log("THETHEKTHKEH");
 		response.json();
 		console.log(response.json());
 	})
