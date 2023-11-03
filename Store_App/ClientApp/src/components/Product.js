@@ -1,14 +1,16 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
-function Product({ productId }) {
+
+function Product() {
   const [product, setProduct] = useState(null);
+  const {id: productId} = useParams();
 
   useEffect(() => {
-    // Replace this with your actual API call
     fetch(`/api/product/getone/${productId}`) 
       .then((response) => {
         console.log(productId);
-        console.log("THETHEKTHKEH");
+        console.log("TEST\n");
 		response.json();
 		console.log(response.json());
 	})
@@ -23,7 +25,7 @@ function Product({ productId }) {
 
   return (
     <div>
-		<h1>PRODUCT</h1>
+		<h1>PRODUCT {productId}</h1>
       {product ? (
         <div>
           <h1>{product.ProductName}</h1>

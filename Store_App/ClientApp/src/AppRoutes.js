@@ -4,7 +4,6 @@ import Product from './components/Product';
 
 // WE WILL NOT BE USING THIS FORM OF ROUTES: CHECK APP.JS
 import Home from './components/Home';
-let id = 0;
 const AppRoutes = [
   {
     index: true,
@@ -15,8 +14,8 @@ const AppRoutes = [
     element: <Counter />
   },
   {
-    path: `/product/${id}`,
-    element: <Product productId={id}/>
+    path: `/product/:id`,
+    element: <Product/>
   },
   {
     path: '/fetch-data',
