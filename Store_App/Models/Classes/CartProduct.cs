@@ -15,5 +15,11 @@ namespace Store_App.Models.Classes
         // Navigation properties for relationships
         public Cart Cart { get; set; }
         public Product Product { get; set; }
+
+        public List<CartProduct> GetCartProductsBasedOnCart(int cartProductId)
+        {
+            // TODO: Implement this
+            return null;
+        }
     }
 }
