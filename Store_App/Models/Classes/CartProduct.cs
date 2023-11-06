@@ -12,7 +12,7 @@ namespace Store_App.Models.Classes
 
         // Additional properties related to the relationship between the product and the cart
         public int Quantity { get; set; }
-        public decimal Price { get; set; }
+        // public decimal Price { get; set; }
 
 
         /*
@@ -24,7 +24,7 @@ namespace Store_App.Models.Classes
         public List<CartProduct> GetCartProductsBasedOnCart(int cartProductId)
         {
             // TODO: Implement this
-            List<CartProduct> product_list = new List<CartProduct>();
+            List<CartProduct> cart_product_list = new List<CartProduct>();
             DataSet userDataset = new DataSet();
 
             string connectionString = "Data Source=DESKTOP-PUP0614\\SQLEXPRESS;Initial Catalog=master;Integrated Security=True;";
@@ -76,10 +76,11 @@ namespace Store_App.Models.Classes
                                 break;
                         }
                     }
+                    cart_product_list.Add(cartProduct);
                 }
             }
 
-            return null;
+            return cart_product_list;
         }
     }
 }

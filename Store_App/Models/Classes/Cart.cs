@@ -12,7 +12,7 @@ namespace Store_App.Models.Classes
         // Define a list of CartProduct items
         public List<CartProduct> CartProducts { get; set; } = new List<CartProduct>();
         
-        public Cart GetOneBasedOnAccountId(int userAccountID)
+        public Cart GetOneBasedOnAccountId(int userAccountId)
         {
             Cart cart = new Cart();
             DataSet userDataset = new DataSet();
@@ -31,8 +31,8 @@ namespace Store_App.Models.Classes
                 }
 
                 // Get the Cart that is related to the current Account and create a Cart instance
-                SqlCommand command = new SqlCommand("SELECT * FROM Cart WHERE accountId = @userAccountID", connection);
-                command.Parameters.AddWithValue("@userAccountID", userAccountID);
+                SqlCommand command = new SqlCommand("SELECT * FROM Cart WHERE accountId = @userAccountId", connection);
+                command.Parameters.AddWithValue("@userAccountId", userAccountId);
 
                 SqlDataAdapter myDataAdapter = new SqlDataAdapter();
                 myDataAdapter.SelectCommand = command;
@@ -67,6 +67,11 @@ namespace Store_App.Models.Classes
             cart.CartProducts.AddRange(newCartProdList);
 
             return cart; // Placeholder return
+        }
+
+        public void AddToCart(CartProduct newCartProduct)
+        {
+            this.CartProducts.Add(newCartProduct);
         }
     }
 }
