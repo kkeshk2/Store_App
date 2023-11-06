@@ -26,7 +26,4 @@ app.MapControllerRoute(
 
 app.MapFallbackToFile("index.html");
 
-string connectionString = "Data Source=DESKTOP-PUP0614\\SQLEXPRESS;Initial Catalog=master;Integrated Security=True;";
-ConnectionAccessor.TestDatabaseConnection(connectionString);
-
 app.Run();
