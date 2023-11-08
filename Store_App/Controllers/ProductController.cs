@@ -25,9 +25,31 @@ namespace Store_App.Controllers
                     Errors = new List<string> { "Product not found" },
                     Success = false
                 };
-                return "";
+                return JsonConvert.SerializeObject(notFoundProduct);
             }
         }
+
+        [HttpGet("getall")]
+        public IActionResult GetAll()
+        {
+            Product product = new Product();
+            List<Product> productList = product.GetAll(); 
+
+            if (productList != null)
+            {
+                return Ok(productList); // Return the list of products as JSON
+            }
+            else
+            {
+                Product notFoundProduct = new Product
+                {
+                    Errors = new List<string> { "Products not found" },
+                    Success = false
+                };
+                return NotFound(notFoundProduct); // Return a 404 Not Found response with the error message
+            }
+        }
+
 
     }
 }
