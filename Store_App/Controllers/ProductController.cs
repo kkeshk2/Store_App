@@ -29,30 +29,5 @@ namespace Store_App.Controllers
             }
         }
 
-        [HttpGet("/api/product/getall")]
-        public List<Product> GetAll()
-        {
-            Product product = new Product();
-            List<Product> product_list = product.GetAll();
-            if (product_list != null)
-            {
-                return product_list;
-            }
-            else
-            {
-                Product notFoundProduct = new Product
-                {
-                    Errors = new List<string> { "Product not found" },
-                    Success = false
-                };
-                List<Product> product_errors_list = new List<Product>();
-                product_errors_list.Add(notFoundProduct);
-
-                return product_errors_list;
-                ;
-                ;
-            }
-        }
-
     }
 }
