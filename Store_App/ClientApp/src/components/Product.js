@@ -5,23 +5,23 @@ import { useParams } from 'react-router-dom';
 function Product() {
   const [product, setProduct] = useState(null);
   const {id: productId} = useParams();
-
   useEffect(() => {
-    fetch(`/api/product/getone/${productId}`) 
-      .then((response) => {
-        console.log(productId);
-        console.log("TEST\n");
-		response.json();
-		console.log(response.json());
-	})
-      .then((data) => {
+	fetch(`api/product/getone?prodID=${productId}`)
+	  .then((response) => {
+		if (!response.ok) {
+		  throw new Error('Network response was not ok');
+		}
+		console.log("NETWORK GOOD");
+	  })
+	  .then((data) => {
 		console.log(data);
-        setProduct(data);
-      })
-      .catch((error) => {
-        console.error('Error fetching product:', error);
-      });
+		setProduct(data);
+	  })
+	  .catch((error) => {
+		console.error('Error fetching product:', error);
+	  });
   }, []);
+  
 
   return (
     <div>

@@ -1,21 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 using Store_App.Models.Classes;
+using Newtonsoft.Json;
 
 namespace Store_App.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/api/[controller]")]
     public class ProductController : ControllerBase
     {
 
-        [HttpGet("/api/product/getone/{id}")]
-        public Product GetOne(int id)
+        [HttpGet("getone")]
+        public ActionResult<string> GetOne(int prodID)
         {
             Product product = new Product();
-            Product retrievedProduct = product.GetOne(id); // Replace with your logic
+            Product retrievedProduct = product.GetOne(prodID); // Replace with your logic
             if (retrievedProduct != null)
             {
-                return retrievedProduct;
+                return JsonConvert.SerializeObject(retrievedProduct);
             }
             else
             {
@@ -24,7 +25,7 @@ namespace Store_App.Controllers
                     Errors = new List<string> { "Product not found" },
                     Success = false
                 };
-                return notFoundProduct;
+                return "";
             }
         }
 
