@@ -21,7 +21,7 @@ namespace Store_App.Models.Classes
         public Product Product { get; set; }
         */
 
-        public List<CartProduct> GetCartProductsBasedOnCart(int cartProductId)
+        public List<CartProduct> GetCartProductsBasedOnCart(int cartId)
         {
             // TODO: Implement this
             List<CartProduct> cart_product_list = new List<CartProduct>();
@@ -41,8 +41,8 @@ namespace Store_App.Models.Classes
                 }
 
                 // Get the Cart that is related to the current Account and create a Cart instance
-                SqlCommand command = new SqlCommand("SELECT * FROM CartProduct WHERE cartProductId = @cartProductId", connection);
-                command.Parameters.AddWithValue("@cartProductId", cartProductId);
+                SqlCommand command = new SqlCommand("SELECT * FROM CartProduct WHERE cartId = @cartId", connection);
+                command.Parameters.AddWithValue("@cartId", cartId);
 
                 SqlDataAdapter myDataAdapter = new SqlDataAdapter();
                 myDataAdapter.SelectCommand = command;
@@ -62,7 +62,7 @@ namespace Store_App.Models.Classes
 
                         switch (columnName)
                         {
-                            case "CartProductId":
+                            case "cartProductId":
                                 cartProduct.CartProductId = (int)cellValue;
                                 break;
                             case "cartId":
