@@ -11,7 +11,13 @@ namespace Store_App.Models.Classes
 
         // Define a list of CartProduct items
         public List<CartProduct> CartProducts { get; set; } = new List<CartProduct>();
-        
+
+        // Error messages array
+        public List<string> Errors { get; set; } = new List<string>();
+
+        // Success boolean field
+        public bool Success { get; set; } = true;
+
         public Cart GetOneBasedOnAccountId(int userAccountId)
         {
             Cart cart = new Cart();
