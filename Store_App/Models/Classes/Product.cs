@@ -63,13 +63,13 @@ namespace Store_App.Models.Classes
 
                         switch (columnName)
                         {
-                            case "ProductId":
+                            case "productId":
                                 product.ProductId = (int)cellValue;
                                 break;
-                            case "ProductName":
+                            case "productName":
                                 product.ProductName = cellValue.ToString();
                                 break;
-                            case "ProductPrice":
+                            case "productPrice":
                                 product.ProductPrice = (decimal)cellValue;
                                 break;
                             case "productManufacturer":
