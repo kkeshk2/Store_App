@@ -63,13 +63,13 @@ namespace Store_App.Models.Classes
 
                         switch (columnName)
                         {
-                            case "ProductId":
+                            case "productId":
                                 product.ProductId = (int)cellValue;
                                 break;
-                            case "ProductName":
+                            case "productName":
                                 product.ProductName = cellValue.ToString();
                                 break;
-                            case "ProductPrice":
+                            case "productPrice":
                                 product.ProductPrice = (decimal)cellValue;
                                 break;
                             case "productManufacturer":
@@ -116,15 +116,32 @@ namespace Store_App.Models.Classes
 
         public Product GetOne(int id)
         {
-            Product product = new Product();
+            Product product = new();
             product.ProductId = id;
             Success = true;
+        
+            string query = $"SELECT * FROM Products WHERE ProductId = {id}";
+            string connectionString = "Data Source=TONY-DEV\\SQLEXPRESS;Initial Catalog=master;Integrated Security=True;";
+            using (SqlConnection connection = new(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query))
+                {
+                    try
+                    {
+                        Console.WriteLine("Opening Connection ...");
+                        connection.Open();
+                        Object obj = cmd.ExecuteScalar();
+                        product = (Product) obj;
+                    }
+                    catch (Exception e)
+                    {
+                        Success = false;
+                        Errors.Add("Error retrieving product: " + e.Message);
+                    }
+                    connection.Close();
+                }
+            }
             return product;
-            // Add logic to retrieve a product by its ProductId
-            // Create and return a Product instance with the retrieved data
-            // If the product is not found, set Success to false and add an error message
-            // If there are errors or the retrieval fails, set Errors and Success accordingly
-           // return new Product(); // Placeholder return
         }
 
         public Product Save(Product model)
