@@ -21,7 +21,14 @@ builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-app.UseCors("_MyAllowSubdomainPolicy");
-app.UseAuthorization();
-app.MapControllers();
+app.UseStaticFiles();
+app.UseRouting();
+
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller}/{action=Index}/{id?}");
+
+app.MapFallbackToFile("index.html");
+
 app.Run();
