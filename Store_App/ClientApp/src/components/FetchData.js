@@ -7,7 +7,7 @@ export function FetchData() {
     useEffect(() => {
         const populateWeatherData = async () => {
             try {
-                const response = await fetch('weatherforecast');
+                const response = await fetch('api/weatherforecast?numberOfForecasts=5');
                 const data = await response.json();
                 setForecasts(data);
                 setLoading(false);
