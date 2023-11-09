@@ -5,6 +5,8 @@ import Home from './components/Home';
 import {Counter} from './components/Counter';
 import {FetchData} from './components/FetchData';
 import Product from './components/Product';
+import Cart from './components/Cart';
+
 
 function App() {
     return (
@@ -13,6 +15,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/counter" element={<Counter />} />
                 <Route path="/product/:id" element={<Product />} />
+                <Route path="/cart/:id" element={<Cart />} />
                 <Route path="/fetch-data" element={<FetchData />} />
             </Routes>
         </Layout>

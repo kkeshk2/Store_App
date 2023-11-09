@@ -1,5 +1,5 @@
 {
-  "proxy": "https://localhost:7080",
+  "proxy": "https://localhost:44394",
   "name": "store_app",
   "version": "0.1.0",
   "private": true,

@@ -1,6 +1,7 @@
 import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
 import Product from './components/Product';
+import Cart from './components/Cart';
 
 // WE WILL NOT BE USING THIS FORM OF ROUTES: CHECK APP.JS
 import Home from './components/Home';
@@ -16,6 +17,10 @@ const AppRoutes = [
   {
     path: `/product/:id`,
     element: <Product/>
+  },
+  {
+    path: `/cart/:id`,
+    element: <Cart />
   },
   {
     path: '/fetch-data',
