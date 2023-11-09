@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Data;
 
+
 namespace Store_App.Models.Classes
 {
     public class Cart : ICart
@@ -23,7 +24,7 @@ namespace Store_App.Models.Classes
             Cart cart = new Cart();
             DataSet userDataset = new DataSet();
 
-            string connectionString = "Data Source=DESKTOP-PUP0614\\SQLEXPRESS;Initial Catalog=master;Integrated Security=True;";
+            string connectionString = ConnectionString.getConnectionString("KareemConnection");
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
