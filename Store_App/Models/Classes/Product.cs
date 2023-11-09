@@ -33,7 +33,7 @@ namespace Store_App.Models.Classes
             List<Product> product_list = new List<Product>();
             DataSet userDataset = new DataSet();
 
-            string connectionString = "Data Source=DESKTOP-PUP0614\\SQLEXPRESS;Initial Catalog=master;Integrated Security=True;";
+            string connectionString = ConnectionString.getConnectionString("KareemConnection");
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -121,7 +121,7 @@ namespace Store_App.Models.Classes
             Success = true;
         
             string query = $"SELECT * FROM Products WHERE ProductId = {id}";
-            string connectionString = "Data Source=TONY-DEV\\SQLEXPRESS;Initial Catalog=master;Integrated Security=True;";
+            string connectionString = ConnectionString.getConnectionString("KareemConnection");
             using (SqlConnection connection = new(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query))
