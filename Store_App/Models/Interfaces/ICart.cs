@@ -5,6 +5,6 @@ namespace Store_App.Models.Interfaces
     public interface ICart
     {
         Cart GetOneBasedOnAccountId(int userAccountID);
-        void AddToCart(CartProduct newCartProduct);
+        void AddToCart(Cart cart, int productId, int quantity);
     }
 }

@@ -75,9 +75,16 @@ namespace Store_App.Models.Classes
             return cart; // Placeholder return
         }
 
-        public void AddToCart(CartProduct newCartProduct)
+        public void AddToCart(Cart cart, int productId, int quantity)
         {
-            this.CartProducts.Add(newCartProduct);
+
+            CartProduct cartProd = new CartProduct();
+            cartProd.AddOneToCartProductDatabase(cart.CartId, productId, quantity);
+
+            CartProduct newCartProd = new CartProduct();
+            newCartProd = newCartProd.GetOne(cart.CartId, productId);
+            cart.CartProducts.Add(newCartProd);
+            
         }
     }
 }

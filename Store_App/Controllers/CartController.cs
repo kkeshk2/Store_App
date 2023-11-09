@@ -6,10 +6,10 @@ using Store_App.Models.Classes;
 namespace Store_App.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/api/[controller]")]
     public class CartController : Controller
     {
-        [HttpGet("/api/cart/getonebasedonaccountid")]
+        [HttpGet("getonebasedonaccountid")]
         public ActionResult<string> GetOneBasedOnAccountId(int userAccountId)
         {
             Cart cart = new Cart();
@@ -26,6 +26,26 @@ namespace Store_App.Controllers
                     Success = false
                 };
                 return JsonConvert.SerializeObject(notFoundCart);
+            }
+        }
+
+        [HttpGet("getone")]
+        public ActionResult<string> GetOne(int cartId, int productId)
+        {
+            CartProduct cartProd = new CartProduct();
+            CartProduct retrievedCartProd = cartProd.GetOne(cartId, productId);
+            if (retrievedCartProd != null)
+            {
+                return JsonConvert.SerializeObject(retrievedCartProd);
+            }
+            else
+            {
+                CartProduct notFoundCartProd = new CartProduct
+                {
+                    Errors = new List<string> { "Product not found" },
+                    Success = false
+                };
+                return JsonConvert.SerializeObject(notFoundCartProd);
             }
         }
     }
