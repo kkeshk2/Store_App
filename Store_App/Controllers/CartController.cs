@@ -28,25 +28,5 @@ namespace Store_App.Controllers
                 return JsonConvert.SerializeObject(notFoundCart);
             }
         }
-
-        [HttpGet("getone")]
-        public ActionResult<string> GetOne(int cartId, int productId)
-        {
-            CartProduct cartProd = new CartProduct();
-            CartProduct retrievedCartProd = cartProd.GetOne(cartId, productId);
-            if (retrievedCartProd != null)
-            {
-                return JsonConvert.SerializeObject(retrievedCartProd);
-            }
-            else
-            {
-                CartProduct notFoundCartProd = new CartProduct
-                {
-                    Errors = new List<string> { "Product not found" },
-                    Success = false
-                };
-                return JsonConvert.SerializeObject(notFoundCartProd);
-            }
-        }
     }
 }
