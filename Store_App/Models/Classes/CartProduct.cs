@@ -31,7 +31,7 @@ namespace Store_App.Models.Classes
             CartProduct retrievedCartProduct = new CartProduct();
             DataSet userDataset = new DataSet();
 
-            string connectionString = "Data Source=DESKTOP-PUP0614\\SQLEXPRESS;Initial Catalog=master;Integrated Security=True;";
+            string connectionString = ConnectionString.getConnectionString("KareemConnection");
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -91,7 +91,7 @@ namespace Store_App.Models.Classes
             List<CartProduct> cart_product_list = new List<CartProduct>();
             DataSet userDataset = new DataSet();
 
-            string connectionString = "Data Source=DESKTOP-PUP0614\\SQLEXPRESS;Initial Catalog=master;Integrated Security=True;";
+            string connectionString = ConnectionString.getConnectionString("KareemConnection");
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -151,7 +151,7 @@ namespace Store_App.Models.Classes
         {
             SqlConnection connection;
             SqlCommand command;
-            string connectionString = "Data Source=DESKTOP-PUP0614\\SQLEXPRESS;Initial Catalog=master;Integrated Security=True;";
+            string connectionString = ConnectionString.getConnectionString("KareemConnection");
             using (connection = new SqlConnection(connectionString))
             {
                 try
