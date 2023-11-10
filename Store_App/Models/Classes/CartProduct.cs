@@ -31,7 +31,7 @@ namespace Store_App.Models.Classes
             CartProduct retrievedCartProduct = new CartProduct();
             DataSet userDataset = new DataSet();
 
-            string connectionString = ConnectionString.getConnectionString("KareemConnection");
+            string connectionString = ConnectionString.getConnectionString();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -91,7 +91,7 @@ namespace Store_App.Models.Classes
             List<CartProduct> cart_product_list = new List<CartProduct>();
             DataSet userDataset = new DataSet();
 
-            string connectionString = ConnectionString.getConnectionString("KareemConnection");
+            string connectionString = ConnectionString.getConnectionString();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -151,7 +151,7 @@ namespace Store_App.Models.Classes
         {
             SqlConnection connection;
             SqlCommand command;
-            string connectionString = ConnectionString.getConnectionString("KareemConnection");
+            string connectionString = ConnectionString.getConnectionString();
             using (connection = new SqlConnection(connectionString))
             {
                 try

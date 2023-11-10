@@ -4,11 +4,13 @@ namespace Store_App
     public class ConnectionString
     {
 
-        public static string getConnectionString(string connectionstr)
+        public static string getConnectionString()
         {
             IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
+
+            string connectionstr = "KareemConnection";
 
             string connectionString = config["ConnectionStrings:" + connectionstr];
             if (connectionString == null)
