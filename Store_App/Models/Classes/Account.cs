@@ -24,7 +24,7 @@ namespace Store_App.Models.Classes
 
         public static Account accessAccountByLogin(string accountEmail, string accountPassword)
         {
-            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString("KareemConnection")))
+            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
                 try
                 {
@@ -57,7 +57,7 @@ namespace Store_App.Models.Classes
 
         public static Account accessAccountById(Int32 accountId)
         {
-            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString("KareemConnection")))
+            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
                 try
                 {
@@ -89,7 +89,7 @@ namespace Store_App.Models.Classes
 
         public static Account createAccount(string accountEmail, string accountPassword, string accountName)
         {
-            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString("KareemConnection")))
+            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
                 try
                 {
@@ -129,7 +129,7 @@ namespace Store_App.Models.Classes
 
         public void updateAccount(string accountEmail, string accountName)
         {
-            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString("KareemConnection")))
+            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
                 try
                 {
@@ -163,7 +163,7 @@ namespace Store_App.Models.Classes
 
         public void updateAccountPassword(string accountPassword)
         {
-            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString("KareemConnection")))
+            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
                 try
                 {
