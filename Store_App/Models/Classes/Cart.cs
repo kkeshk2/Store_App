@@ -24,7 +24,7 @@ namespace Store_App.Models.Classes
             Cart cart = new Cart();
             DataSet userDataset = new DataSet();
 
-            string connectionString = ConnectionString.getConnectionString("KareemConnection");
+            string connectionString = ConnectionString.getConnectionString();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try

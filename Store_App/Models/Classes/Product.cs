@@ -33,7 +33,7 @@ namespace Store_App.Models.Classes
             List<Product> product_list = new List<Product>();
             DataSet userDataset = new DataSet();
 
-            string connectionString = ConnectionString.getConnectionString("KareemConnection");
+            string connectionString = ConnectionString.getConnectionString();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -121,7 +121,7 @@ namespace Store_App.Models.Classes
             Success = true;
         
             string query = $"SELECT * FROM Products WHERE ProductId = {id}";
-            string connectionString = ConnectionString.getConnectionString("KareemConnection");
+            string connectionString = ConnectionString.getConnectionString();
             using (SqlConnection connection = new(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query))
