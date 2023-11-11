@@ -13,6 +13,9 @@ namespace Store_App.Models.Classes
         // Define a list of CartProduct items
         public List<CartProduct> CartProducts { get; set; } = new List<CartProduct>();
 
+        // List of Products in each Cart
+        public List<Product> Products { get; set; } = new List<Product>();
+
         // Error messages array
         public List<string> Errors { get; set; } = new List<string>();
 
@@ -73,6 +76,13 @@ namespace Store_App.Models.Classes
             List<CartProduct> newCartProdList = cartProd.GetCartProductsBasedOnCart(cart.CartId);
             cart.CartProducts.AddRange(newCartProdList);
 
+
+            Product prod = new Product();
+            for (int i = 0; i < newCartProdList.Count(); i++)
+            {
+                cart.Products.Add(prod.GetOne(newCartProdList[i].ProductId));
+            }
+
             return cart; // Placeholder return
         }
 
@@ -85,7 +95,12 @@ namespace Store_App.Models.Classes
             CartProduct newCartProd = new CartProduct();
             newCartProd = newCartProd.GetOne(cart.CartId, productId);
             cart.CartProducts.Add(newCartProd);
-            
+
+            Product prod = new Product();
+            cart.Products.Add(prod.GetOne(newCartProd.ProductId));
+
+
+
         }
     }
 }

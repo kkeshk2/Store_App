@@ -117,7 +117,6 @@ namespace Store_App.Models.Classes
        public Product GetOne(int id)
        {
            Product product = new Product();
-           product.ProductId = id;
            DataSet userDataset = new DataSet();
            string connectionString = ConnectionString.getConnectionString();
            using (SqlConnection connection = new(connectionString))
@@ -144,7 +143,6 @@ namespace Store_App.Models.Classes
            {
                foreach (DataRow row in table.Rows)
                {
-                   Product product = new Product();
                    foreach (DataColumn column in table.Columns)
                    {
                        string columnName = column.ColumnName;
