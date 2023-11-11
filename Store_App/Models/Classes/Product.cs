@@ -113,32 +113,83 @@ namespace Store_App.Models.Classes
             // If there are errors or the retrieval fails, set Errors and Success accordingly
             return product_list; // Placeholder return
         }
-
-        public Product GetOne(int id)
-        {
-            Product product = new();
-            product.ProductId = id;
-            Success = true;
         
-            string query = $"SELECT * FROM Products WHERE ProductId = {id}";
-            string connectionString = ConnectionString.getConnectionString();
-            using (SqlConnection connection = new(connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand(query))
-                {
-                    try
-                    {
-                        Console.WriteLine("Opening Connection ...");
-                        connection.Open();
-                        Object obj = cmd.ExecuteScalar();
-                        product = (Product) obj;
+       public Product GetOne(int id)
+       {
+           Product product = new Product();
+           product.ProductId = id;
+           DataSet userDataset = new DataSet();
+           string connectionString = ConnectionString.getConnectionString();
+           using (SqlConnection connection = new(connectionString))
+           {
+               try
+               {
+                   Console.WriteLine("Opening Connection ...");
+                   connection.Open();
+                    
+               }
+               catch (Exception e)
+               {
+                   Console.WriteLine("Error: " + e.Message);
+               }
+                   SqlCommand command = new SqlCommand("SELECT * FROM Product WHERE productId = @id", connection);
+                   command.Parameters.AddWithValue("@id", id);
+
+                   SqlDataAdapter myDataAdapter = new SqlDataAdapter();
+                   myDataAdapter.SelectCommand = command;
+                   myDataAdapter.Fill(userDataset);
+                   connection.Close();
+           }
+           foreach (DataTable table in userDataset.Tables)
+           {
+               foreach (DataRow row in table.Rows)
+               {
+                   Product product = new Product();
+                   foreach (DataColumn column in table.Columns)
+                   {
+                       string columnName = column.ColumnName;
+                       object cellValue = row[column];
+
+                       switch (columnName)
+                       {
+                           case "productId":
+                               product.ProductId = (int)cellValue;
+                               break;
+                           case "productName":
+                               product.ProductName = cellValue.ToString();
+                               break;
+                           case "productPrice":
+                               product.ProductPrice = (decimal)cellValue;
+                               break;
+                           case "productManufacturer":
+                               product.ProductManufacturer = cellValue.ToString();
+                               break;
+                           case "productRating":
+                               product.ProductRating = (decimal)cellValue;
+                               break;
+                           case "productDescription":
+                               product.ProductDescription = cellValue.ToString();
+                               break;
+                           case "productCategory":
+                               product.ProductCategory = cellValue.ToString();
+                               break;
+                           case "productLength":
+                               product.ProductLength = (decimal)cellValue;
+                               break;
+                           case "productWidth":
+                               product.ProductWidth = (decimal)cellValue;
+                               break;
+                           case "productHeight":
+                               product.ProductHeight = (decimal)cellValue;
+                               break;
+                           case "productWeight":
+                               product.ProductWeight = (decimal)cellValue;
+                               break;
+                           case "productSKU":
+                               product.ProductSKU = cellValue.ToString();
+                               break;
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        Success = false;
-                        Errors.Add("Error retrieving product: " + e.Message);
-                    }
-                    connection.Close();
                 }
             }
             return product;
