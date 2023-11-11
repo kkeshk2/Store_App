@@ -13,8 +13,6 @@ namespace Store_App.Models.Classes
         // Define a list of CartProduct items
         public List<CartProduct> CartProducts { get; set; } = new List<CartProduct>();
 
-        // TODO: Create Product List
-
         // Error messages array
         public List<string> Errors { get; set; } = new List<string>();
 
@@ -74,8 +72,6 @@ namespace Store_App.Models.Classes
             CartProduct cartProd = new CartProduct();
             List<CartProduct> newCartProdList = cartProd.GetCartProductsBasedOnCart(cart.CartId);
             cart.CartProducts.AddRange(newCartProdList);
-
-            // TODO: Fill in Product List using CartProducts list and passing in Product Id
 
             return cart; // Placeholder return
         }
