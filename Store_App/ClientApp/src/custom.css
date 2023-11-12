@@ -16,7 +16,6 @@ code {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
-
 .product-grid {
   display: flex;
   flex-wrap: wrap;
@@ -30,6 +29,15 @@ code {
   border: 1px solid #ccc;
   text-align: center;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  height: 400px; /* Set a fixed height for the product cards */
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card img {
+  object-fit: contain; /* Ensure the entire image is displayed within the container */
+  height: 100%; /* Make the image take up the full height of the container */
+  width: 100%; /* Make the image take up the full width of the container */
 }
 
 /* Media query for smaller screens */
@@ -38,4 +46,3 @@ code {
     flex-basis: calc(50% - 20px); /* Adjust the width for smaller screens */
   }
 }
-
