@@ -14,6 +14,9 @@ namespace Store_App.Models.Classes
         public int AccountId { get; }
         public string AccountEmail { get; set; }
         public string AccountName { get; set; }
+        public bool Success { get; set; }
+        public List<string> Errors { get; set; } = new List<string>();
+
 
         public Account(int accountId, string accountEmail, string accountName)
         {

@@ -20,6 +20,7 @@ namespace Store_App.Models.Classes
         public decimal ProductHeight { get; set; }
         public decimal ProductWeight { get; set; }
         public string ProductSKU { get; set; }
+        public string ProductImageLocation { get; set; }
 
         // Error messages array
         public List<string> Errors { get; set; } = new List<string>();
@@ -99,7 +100,9 @@ namespace Store_App.Models.Classes
                             case "productSKU":
                                 product.ProductSKU = cellValue.ToString();
                                 break;
-                                // Handle other fields similarly
+                            case "productImageLocation":
+                                product.ProductImageLocation = cellValue.ToString();
+                                break;
                         }
 
                     }
@@ -185,6 +188,9 @@ namespace Store_App.Models.Classes
                                break;
                            case "productSKU":
                                product.ProductSKU = cellValue.ToString();
+                               break;
+                           case "productImageLocation":
+                               product.ProductImageLocation = cellValue.ToString();
                                break;
                         }
                     }
