@@ -1,10 +1,13 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import '../custom.css'; 
 
 
 function Product() {
   const [product, setProduct] = useState(null);
-  const {id: productId} = useParams();
+  const [loading, setLoading] = useState(true);
+  const { id: productId } = useParams();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -12,47 +15,129 @@ function Product() {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-  
-        const data = await response.json(); // Parse the response as JSON
-  
-        console.log("NETWORK GOOD");
+
+        const data = await response.json();
+        console.log('NETWORK GOOD');
         console.log(data);
-        setProduct(data); // Set the product state with the parsed data
+        setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
+      } finally {
+        setLoading(false);
       }
     };
-  
+
     fetchData();
   }, [productId]);
-  
-  
+
+  const addToCart = () => {
+    // Add logic to handle adding the product to the cart
+    console.log(`Product ${product.ProductName} added to the cart`);
+    // You can dispatch an action or perform other actions here
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!product) {
+    return <p>Error loading product data</p>;
+  }
 
   return (
-    <div>
-      <h1>PRODUCT {productId}</h1>
-      {product ? (
-        <div>
-          <img src="/emptyImage.jpeg" alt="Product Image" style={{ width: '100%', height: 'auto' }} />
-          <h1>{product.productName}</h1>
-          {product.productPrice && <p>Price: ${product.productPrice.toFixed(2)}</p>}
-          {product.productManufacturer && <p>Manufacturer: {product.productManufacturer}</p>}
-          {product.productRating && <p>Rating: {product.productRating}</p>}
-          {product.productDescription && <p>Description: {product.productDescription}</p>}
-          {product.productCategory && <p>Category: {product.productCategory}</p>}
-          {product.productLength && product.productWidth && product.productHeight && (
-            <p>Dimensions: {product.productLength}x{product.productWidth}x{product.productHeight} (inches)</p>
-          )}
-          {product.productWeight && <p>Weight: {product.productWeight} lbs</p>}
-          {product.productSKU && <p>SKU: {product.productSKU}</p>}
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+    <div style={{ maxWidth: '800px', margin: 'auto' }}>
+      <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
+        <tbody>
+          <tr>
+            <td colSpan={2}>
+              <img
+                src={product.ProductImageLocation || "/emptyImage.jpeg"}
+                alt="Product Image"
+                style={{ width: '100%', height: 'auto' }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td style={{ textAlign: 'center', padding: '10px', backgroundColor: '#f5f5f5' }} colSpan={2}>
+              <h1>{product.ProductName}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
+              <strong>Price</strong>
+            </td>
+            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
+              {product.ProductPrice && `$${product.ProductPrice.toFixed(2)}`}
+            </td>
+          </tr>
+          <tr>
+            <td style={{ padding: '10px' }}>
+              <strong>Manufacturer</strong>
+            </td>
+            <td style={{ padding: '10px' }}>
+              {product.ProductManufacturer}
+            </td>
+          </tr>
+          <tr>
+            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
+              <strong>Rating</strong>
+            </td>
+            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
+              {product.ProductRating}
+            </td>
+          </tr>
+          <tr>
+            <td style={{ padding: '10px' }}>
+              <strong>Description</strong>
+            </td>
+            <td style={{ padding: '10px' }}>
+              {product.ProductDescription}
+            </td>
+          </tr>
+          <tr>
+            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
+              <strong>Category</strong>
+            </td>
+            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
+              {product.ProductCategory}
+            </td>
+          </tr>
+          <tr>
+            <td style={{ padding: '10px' }}>
+              <strong>Dimensions</strong>
+            </td>
+            <td style={{ padding: '10px' }}>
+              {product.ProductLength && product.ProductWidth && product.ProductHeight && (
+                `${product.ProductLength} x ${product.ProductWidth} x ${product.ProductHeight} (inches)`
+              )}
+            </td>
+          </tr>
+          <tr>
+            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
+              <strong>Weight</strong>
+            </td>
+            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
+              {product.ProductWeight && `${product.ProductWeight} lbs`}
+            </td>
+          </tr>
+          <tr>
+            <td style={{ padding: '10px' }}>
+              <strong>SKU</strong>
+            </td>
+            <td style={{ padding: '10px' }}>
+              {product.ProductSKU}
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={2} style={{ textAlign: 'center', padding: '10px' }}>
+              <button onClick={addToCart} className="btn-primary">Add to Cart</button>
+            </td>
+          </tr>
+          {/* Add more rows for other product information */}
+        </tbody>
+      </table>
     </div>
   );
-  
-  
 }
 
 export default Product;
