@@ -237,11 +237,11 @@ namespace Store_App.Models.Classes
                 {
                     Console.WriteLine("Error saving product");
                 }
+                connection.Close();
             }
             return model;
         }
     }
-}
 
         public Product Update(Product model)
         {
