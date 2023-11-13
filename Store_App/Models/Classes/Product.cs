@@ -207,16 +207,17 @@ namespace Store_App.Models.Classes
                 {
                     Console.WriteLine("Opening Connection ...");
                     connection.Open();
-                    string query = "INSERT INTO Product (productName, productPrice, productManufacturer, " +
+                    string query = "INSERT INTO Product (productId, productName, productPrice, productManufacturer, " +
                                    "productRating, productDescription, productCategory, productLength, " +
                                    "productWidth, productHeight, productWeight, productSKU) " +
-                                   "VALUES (@ProductName, @ProductPrice, @ProductManufacturer, " +
+                                   "VALUES (@ProductId, @ProductName, @ProductPrice, @ProductManufacturer, " +
                                    "@ProductRating, @ProductDescription, @ProductCategory, " +
                                    "@ProductLength, @ProductWidth, @ProductHeight, @ProductWeight, @ProductSKU);" +
                                    "SELECT SCOPE_IDENTITY();";
                                    
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
+                        command.Parameters.AddWithValue("@ProductId", model.ProductId);
                         command.Parameters.AddWithValue("@ProductName", model.ProductName);
                         command.Parameters.AddWithValue("@ProductPrice", model.ProductPrice);
                         command.Parameters.AddWithValue("@ProductManufacturer", model.ProductManufacturer);
@@ -228,14 +229,13 @@ namespace Store_App.Models.Classes
                         command.Parameters.AddWithValue("@ProductHeight", model.ProductHeight);
                         command.Parameters.AddWithValue("@ProductWeight", model.ProductWeight);
                         command.Parameters.AddWithValue("@ProductSKU", model.ProductSKU);
-
-                        int productId = Convert.ToInt32(command.ExecuteScalar());
-                        model.ProductId = productId;
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Inserted new product . . .");
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error saving product");
+                    Console.WriteLine("Error saving product . . .");
                 }
                 connection.Close();
             }
