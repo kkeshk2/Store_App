@@ -201,11 +201,47 @@ namespace Store_App.Models.Classes
 
         public Product Save(Product model)
         {
-            // Add logic to save a new product
-            // If save is successful, return true and set Success to true
-            // If there are errors or the save fails, set Errors and Success accordingly
-            return new Product();// Placeholder return
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    Console.WriteLine("Opening Connection ...");
+                    connection.Open();
+                    string query = "INSERT INTO Product (productName, productPrice, productManufacturer, " +
+                                   "productRating, productDescription, productCategory, productLength, " +
+                                   "productWidth, productHeight, productWeight, productSKU) " +
+                                   "VALUES (@ProductName, @ProductPrice, @ProductManufacturer, " +
+                                   "@ProductRating, @ProductDescription, @ProductCategory, " +
+                                   "@ProductLength, @ProductWidth, @ProductHeight, @ProductWeight, @ProductSKU);" +
+                                   "SELECT SCOPE_IDENTITY();";
+                                   
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ProductName", model.ProductName);
+                        command.Parameters.AddWithValue("@ProductPrice", model.ProductPrice);
+                        command.Parameters.AddWithValue("@ProductManufacturer", model.ProductManufacturer);
+                        command.Parameters.AddWithValue("@ProductRating", model.ProductRating);
+                        command.Parameters.AddWithValue("@ProductDescription", model.ProductDescription);
+                        command.Parameters.AddWithValue("@ProductCategory", model.ProductCategory);
+                        command.Parameters.AddWithValue("@ProductLength", model.ProductLength);
+                        command.Parameters.AddWithValue("@ProductWidth", model.ProductWidth);
+                        command.Parameters.AddWithValue("@ProductHeight", model.ProductHeight);
+                        command.Parameters.AddWithValue("@ProductWeight", model.ProductWeight);
+                        command.Parameters.AddWithValue("@ProductSKU", model.ProductSKU);
+
+                        int productId = Convert.ToInt32(command.ExecuteScalar());
+                        model.ProductId = productId;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error saving product");
+                }
+                connection.Close();
+            }
+            return model;
         }
+    }
 
         public Product Update(Product model)
         {

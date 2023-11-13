@@ -13,8 +13,18 @@ code {
 
 .btn-primary {
   color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+  background: linear-gradient(to right, #0074cc, #0062a8);
+  border: 1px solid #005688;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(to right, #0062a8, #004777);
 }
 .product-grid {
   display: flex;
