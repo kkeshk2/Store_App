@@ -241,14 +241,63 @@ namespace Store_App.Models.Classes
             }
             return model;
         }
-    }
 
-        public Product Update(Product model)
+        public Product Update(int id, Product updatedProduct)
         {
-            // Add logic to update an existing product
-            // If update is successful, return true and set Success to true
-            // If there are errors or the update fails, set Errors and Success accordingly
-            return new Product(); ; // Placeholder return
+            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
+            {
+                try
+                {
+                    Console.WriteLine("Opening connection...");
+                    connection.Open();
+
+                    string query = "UPDATE Product SET " +
+                                   "ProductName = @ProductName, " +
+                                   "ProductPrice = @ProductPrice, " +
+                                   "ProductManufacturer = @ProductManufacturer, " +
+                                   "ProductRating = @ProductRating, " +
+                                   "ProductDescription = @ProductDescription, " +
+                                   "ProductCategory = @ProductCategory, " +
+                                   "ProductLength = @ProductLength, " +
+                                   "ProductWidth = @ProductWidth, " +
+                                   "ProductHeight = @ProductHeight, " +
+                                   "ProductWeight = @ProductWeight, " +
+                                   "ProductSKU = @ProductSKU " +
+                                   "WHERE ProductId = @ProductId;";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ProductId", id);
+                        command.Parameters.AddWithValue("@ProductName", updatedProduct.ProductName);
+                        command.Parameters.AddWithValue("@ProductPrice", updatedProduct.ProductPrice);
+                        command.Parameters.AddWithValue("@ProductManufacturer", updatedProduct.ProductManufacturer);
+                        command.Parameters.AddWithValue("@ProductRating", updatedProduct.ProductRating);
+                        command.Parameters.AddWithValue("@ProductDescription", updatedProduct.ProductDescription);
+                        command.Parameters.AddWithValue("@ProductCategory", updatedProduct.ProductCategory);
+                        command.Parameters.AddWithValue("@ProductLength", updatedProduct.ProductLength);
+                        command.Parameters.AddWithValue("@ProductWidth", updatedProduct.ProductWidth);
+                        command.Parameters.AddWithValue("@ProductHeight", updatedProduct.ProductHeight);
+                        command.Parameters.AddWithValue("@ProductWeight", updatedProduct.ProductWeight);
+                        command.Parameters.AddWithValue("@ProductSKU", updatedProduct.ProductSKU);
+
+                        int updatedLines = command.ExecuteNonQuery();
+
+                        if (updatedLines > 0)
+                        {
+                            Console.WriteLine($"Product {id} updated.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Product {id} not found.");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error updating product: " + e.Message);
+                }
+            }
+            return updatedProduct;
         }
 
         public override string ToString()
