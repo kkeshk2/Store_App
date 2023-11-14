@@ -28,5 +28,29 @@ namespace Store_App.Controllers
                 return JsonConvert.SerializeObject(notFoundCart);
             }
         }
+
+        [HttpGet("addtocart")]
+        
+        public void AddToCart(int accountId, int productId, int quantity)
+        {
+            Cart cart = new Cart();
+            Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
+            if (retrievedCart != null)
+            {
+                cart.AddToCart(cart, productId, quantity);
+                //return "success";
+
+            }
+            else
+            {
+                Cart notFoundCart = new Cart
+                {
+                    Errors = new List<string> { "Product not found" },
+                    Success = false
+                };
+                //return JsonConvert.SerializeObject(notFoundCart);
+            }
+
+        }
     }
 }
