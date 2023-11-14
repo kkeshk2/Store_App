@@ -212,8 +212,7 @@ namespace Store_App.Models.Classes
                                    "productWidth, productHeight, productWeight, productSKU) " +
                                    "VALUES (@ProductId, @ProductName, @ProductPrice, @ProductManufacturer, " +
                                    "@ProductRating, @ProductDescription, @ProductCategory, " +
-                                   "@ProductLength, @ProductWidth, @ProductHeight, @ProductWeight, @ProductSKU);" +
-                                   "SELECT SCOPE_IDENTITY();";
+                                   "@ProductLength, @ProductWidth, @ProductHeight, @ProductWeight, @ProductSKU);";
                                    
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
