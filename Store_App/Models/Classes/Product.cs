@@ -201,6 +201,7 @@ namespace Store_App.Models.Classes
 
         public Product Save(Product model)
         {
+            DataSet userDataset = new DataSet();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -236,6 +237,9 @@ namespace Store_App.Models.Classes
                 {
                     Console.WriteLine("Error saving product . . .");
                 }
+                SqlDataAdapter myDataAdapter = new SqlDataAdapter();
+                myDataAdapter.SelectCommand = command;
+                myDataAdapter.Fill(userDataset);
                 connection.Close();
             }
             return model;
@@ -243,6 +247,7 @@ namespace Store_App.Models.Classes
 
         public Product Update(int id, Product updatedProduct)
         {
+            DataSet userDataset = new DataSet();
             using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
                 try
@@ -295,6 +300,9 @@ namespace Store_App.Models.Classes
                 {
                     Console.WriteLine("Error updating product: " + e.Message);
                 }
+                SqlDataAdapter myDataAdapter = new SqlDataAdapter();
+                myDataAdapter.SelectCommand = command;
+                myDataAdapter.Fill(userDataset);
                 connection.Close();
             }
             return updatedProduct;
