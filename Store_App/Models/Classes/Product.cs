@@ -295,6 +295,7 @@ namespace Store_App.Models.Classes
                 {
                     Console.WriteLine("Error updating product: " + e.Message);
                 }
+                connection.Close();
             }
             return updatedProduct;
         }
