@@ -37,7 +37,7 @@ namespace Store_App.Controllers
             Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
             if (retrievedCart != null)
             {
-                cart.AddToCart(cart, productId, quantity);
+                cart.AddToCart(retrievedCart, productId, quantity);
                 return "success";
 
             }
