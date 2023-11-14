@@ -7,6 +7,8 @@ function Product() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id: productId } = useParams();
+ 
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,8 +32,22 @@ function Product() {
     fetchData();
   }, [productId]);
 
-  const addToCart = () => {
+  const addToCart = async() => {
     // Add logic to handle adding the product to the cart
+    console.log("URL:", `api/cart/addtocart?accountId=${2}&productId=${productId}&quantity=${4}`);
+
+    try {
+        const response = await fetch(`api/cart/addtocart?accountId=${2}&productId=${productId}&quantity=${4}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('NETWORK GOOD');
+        console.log(data);
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+    }
     console.log(`Product ${product.ProductName} added to the cart`);
     // You can dispatch an action or perform other actions here
   };
