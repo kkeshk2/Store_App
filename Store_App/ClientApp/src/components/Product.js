@@ -7,8 +7,7 @@ function Product() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id: productId } = useParams();
- 
-
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,10 +33,10 @@ function Product() {
 
   const addToCart = async() => {
     // Add logic to handle adding the product to the cart
-    console.log("URL:", `api/cart/addtocart?accountId=${2}&productId=${productId}&quantity=${4}`);
+    console.log("URL:", `api/cart/addtocart?accountId=${2}&productId=${productId}&quantity=${selectedQuantity}`);
 
     try {
-        const response = await fetch(`api/cart/addtocart?accountId=${1}&productId=${productId}&quantity=${4}`);
+        const response = await fetch(`api/cart/addtocart?accountId=${1}&productId=${productId}&quantity=${selectedQuantity}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -145,11 +144,32 @@ function Product() {
             </td>
           </tr>
           <tr>
-            <td colSpan={2} style={{ textAlign: 'center', padding: '10px' }}>
-              <button onClick={addToCart} className="btn-primary">Add to Cart</button>
+            <td colSpan={2} style={{ textAlign: 'left', padding: '10px' }}>
+              <button onClick={addToCart} className="btn-primary" style={{ marginRight: '10px'}}>Add to Cart</button>
+              <label htmlFor="quantity" style={{ marginRight: '10px'}}>Quantity:</label>
+              <select
+                id="quantity"
+                name="quantity"
+                value={selectedQuantity}
+                onChange={(e) => setSelectedQuantity(parseInt(e.target.value))}
+                style={{
+                  padding: '10px',
+                  fontSize: '16px',
+                  borderRadius: '5px',
+                  border: '1px solid #ccc',
+                  backgroundColor: '#fff',
+                  cursor: 'pointer',
+                }}
+              >
+                {[1, 2, 3, 4, 5].map((number) => (
+                  <option key={number} value={number}>
+                    {number}
+                  </option>
+                ))}
+              </select>
             </td>
+            
           </tr>
-          {/* Add more rows for other product information */}
         </tbody>
       </table>
     </div>
