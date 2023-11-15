@@ -32,7 +32,7 @@ function Cart() {
             <h1>Cart for (AccountId: {userAccountId})</h1>
             {cart ? (
                 <div>
-                    <img src="/emptyImage.jpeg" alt="Product Image" style={{ width: '100%', height: 'auto' }} />
+                    <img src="/cartImage.png" alt="Cart Image" style={{ width: '20%', height: '20%' }} />
                     {cart.cartId && <p>AccountId: ${cart.cartId}</p>}
                     {cart.cartProducts && <p>CartProducts: {cart.cartProducts}</p>}
                 </div>
