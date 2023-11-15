@@ -38,7 +38,7 @@ namespace Store_App.Controllers
             if (retrievedCart != null)
             {
                 cart.AddToCart(retrievedCart, productId, quantity);
-                return "success";
+                return Ok(new { Success = true, Message = "Product added to cart successfully", Cart = cart });
 
             }
             else
