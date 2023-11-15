@@ -7,7 +7,7 @@ namespace Store_App.Models.Interfaces
         List<Product> GetAll();
         Product GetOne(int id);
         Product Save(Product model);
-        Product Update(Product model);
+        Product Update(int id, Product model);
         public string ToString();
     }
 }
