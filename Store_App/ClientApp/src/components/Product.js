@@ -37,7 +37,7 @@ function Product() {
     console.log("URL:", `api/cart/addtocart?accountId=${2}&productId=${productId}&quantity=${4}`);
 
     try {
-        const response = await fetch(`api/cart/addtocart?accountId=${2}&productId=${productId}&quantity=${4}`);
+        const response = await fetch(`api/cart/addtocart?accountId=${1}&productId=${productId}&quantity=${4}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
