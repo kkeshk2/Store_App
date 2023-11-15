@@ -25,6 +25,10 @@ namespace Store_App.Models.Classes
             this.AccountName = accountName;
         }
 
+        public Account()
+        {
+        }
+
         public static Account accessAccountByLogin(string accountEmail, string accountPassword)
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
@@ -186,7 +190,7 @@ namespace Store_App.Models.Classes
                 connection.Close();
             }
         }
-        public void accountLogin(string accountName, string accountPassword)
+        public Account accountLogin(string accountName, string accountPassword)
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
@@ -198,30 +202,36 @@ namespace Store_App.Models.Classes
                 {
                     Console.WriteLine("Error: " + e.Message);
                 }
-                int success = 0;
                 SqlCommand cmd = new SqlCommand("SELECT * from accountName, accountPassword, accountEmail WHERE accountName = @accountName AND accountPassword = @accountPassword", connection);
                 cmd.Parameters.AddWithValue("@accountName", accountName);
                 cmd.Parameters.AddWithValue("@accountPassword", accountPassword);
 
-                using(SqlDataReader reader = cmd.ExecuteReader())
+                using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     if (!reader.HasRows)
                     {
                         Console.WriteLine("No Account found");
-                        Account account = new account(); 
-                    }else
+                        Account account = new Account();
+                        account.Success = false;
+                        account.Errors.Add("Account not found");
+                        return account;
+                    }
+                    else
                     {
-                        success = 1
                         Account account = new Account(
                             reader.GetInt32("accountId"),
                             reader.GetString("accountEmail"),
                             reader.GetString("accountName")
                         );
+                        return account;
                     }
+                    reader.Close();
                 }
-                return account, success;
-                reader.Close();
+                Account notFound = new Account();
+                notFound.Success = false;
+                return notFound;
                 connection.Close();
+            }
         }
     }
 }

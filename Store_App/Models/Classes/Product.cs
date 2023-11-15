@@ -202,6 +202,7 @@ namespace Store_App.Models.Classes
         public Product Save(Product model)
         {
             DataSet userDataset = new DataSet();
+            string connectionString = ConnectionString.getConnectionString();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -231,15 +232,16 @@ namespace Store_App.Models.Classes
                         command.Parameters.AddWithValue("@ProductSKU", model.ProductSKU);
                         command.ExecuteNonQuery();
                         Console.WriteLine("Inserted new product . . .");
+                        SqlDataAdapter myDataAdapter = new SqlDataAdapter();
+                        myDataAdapter.SelectCommand = command;
+                        myDataAdapter.Fill(userDataset);
                     }
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Error saving product . . .");
                 }
-                SqlDataAdapter myDataAdapter = new SqlDataAdapter();
-                myDataAdapter.SelectCommand = command;
-                myDataAdapter.Fill(userDataset);
+                
                 connection.Close();
             }
             return model;
@@ -285,7 +287,9 @@ namespace Store_App.Models.Classes
                         command.Parameters.AddWithValue("@ProductSKU", updatedProduct.ProductSKU);
 
                         int updatedLines = command.ExecuteNonQuery();
-
+                        SqlDataAdapter myDataAdapter = new SqlDataAdapter();
+                        myDataAdapter.SelectCommand = command;
+                        myDataAdapter.Fill(userDataset);
                         if (updatedLines > 0)
                         {
                             Console.WriteLine($"Product {id} updated.");
@@ -300,9 +304,7 @@ namespace Store_App.Models.Classes
                 {
                     Console.WriteLine("Error updating product: " + e.Message);
                 }
-                SqlDataAdapter myDataAdapter = new SqlDataAdapter();
-                myDataAdapter.SelectCommand = command;
-                myDataAdapter.Fill(userDataset);
+ 
                 connection.Close();
             }
             return updatedProduct;
