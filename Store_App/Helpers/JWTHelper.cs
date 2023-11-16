@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 
-namespace AuthApp.Helpers
+namespace Store_App.Helpers
 {
 
     public class JWTHelper
@@ -48,7 +48,7 @@ namespace AuthApp.Helpers
 
         }
 
-        public static int GetUserId(string encodedToken)
+        public static int? GetUserId(string encodedToken)
         {
             var handler = new JsonWebTokenHandler();
             var parameters = new TokenValidationParameters();
@@ -59,12 +59,12 @@ namespace AuthApp.Helpers
 
             var validation = handler.ValidateTokenAsync(encodedToken, parameters);
 
-            int value = -1;
+            int? value = null;
             if (validation.Result.IsValid)
             {
                 var claims = validation.Result.ClaimsIdentity;
                 var claim = claims.FindFirst("userId");
-                if (claim != null) value = Int32.Parse(claim.Value.ToString());
+                if (claim != null) value = int.Parse(claim.Value.ToString());
             }
             return value;
         }
