@@ -25,20 +25,19 @@ function Cart() {
         fetchData();
     }, [userAccountId]);
 
-    const productName = cart && cart.Products && cart.Products.length > 0 ? cart.Products[0].ProductName : '';
-
-
     return (
         <div style={{ maxWidth: '800px', margin: 'auto' }}>
             <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
                 <tbody>
                     <tr>
                         <td colSpan={2}>
-                            <img
-                                src={"/cartImage.png" || "/emptyImage.jpeg"}
-                                alt= "Cart Image"
-                                style={{ width: '20%', height: 'auto' }}
-                            />
+                            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                <img
+                                    src={"/cartImage.png" || "/emptyImage.jpeg"}
+                                    alt="Cart Image"
+                                    style={{ width: '10%', height: 'auto', display: 'block', margin: '0 auto' }}
+                                />
+                            </div>
                         </td>
                     </tr>
                     {cart && cart.Products && cart.Products.map(product => {
@@ -70,18 +69,6 @@ function Cart() {
                 </tbody>
             </table>
         </div>
-        //<div>
-        //    <h1>Cart for (AccountId: {userAccountId})</h1>
-        //    {cart ? (
-        //        <div>
-        //            <img src="/cartImage.png" alt="Cart Image" style={{ width: '20%', height: '20%' }} />
-        //            {cart.cartId && <p>AccountId: ${cart.cartId}</p>}
-        //            {cart.cartProducts && <p>CartProducts: {cart.cartProducts}</p>}
-        //        </div>
-        //    ) : (
-        //        <p>Loading...</p>
-        //    )}
-        //</div>
     );
 
 
