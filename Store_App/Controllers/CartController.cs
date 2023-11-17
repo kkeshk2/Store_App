@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using Store_App.Models.Classes;
 
@@ -51,6 +52,28 @@ namespace Store_App.Controllers
                 return JsonConvert.SerializeObject(notFoundCart);
             }
 
+        }
+
+        [HttpGet("deletefromcart")]
+        public ActionResult<string> DeleteFromCart(int accountId, int productId)
+        {
+            Cart cart = new Cart();
+            Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
+            if (retrievedCart != null)
+            {
+                cart.DeleteFromCart(retrievedCart.CartId, productId);
+                return Ok(new { Success = true, Message = "Product deleted from cart successfully", Cart = cart });
+
+            }
+            else
+            {
+                Cart notFoundCart = new Cart
+                {
+                    Errors = new List<string> { "Product not found" },
+                    Success = false
+                };
+                return JsonConvert.SerializeObject(notFoundCart);
+            }
         }
     }
 }

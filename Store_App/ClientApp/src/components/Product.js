@@ -33,7 +33,7 @@ function Product() {
 
   const addToCart = async() => {
     // Add logic to handle adding the product to the cart
-    console.log("URL:", `api/cart/addtocart?accountId=${2}&productId=${productId}&quantity=${selectedQuantity}`);
+    console.log("URL:", `api/cart/addtocart?accountId=${1}&productId=${productId}&quantity=${selectedQuantity}`);
 
     try {
         const response = await fetch(`api/cart/addtocart?accountId=${1}&productId=${productId}&quantity=${selectedQuantity}`);

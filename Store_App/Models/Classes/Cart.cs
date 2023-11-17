@@ -92,6 +92,13 @@ namespace Store_App.Models.Classes
             CartProduct cartProd = new CartProduct();
             cartProd.AddOneToCartProductDatabase(cart.CartId, productId, quantity);
         }
+
+        public void DeleteFromCart(int cartId, int productId)
+        {
+            CartProduct cartProd = new CartProduct(); 
+            cartProd = cartProd.GetOne(cartId, productId);
+            cartProd.DeleteFromCartProductDatabase(cartProd.CartProductId);
+        }
     }
 }
 

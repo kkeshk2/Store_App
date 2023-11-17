@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import '../custom.css';
 
 function Cart() {
     const [cart, setCart] = useState(null);
@@ -24,6 +25,24 @@ function Cart() {
 
         fetchData();
     }, [userAccountId]);
+
+    const deleteFromCart = async (productId) => {
+        console.log("URL:", `api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
+
+        try {
+            const response = await fetch(`api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log('NETWORK GOOD');
+            console.log(data);
+        } catch (error) {
+            console.error('Error deleting from cart:', error);
+        }
+        console.log(`Product deleted from the cart`);
+    }
 
     return (
         <div style={{ maxWidth: '800px', margin: 'auto' }}>
