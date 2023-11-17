@@ -91,16 +91,6 @@ namespace Store_App.Models.Classes
 
             CartProduct cartProd = new CartProduct();
             cartProd.AddOneToCartProductDatabase(cart.CartId, productId, quantity);
-
-            //CartProduct newCartProd = new CartProduct();
-            //newCartProd = newCartProd.GetOne(cart.CartId, productId);
-            //cart.CartProducts.Add(newCartProd);
-
-            //Product prod = new Product();
-            //cart.Products.Add(prod.GetOne(newCartProd.ProductId));
-
-
-
         }
     }
 }
