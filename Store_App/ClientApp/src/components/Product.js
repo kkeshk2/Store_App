@@ -3,11 +3,13 @@ import { useParams } from 'react-router-dom';
 import '../custom.css'; 
 
 
+
 function Product() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id: productId } = useParams();
   const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,32 +38,42 @@ function Product() {
     console.log("URL:", `api/cart/addtocart?accountId=${2}&productId=${productId}&quantity=${selectedQuantity}`);
 
     try {
+        setLoading(true);
         const response = await fetch(`api/cart/addtocart?accountId=${1}&productId=${productId}&quantity=${selectedQuantity}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
 
         const data = await response.json();
+        
         console.log('NETWORK GOOD');
         console.log(data);
+        setAddedToCart(true);
     } catch (error) {
         console.error('Error adding to cart:', error);
+    } finally{
+      setLoading(false);
     }
     console.log(`Product ${product.ProductName} added to the cart`);
     // You can dispatch an action or perform other actions here
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  // if (loading) {
+  //   return <p>Loading...</p>;
+  // }
 
   if (!product) {
     return <p>Error loading product data</p>;
   }
 
-  return (
-    <div style={{ maxWidth: '800px', margin: 'auto' }}>
-      <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
+    return (
+     <div style={{ maxWidth: '800px', margin: 'auto' }}>
+      {addedToCart &&
+        <div style={{ backgroundColor: 'green', color: 'white', padding: '10px', textAlign: 'center' }}>
+            Added to cart!
+        </div>
+      }
+      <table style={{ width: '100%', marginTop: '5px', borderCollapse: 'collapse' }}>
         <tbody>
           <tr>
             <td colSpan={2}>
@@ -145,7 +157,7 @@ function Product() {
           </tr>
           <tr>
             <td colSpan={2} style={{ textAlign: 'left', padding: '10px' }}>
-              <button onClick={addToCart} className="btn-primary" style={{ marginRight: '10px'}}>Add to Cart</button>
+              <button onClick={addToCart} className="btn-primary" disabled={loading} style={{ marginRight: '10px'}}>Add to Cart</button>
               <label htmlFor="quantity" style={{ marginRight: '10px'}}>Quantity:</label>
               <select
                 id="quantity"

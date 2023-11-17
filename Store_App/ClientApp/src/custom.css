@@ -26,6 +26,13 @@ code {
 .btn-primary:hover {
   background: linear-gradient(to right, #0062a8, #004777);
 }
+
+.btn-primary:disabled {
+  background: #bdc3c7;
+  color: #7f8c8d;
+  border: 1px solid #a3acb0;
+  cursor: not-allowed;
+}
 .product-grid {
   display: flex;
   flex-wrap: wrap;
