@@ -30,7 +30,7 @@ function NavMenu() {
                             <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/cart/1">Cart</NavLink>
+                            <NavLink tag={Link} className="text-dark" to="/cart">Cart</NavLink>
                         </NavItem>
                     </ul>
                 </Collapse>

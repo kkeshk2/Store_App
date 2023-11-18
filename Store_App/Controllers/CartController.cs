@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
+using Store_App.Helpers;
 using Store_App.Models.Classes;
 
 
@@ -11,8 +13,10 @@ namespace Store_App.Controllers
     public class CartController : Controller
     {
         [HttpGet("getonebasedonaccountid")]
-        public ActionResult<string> GetOneBasedOnAccountId(int userAccountId)
+        [Authorize("ValidUser")]
+        public ActionResult<string> GetOneBasedOnAccountId()
         {
+            int userAccountId = (int)HttpContextHelper.GetUserId(HttpContext);
             Cart cart = new Cart();
             Cart retrievedCart = cart.GetOneBasedOnAccountId(userAccountId);
             if (retrievedCart != null)
@@ -31,9 +35,10 @@ namespace Store_App.Controllers
         }
 
         [HttpGet("addtocart")]
-        
-        public ActionResult<string> AddToCart(int accountId, int productId, int quantity)
+        [Authorize("ValidUser")]
+        public ActionResult<string> AddToCart(int productId, int quantity)
         {
+            int accountId = (int)HttpContextHelper.GetUserId(HttpContext);
             Cart cart = new Cart();
             Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
             if (retrievedCart != null)
@@ -55,8 +60,10 @@ namespace Store_App.Controllers
         }
 
         [HttpGet("deletefromcart")]
-        public ActionResult<string> DeleteFromCart(int accountId, int productId)
+        [Authorize("ValidUser")]
+        public ActionResult<string> DeleteFromCart(int productId)
         {
+            int accountId = (int)HttpContextHelper.GetUserId(HttpContext);
             Cart cart = new Cart();
             Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
             if (retrievedCart != null)

@@ -8,7 +8,8 @@ function Cart() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`api/cart/getonebasedonaccountid?userAccountId=${userAccountId}`);
+                const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                const response = await fetch(`api/cart/getonebasedonaccountid`, { headers });
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -27,10 +28,12 @@ function Cart() {
     }, [userAccountId]);
 
     const deleteFromCart = async (productId) => {
-        console.log("URL:", `api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
+        // console.log("URL:", `api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
 
         try {
-            const response = await fetch(`api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
+            const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+            const response = await fetch(`api/cart/deletefromcart?productId=${productId}`, { headers });
+            // const response = await fetch(`api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -60,8 +63,14 @@ function Cart() {
                         </td>
                     </tr>
                     {cart && cart.Products && cart.Products.map(product => {
-                        // Find the corresponding cart product to get the quantity
                         const cartProduct = cart.CartProducts.find(cartProd => cartProd.ProductId === product.ProductId);
+
+                        const handleDelete = async () => {
+                            if (cartProduct) {
+                                await deleteFromCart(cartProduct.ProductId);
+                                // After deleting, you might want to refetch the cart data or update it in some way
+                            }
+                        };
 
                         return (
                             <React.Fragment key={product.ProductId}>
@@ -79,7 +88,15 @@ function Cart() {
                                         <h1>{product.ProductName}</h1>
                                         <p>Price: ${product.ProductPrice}</p>
                                         {cartProduct && <p>Quantity: {cartProduct.Quantity}</p>}
-                                        {/* Add more details as needed */}
+                                        {cartProduct && (
+                                            <button
+                                                className="btn-cart"
+                                                onClick={handleDelete}
+                                                style={{ marginTop: '10px' }}
+                                            >
+                                                Delete from Cart
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             </React.Fragment>
