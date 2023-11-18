@@ -26,6 +26,17 @@ code {
 .btn-primary:hover {
   background: linear-gradient(to right, #0062a8, #004777);
 }
+
+.btn-login {
+    color: #ffffff;
+    background: #0074cc;
+}
+
+.btn-login:hover {
+    color: #ffffff;
+    background: #0062a8;
+}
+
 .product-grid {
   display: flex;
   flex-wrap: wrap;

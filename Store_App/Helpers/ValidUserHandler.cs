@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Store_App.Models.Classes;
 
 namespace Store_App.Helpers
@@ -6,11 +7,9 @@ namespace Store_App.Helpers
     public class ValidUserHandler : AuthorizationHandler<ValidUserRequirement>
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ValidUserRequirement requirement)
-        {  
-            string? header = GetHeader(context);
-            string? bearer = GetBearer(header);
-            string? token = GetToken(bearer);
-            int? userId = GetUserId(token);
+        {
+            HttpContext? httpContext = GetHttpContext(context);
+            int? userId = HttpContextHelper.GetUserId(httpContext);
             Account? account = GetAccount(userId);
 
             if (account != null) context.Succeed(requirement);
@@ -18,29 +17,10 @@ namespace Store_App.Helpers
             return Task.CompletedTask;
         }
 
-        private static string? GetHeader(AuthorizationHandlerContext context)
+        private static HttpContext? GetHttpContext(AuthorizationHandlerContext context)
         {
-            if (context.Resource is not HttpContext AuthContext) return null;
-            return AuthContext.Request.Headers["Authorization"];
-        }
-
-        private static string? GetBearer(string? header)
-        {
-            if (header == null) return null;
-            if (header.Contains("Bearer") == false) return null;
-            return header[header.IndexOf("Bearer")..];
-        }
-
-        private static string? GetToken(string? bearer)
-        {
-            if (bearer == null) return null;
-            return bearer.Split(" ")[1];
-        }
-
-        private static int? GetUserId(string? token)
-        {
-            if (token == null) return null;
-            return JWTHelper.GetUserId(token);
+            if (context.Resource is HttpContext httpContext) return httpContext;
+            return null;
         }
 
         private static Account? GetAccount(int? userId)
