@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import '../custom.css';
 
 function Cart() {
     const [cart, setCart] = useState(null);
@@ -7,7 +8,8 @@ function Cart() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`api/cart/getonebasedonaccountid?userAccountId=${userAccountId}`);
+                const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                const response = await fetch(`api/cart/getonebasedonaccountid`, { headers });
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -25,6 +27,26 @@ function Cart() {
         fetchData();
     }, [userAccountId]);
 
+    const deleteFromCart = async (productId) => {
+        // console.log("URL:", `api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
+
+        try {
+            const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+            const response = await fetch(`api/cart/deletefromcart?productId=${productId}`, { headers });
+            // const response = await fetch(`api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log('NETWORK GOOD');
+            console.log(data);
+        } catch (error) {
+            console.error('Error deleting from cart:', error);
+        }
+        console.log(`Product deleted from the cart`);
+    }
+
     return (
         <div style={{ maxWidth: '800px', margin: 'auto' }}>
             <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
@@ -41,8 +63,14 @@ function Cart() {
                         </td>
                     </tr>
                     {cart && cart.Products && cart.Products.map(product => {
-                        // Find the corresponding cart product to get the quantity
                         const cartProduct = cart.CartProducts.find(cartProd => cartProd.ProductId === product.ProductId);
+
+                        const handleDelete = async () => {
+                            if (cartProduct) {
+                                await deleteFromCart(cartProduct.ProductId);
+                                // After deleting, you might want to refetch the cart data or update it in some way
+                            }
+                        };
 
                         return (
                             <React.Fragment key={product.ProductId}>
@@ -60,7 +88,15 @@ function Cart() {
                                         <h1>{product.ProductName}</h1>
                                         <p>Price: ${product.ProductPrice}</p>
                                         {cartProduct && <p>Quantity: {cartProduct.Quantity}</p>}
-                                        {/* Add more details as needed */}
+                                        {cartProduct && (
+                                            <button
+                                                className="btn-cart"
+                                                onClick={handleDelete}
+                                                style={{ marginTop: '10px' }}
+                                            >
+                                                Delete from Cart
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             </React.Fragment>
