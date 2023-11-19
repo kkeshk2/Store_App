@@ -5,6 +5,7 @@ import '../custom.css';
 function Cart() {
     const [cart, setCart] = useState(null);
     const { id: userAccountId } = useParams();
+    const [refreshCart, setRefreshCart] = useState(false);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -25,7 +26,7 @@ function Cart() {
         };
 
         fetchData();
-    }, [userAccountId]);
+    }, [userAccountId, refreshCart]);
 
     const deleteFromCart = async (productId) => {
         // console.log("URL:", `api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
@@ -41,6 +42,7 @@ function Cart() {
             const data = await response.json();
             console.log('NETWORK GOOD');
             console.log(data);
+            setRefreshCart(prevState => !prevState);
         } catch (error) {
             console.error('Error deleting from cart:', error);
         }
