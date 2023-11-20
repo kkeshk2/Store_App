@@ -28,18 +28,8 @@ namespace Store_App.Controllers
                 return new StatusCodeResult(502);
             }
         }
-            try
-            {
-            Account new_account = Account.createAccount(email, password, username);
-            return JsonConvert.SerializeObject(new_account);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error creating account: {ex.Message}");
-                return StatusCode(500, "Internal Server Error");
-            }
-        }
-                [HttpPut("updateaccount")]
+
+        [HttpPut("updateaccount")]
         public ActionResult<string> UpdateAccount(string email, string username)
         {
             try
@@ -54,6 +44,7 @@ namespace Store_App.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
         }
+
         [HttpPut("updateaccountpassword")]
         public ActionResult<string> UpdateAccountPassword(string password)
         {
