@@ -28,17 +28,15 @@ namespace Store_App.Controllers
                 return new StatusCodeResult(502);
             }
         }
-        [HttpPost("createaccount")]
-        public ActionResult<string> CreateAccount(string email, string password, string username)
-        {
             try
             {
             Account new_account = Account.createAccount(email, password, username);
             return JsonConvert.SerializeObject(new_account);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Console.WriteLine("Account cannot be created");
+                Console.WriteLine($"Error creating account: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
             }
         }
                 [HttpPut("updateaccount")]
@@ -46,12 +44,14 @@ namespace Store_App.Controllers
         {
             try
             {
-                Account updated_account = Account.updateAccount(email, username);
-                return JsonConvert.SerializeObject(updated_account);
+                Account account = new Account();
+                account.updateAccount(email, username);  
+                return Ok("Account updated successfully");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Console.WriteLine("Account cannot be updated");
+                Console.WriteLine($"Error updating account: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
             }
         }
         [HttpPut("updateaccountpassword")]
@@ -59,12 +59,14 @@ namespace Store_App.Controllers
         {
             try
             {
-                Account updated_password = Account.updateAccount(password);
-                return JsonConvert.SerializeObject(updated_password);
+                Account updated_password = new Account();
+                updated_password.updateAccountPassword(password);
+                return Ok("Account updated successfully");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Console.WriteLine("Password cannot be updated");
+                Console.WriteLine($"Error updating account: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
             }
         }
     }
