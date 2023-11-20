@@ -16,7 +16,7 @@ namespace Store_App.Controllers
         [Authorize("ValidUser")]
         public ActionResult<string> GetOneBasedOnAccountId()
         {
-            int userAccountId = (int)HttpContextHelper.GetUserId(HttpContext);
+            int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
             Cart cart = new Cart();
             Cart retrievedCart = cart.GetOneBasedOnAccountId(userAccountId);
             if (retrievedCart != null)
@@ -38,7 +38,7 @@ namespace Store_App.Controllers
         [Authorize("ValidUser")]
         public ActionResult<string> AddToCart(int productId, int quantity)
         {
-            int accountId = (int)HttpContextHelper.GetUserId(HttpContext);
+            int? accountId = (int?)HttpContextHelper.GetUserId(HttpContext);
             Cart cart = new Cart();
             Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
             if (retrievedCart != null)
@@ -63,7 +63,7 @@ namespace Store_App.Controllers
         [Authorize("ValidUser")]
         public ActionResult<string> DeleteFromCart(int productId)
         {
-            int accountId = (int)HttpContextHelper.GetUserId(HttpContext);
+            int? accountId = (int?)HttpContextHelper.GetUserId(HttpContext);
             Cart cart = new Cart();
             Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
             if (retrievedCart != null)

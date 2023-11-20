@@ -22,7 +22,7 @@ namespace Store_App.Models.Classes
         // Success boolean field
         public bool Success { get; set; } = true;
 
-        public Cart GetOneBasedOnAccountId(int userAccountId)
+        public Cart GetOneBasedOnAccountId(int? userAccountId)
         {
             Cart cart = new Cart();
             DataSet userDataset = new DataSet();
