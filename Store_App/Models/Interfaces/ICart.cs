@@ -7,5 +7,7 @@ namespace Store_App.Models.Interfaces
         Cart GetOneBasedOnAccountId(int? userAccountId);
         void AddToCart(Cart cart, int productId, int quantity);
         void DeleteFromCart(int cartId, int productId);
+        double GetTotalPrice(int? accountId);
+        void DeleteAllFromCart(int? accountId);
     }
 }

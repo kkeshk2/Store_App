@@ -9,5 +9,6 @@ namespace Store_App.Models.Interfaces
         List<CartProduct> GetCartProductsBasedOnCart(int cartProductId);
         void AddOneToCartProductDatabase(int cartId, int productId, int quantity);
         void DeleteFromCartProductDatabase(int cartProductId);
+        void DeleteCartProductsForOneCart(int cartId);
     }
 }

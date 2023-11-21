@@ -82,5 +82,49 @@ namespace Store_App.Controllers
                 return JsonConvert.SerializeObject(notFoundCart);
             }
         }
+
+        [HttpGet("gettotalprice")]
+        [Authorize("ValidUser")]
+        public ActionResult<string> GetTotalPrice()
+        {
+            int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
+            Cart cart = new Cart();
+            double totalPrice = cart.GetTotalPrice(userAccountId);
+            if (totalPrice >= 0)
+            {
+                return JsonConvert.SerializeObject(totalPrice);
+            }
+            else
+            {
+                Cart notFoundCart = new Cart
+                {
+                    Errors = new List<string> { "Error Getting Total Price" },
+                    Success = false
+                };
+                return JsonConvert.SerializeObject(notFoundCart);
+            }
+        }
+
+        [HttpGet("deleteallfromcart")]
+        [Authorize("ValidUser")]
+        public ActionResult<string> DeleteAllFromCart()
+        {
+            int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
+            Cart cart = new Cart();
+            if (userAccountId != null)
+            {
+                cart.DeleteAllFromCart(userAccountId);
+                return Ok(new { Success = true, Message = "Product deleted from cart successfully", Cart = cart });
+            }
+            else
+            {
+                Cart notFoundCart = new Cart
+                {
+                    Errors = new List<string> { "Error Deleting Products from Cart" },
+                    Success = false
+                };
+                return JsonConvert.SerializeObject(notFoundCart);
+            }
+        }
     }
 }
