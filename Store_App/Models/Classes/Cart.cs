@@ -99,6 +99,29 @@ namespace Store_App.Models.Classes
             cartProd = cartProd.GetOne(cartId, productId);
             cartProd.DeleteFromCartProductDatabase(cartProd.CartProductId);
         }
+
+        public double GetTotalPrice(int? accountId)
+        {
+            Cart currentCart = GetOneBasedOnAccountId(accountId);
+            CartProduct currentCartProduct = new CartProduct();
+
+            double totalPrice = 0;
+            for (int i = 0; i < currentCart.Products.Count(); i++)
+            {
+                currentCartProduct = currentCartProduct.GetOne(currentCart.CartId, currentCart.Products[i].ProductId);
+                totalPrice += ((double)currentCart.Products[i].ProductPrice) * (currentCartProduct.Quantity);
+            }
+
+            return totalPrice;
+        }
+
+        public void DeleteAllFromCart(int? accountId)
+        {
+            CartProduct cartProd = new CartProduct();
+            Cart currentCart = GetOneBasedOnAccountId(accountId);
+            cartProd.DeleteCartProductsForOneCart(currentCart.CartId);
+
+        }
     }
 }
 

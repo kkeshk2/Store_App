@@ -45,9 +45,9 @@ function Product() {
         const data = await response.json();
         console.log('NETWORK GOOD');
         console.log(data);
-    } catch (error) {
+      } catch (error) {
         console.error('Error adding to cart:', error);
-    }
+      }
     console.log(`Product ${product.ProductName} added to the cart`);
     // You can dispatch an action or perform other actions here
   };

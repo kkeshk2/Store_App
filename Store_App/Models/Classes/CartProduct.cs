@@ -222,5 +222,41 @@ namespace Store_App.Models.Classes
                 }
             }
         }
+
+        public void DeleteCartProductsForOneCart(int cartId)
+        {
+            SqlConnection connection;
+            string connectionString = ConnectionString.getConnectionString();
+            using (connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    Console.WriteLine("Opening Connection ...");
+                    connection.Open();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e.Message);
+                }
+
+                SqlCommand command = new SqlCommand("DELETE FROM CartProduct WHERE cartId = @cartId",
+                    connection);
+                command.Parameters.AddWithValue("@cartId", cartId);
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("CartProduct Deleted Successfully");
+                }
+                catch (SqlException e)
+                {
+                    Console.WriteLine("Error Generated. Details: " + e.ToString());
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
     }
 }
