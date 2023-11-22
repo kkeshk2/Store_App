@@ -44,13 +44,20 @@ code {
 }
 
 .btn-login {
-    color: #ffffff;
     background: #0074cc;
+    color: #ffffff;
+}
+
+.btn-login:disabled {
+    background: #0074cc;
+    color: #ffffff;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .btn-login:hover {
-    color: #ffffff;
     background: #0062a8;
+    color: #ffffff;
 }
 
 .product-grid {

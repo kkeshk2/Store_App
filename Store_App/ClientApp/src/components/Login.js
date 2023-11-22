@@ -35,6 +35,7 @@ export default function Login() {
                 const token = await response.text()
                 localStorage.setItem("authtoken", token)
                 navigate("/")
+                window.location.reload()
             } else if (response.status === 400) {
                 setStatus(400)
             } else {
@@ -77,8 +78,8 @@ export default function Login() {
                 <h2>Log In</h2>
             </Col></Row>
             <Row><Col lg="5">
-                <Alert color="danger" isOpen={status === 400}> Your username or password is incorrect. </Alert>
-                <Alert color="warning" isOpen={status === 502}> Error Logging In. </Alert>
+                <Alert color="danger" isOpen={status === 400}> Your email or password is incorrect. </Alert>
+                <Alert color="warning" isOpen={status === 502}> There was an error logging in. </Alert>
             </Col></Row>
             <Row><Col lg="5">
                 <FormGroup>
@@ -102,7 +103,7 @@ export default function Login() {
             </Col></Row>
             <Row><Col lg="5">
                 <Nav  justified>
-                    <NavLink href="/"> Create Account </NavLink>
+                    <NavLink href="/create-account"> Create Account </NavLink>
                 </Nav>
             </Col></Row>
         </Form>

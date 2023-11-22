@@ -4,6 +4,8 @@ using Store_App.Helpers;
 using Store_App.Models.Classes;
 using System.Net;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
+using System.Text.RegularExpressions;
 
 namespace Store_App.Controllers
 {
@@ -29,35 +31,74 @@ namespace Store_App.Controllers
             }
         }
 
+
+        [HttpGet("verify")]
+        [Authorize("ValidUser")]
+        public ActionResult<string> Verify()
+        {
+            return new OkResult();
+        }
+
+        [HttpGet("createaccount")]
+        public ActionResult<string> CreateAccount(string email, string password, string name)
+        {
+            if (!Regex.IsMatch(email, "^[^@\\s@]+@[^@\\s]+\\.[^@\\s]+$")) return new StatusCodeResult(400);
+            if (!Regex.IsMatch(password, "^[^\\s]{8,128}$")) return new StatusCodeResult(400);
+            if (!Regex.IsMatch(name, "^[A-Za-z][A-Za-z\\.\\-\\x20]{0,127}$")) return new StatusCodeResult(400);
+            try
+            {
+                int count = Account.accessAccountByEmail(email);
+                if (count != 0) return new StatusCodeResult(401);
+                Account account = Account.createAccount(email, password, name);
+                return JWTHelper.GetToken(account.AccountId);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(502);
+            }
+        }
+
         [HttpPut("updateaccount")]
+        [Authorize("ValidUser")]
         public ActionResult<string> UpdateAccount(string email, string username)
         {
             try
             {
-                Account account = new Account();
-                account.updateAccount(email, username);  
-                return Ok("Account updated successfully");
+                int? userId = HttpContextHelper.GetUserId(HttpContext);
+                if (userId == null) return new StatusCodeResult(401);
+                Account account = Account.accessAccountById((int) userId);
+                account.updateAccount(email, username);
+                return new StatusCodeResult(200);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException)
             {
-                Console.WriteLine($"Error updating account: {ex.Message}");
-                return StatusCode(500, "Internal Server Error");
+                return new StatusCodeResult(401);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(502);
             }
         }
 
         [HttpPut("updateaccountpassword")]
+        [Authorize("ValidUser")]
         public ActionResult<string> UpdateAccountPassword(string password)
         {
             try
             {
-                Account updated_password = new Account();
-                updated_password.updateAccountPassword(password);
-                return Ok("Account updated successfully");
+                int? userId = HttpContextHelper.GetUserId(HttpContext);
+                if (userId == null) return new StatusCodeResult(401);
+                Account account = Account.accessAccountById((int)userId);
+                account.updateAccountPassword(password);
+                return new StatusCodeResult(200);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException)
             {
-                Console.WriteLine($"Error updating account: {ex.Message}");
-                return StatusCode(500, "Internal Server Error");
+                return new StatusCodeResult(401);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(502);
             }
         }
     }
