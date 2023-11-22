@@ -67,8 +67,8 @@ function Checkout() {
             <div
                 style={{
                     position: 'absolute',
-                    top: '55px',
-                    right: '-275px',
+                    top: '56px',
+                    right: '-300px',
                     backgroundColor: '#fff',
                     padding: '20px',
                     border: '1px solid #ccc',
