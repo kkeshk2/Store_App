@@ -48,6 +48,9 @@ function NavMenu() {
                             <NavItem>
                                 <NavLink tag={Link} className="text-dark" to="/cart">Cart</NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink tag={Link} className="text-dark" to="/checkout">Checkout</NavLink>
+                            </NavItem>
                         </ul>
                     </Collapse>
                 </Navbar>
@@ -67,6 +70,9 @@ function NavMenu() {
                         </NavItem>
                         <NavItem>
                             <NavLink tag={Link} className="text-dark" to="/create-account">Create Account</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink tag={Link} className="text-dark" to="/checkout">Checkout</NavLink>
                         </NavItem>
                     </ul>
                 </Collapse>
