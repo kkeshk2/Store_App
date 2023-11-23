@@ -25,10 +25,6 @@ namespace Store_App.Models.Classes
             this.AccountName = accountName;
         }
 
-        public Account()
-        {
-        }
-
         public static Account accessAccountByLogin(string accountEmail, string accountPassword)
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
@@ -62,7 +58,35 @@ namespace Store_App.Models.Classes
             }
         }
 
-        public static Account accessAccountById(Int32 accountId)
+        public static int accessAccountByEmail(string accountEmail)
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
+            {
+                try
+                {
+                    connection.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM Account WHERE accountEmail = @accountEmail", connection);
+                    cmd.Parameters.AddWithValue("@accountEmail", accountEmail);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    reader.Read();
+                    int count = reader.GetInt32(0);
+
+                    reader.Close();
+                    connection.Close();
+
+                    return count;
+                }
+                catch (Exception)
+                {
+                    return -1;
+                }
+            }
+        }
+
+        public static Account accessAccountById(int accountId)
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
@@ -187,49 +211,6 @@ namespace Store_App.Models.Classes
 
                 cmd.ExecuteNonQuery();
 
-                connection.Close();
-            }
-        }
-        public Account accountLogin(string accountName, string accountPassword)
-        {
-            using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
-            {
-                try
-                {
-                    connection.Open();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error: " + e.Message);
-                }
-                SqlCommand cmd = new SqlCommand("SELECT * from accountName, accountPassword, accountEmail WHERE accountName = @accountName AND accountPassword = @accountPassword", connection);
-                cmd.Parameters.AddWithValue("@accountName", accountName);
-                cmd.Parameters.AddWithValue("@accountPassword", accountPassword);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    if (!reader.HasRows)
-                    {
-                        Console.WriteLine("No Account found");
-                        Account account = new Account();
-                        account.Success = false;
-                        account.Errors.Add("Account not found");
-                        return account;
-                    }
-                    else
-                    {
-                        Account account = new Account(
-                            reader.GetInt32("accountId"),
-                            reader.GetString("accountEmail"),
-                            reader.GetString("accountName")
-                        );
-                        return account;
-                    }
-                    reader.Close();
-                }
-                Account notFound = new Account();
-                notFound.Success = false;
-                return notFound;
                 connection.Close();
             }
         }

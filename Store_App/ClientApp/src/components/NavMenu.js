@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './NavMenu.css';
 
 
 function NavMenu() {
     const [collapsed, setCollapsed] = useState(true);
-    const navigate = useNavigate()
 
     const toggleNavbar = () => {
         setCollapsed(!collapsed);
@@ -14,8 +13,26 @@ function NavMenu() {
 
     const HandleLogOut = () => {
         localStorage.removeItem("authtoken")
-        navigate("/")
+        window.location.reload()
     }
+
+    const HandleVerify = async event => {
+        if (localStorage.getItem("authtoken")) {
+            try {
+                const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                const response = await fetch(`api/account/verify`, { headers });
+                if (!response.ok) {
+                    localStorage.removeItem("authtoken")
+                    window.location.reload()
+                }
+            } catch (Exception) {
+                localStorage.removeItem("authtoken")
+                window.location.reload()
+            }
+        }
+    }
+
+    HandleVerify();
 
     if (localStorage.getItem("authtoken") != null) {
         return (
@@ -26,10 +43,7 @@ function NavMenu() {
                     <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
                         <ul className="navbar-nav flex-grow">
                             <NavItem>
-                                <NavLink tag={Link} className="text-dark" onClick={HandleLogOut}>Log Out</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
+                                <NavLink tag={Link} className="text-dark" onClick={HandleLogOut} to="/">Log Out</NavLink>
                             </NavItem>
                             <NavItem>
                                 <NavLink tag={Link} className="text-dark" to="/cart">Cart</NavLink>
@@ -55,10 +69,7 @@ function NavMenu() {
                             <NavLink tag={Link} className="text-dark" to="/login">Log In</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/cart">Cart</NavLink>
+                            <NavLink tag={Link} className="text-dark" to="/create-account">Create Account</NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink tag={Link} className="text-dark" to="/checkout">Checkout</NavLink>
