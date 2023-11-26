@@ -4,6 +4,7 @@ import '../custom.css';
 
 function Cart() {
     const [cart, setCart] = useState(null);
+    const [loading, setLoading] = useState(true);
     const { id: userAccountId } = useParams();
     const [refreshCart, setRefreshCart] = useState(false);
     useEffect(() => {
@@ -22,6 +23,8 @@ function Cart() {
                 setCart(data); // Set the product state with the parsed data
             } catch (error) {
                 console.error('Error fetching product:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -49,6 +52,14 @@ function Cart() {
         console.log(`Product deleted from the cart`);
     }
 
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    if (!cart) {
+        return <p>Error loading cart data</p>;
+    }
+
     return (
         <div style={{ maxWidth: '800px', margin: 'auto' }}>
             <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
@@ -58,7 +69,7 @@ function Cart() {
                             <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                                 <img
                                     src={"/cartImage.png" || "/emptyImage.jpeg"}
-                                    alt="Cart Image"
+                                    alt="Cart Img"
                                     style={{ width: '10%', height: 'auto', display: 'block', margin: '0 auto' }}
                                 />
                             </div>

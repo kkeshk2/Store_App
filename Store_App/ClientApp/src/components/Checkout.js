@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import '../custom.css';
 
 function Checkout() {
@@ -43,14 +42,12 @@ function Checkout() {
             const data = await response.json();
             console.log('NETWORK GOOD');
             console.log(data);
-            setRefreshCheckout(prevState => !prevState);
+            alert('Order Successful');
+            setTimeout(() => { setRefreshCheckout(prevState => !prevState); }, 3000);
+            
         } catch (error) {
-            console.error('Error adding to cart:', error);
+            console.error('Error with Payment:', error);
         }
-
-        alert('Order Successful');
-
-        console.log('Payment logic goes here');
     };
 
     const handleInputChange = (e) => {

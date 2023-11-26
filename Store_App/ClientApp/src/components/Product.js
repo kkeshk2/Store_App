@@ -68,7 +68,7 @@ function Product() {
             <td colSpan={2}>
               <img
                 src={product.ProductImageLocation || "/emptyImage.jpeg"}
-                alt="Product Image"
+                alt="Product Img"
                 style={{ width: '100%', height: 'auto' }}
               />
             </td>

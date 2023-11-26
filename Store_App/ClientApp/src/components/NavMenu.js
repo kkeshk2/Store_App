@@ -71,9 +71,6 @@ function NavMenu() {
                         <NavItem>
                             <NavLink tag={Link} className="text-dark" to="/create-account">Create Account</NavLink>
                         </NavItem>
-                        <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/checkout">Checkout</NavLink>
-                        </NavItem>
                     </ul>
                 </Collapse>
             </Navbar>
