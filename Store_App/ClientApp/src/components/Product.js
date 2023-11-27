@@ -23,6 +23,7 @@ function Product() {
         console.log('NETWORK GOOD');
         console.log(data);
         setProduct(data);
+        setAddedToCart(true);
       } catch (error) {
         console.error('Error fetching product:', error);
       } finally {
