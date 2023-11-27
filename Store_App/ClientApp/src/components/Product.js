@@ -2,8 +2,6 @@
 import { useParams } from 'react-router-dom';
 import '../custom.css'; 
 
-
-
 function Product() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +21,6 @@ function Product() {
         console.log('NETWORK GOOD');
         console.log(data);
         setProduct(data);
-        setAddedToCart(true);
       } catch (error) {
         console.error('Error fetching product:', error);
       } finally {
@@ -50,6 +47,7 @@ function Product() {
         
         console.log('NETWORK GOOD');
         console.log(data);
+        setAddedToCart(true);
       } catch (error) {
         console.error('Error adding to cart:', error);
     }
@@ -69,7 +67,7 @@ function Product() {
   }
 
     return (
-     <div style={{ maxWidth: '800px', margin: 'auto' }}>
+     <div style={{ maxWidth: '1000px', margin: 'auto' }}>
       {addedToCart &&
         <div style={{ backgroundColor: 'green', color: 'white', padding: '10px', textAlign: 'center' }}>
             Added to cart!
@@ -82,7 +80,7 @@ function Product() {
               <img
                 src={product.ProductImageLocation || "/emptyImage.jpeg"}
                 alt="Product Img"
-                style={{ width: '100%', height: 'auto' }}
+                style={{ width: '65%', height: 'auto', margin: '0 auto', display: 'block'}}
               />
             </td>
           </tr>

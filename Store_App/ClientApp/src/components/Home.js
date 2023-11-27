@@ -26,10 +26,10 @@ function Home() {
              <div className="product-grid">
       {products.map((product) => (
         <Link to={`/product/${product.productId}`} key={product.productSKU} className="product-card">
-          <img src={product.productImageLocation ?? "/emptyImage.jpeg"} alt={product.productName} />
-          <h3>{product.productName}</h3>
-          <p>{product.productDescription}</p>
-          <p>Price: ${product.productPrice.toFixed(2)}</p>
+           <img src={product.productImageLocation ?? "/emptyImage.jpeg"} alt={product.productName} />
+  <h3 className="product-title">{product.productName}</h3>
+  <p className="product-description">{product.productDescription}</p>
+  <p className="product-price">Price: ${product.productPrice.toFixed(2)}</p>
         </Link>
       ))}
     </div>
