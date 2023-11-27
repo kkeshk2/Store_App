@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import '../custom.css';
 
 function Checkout() {
     const [totalPrice, setTotalPrice] = useState(null);
-    const [refreshCheckout, setRefreshCheckout] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         creditCardNumber: '',
         shippingAddress: '',
     });
+    const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,33 +24,14 @@ function Checkout() {
                 const data = await response.json();
                 setTotalPrice(data);
             } catch (error) {
-                console.error('Error fetching product:', error);
+                console.error('Error fetching total price:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchData();
-    }, [totalPrice, refreshCheckout]);
-
-    const handlePayment = async () => {
-        console.log('Form Data:', formData);
-
-        try {
-            const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
-            const response = await fetch(`api/cart/deleteallfromcart`, { headers });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
-            console.log('NETWORK GOOD');
-            console.log(data);
-            alert('Order Successful');
-            setTimeout(() => { setRefreshCheckout(prevState => !prevState); }, 3000);
-            
-        } catch (error) {
-            console.error('Error with Payment:', error);
-        }
-    };
+    }, [totalPrice]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -57,6 +40,17 @@ function Checkout() {
             [name]: value,
         });
     };
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    if (totalPrice === 0) {
+        return (<div className="outer-container" style={{ paddingTop: '200px', textAlign: 'center' }}>
+                    <h1>There is nothing in the cart to checkout</h1>
+                </div >
+        );
+    }
 
     return (
         <div style={{ maxWidth: '800px', margin: 'auto', position: 'relative' }}>
@@ -117,9 +111,9 @@ function Checkout() {
                         style={{ marginBottom: '15px', padding: '8px', borderRadius: '5px', minHeight: '100px' }}
                         required
                     />
-                    <button onClick={handlePayment} className="btn-pay">
-                        Pay Now
-                    </button>
+                    <Link to={"/payment-successful"}>
+                        < button className="btn-pay">Pay Now</button>
+                    </Link>
                 </form>
             </div>
         </div>

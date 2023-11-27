@@ -89,7 +89,7 @@ namespace Store_App.Controllers
         {
             int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
             Cart cart = new Cart();
-            double totalPrice = cart.GetTotalPrice(userAccountId);
+            double totalPrice = Math.Round(cart.GetTotalPrice(userAccountId), 2);
             if (totalPrice >= 0)
             {
                 return JsonConvert.SerializeObject(totalPrice);
