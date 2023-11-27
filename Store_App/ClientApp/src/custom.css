@@ -92,6 +92,13 @@ code {
     color: #ffffff;
 }
 
+
+.btn-primary:disabled {
+  background: #bdc3c7;
+  color: #7f8c8d;
+  border: 1px solid #a3acb0;
+  cursor: not-allowed;
+}
 .product-grid {
   display: flex;
   flex-wrap: wrap;
@@ -114,6 +121,7 @@ code {
   object-fit: contain; /* Ensure the entire image is displayed within the container */
   height: 100%; /* Make the image take up the full height of the container */
   width: 100%; /* Make the image take up the full width of the container */
+  text-decoration: none !important;
 }
 
 /* Media query for smaller screens */
@@ -122,3 +130,16 @@ code {
     flex-basis: calc(50% - 20px); /* Adjust the width for smaller screens */
   }
 }
+.product-title {
+  color: black; /* or any other color you prefer */
+  text-decoration: none !important;
+}
+
+.product-description {
+  color: green; /* or any other color you prefer */
+}
+
+.product-price {
+  color: red; /* or any other color you prefer */
+}
+
