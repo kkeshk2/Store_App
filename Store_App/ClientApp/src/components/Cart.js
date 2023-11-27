@@ -17,14 +17,12 @@ function Cart() {
                     fetch(`api/cart/getonebasedonaccountid`, { headers })
                 ]);
 
-                // Handle total price response
                 if (!totalPriceResponse.ok) {
                     throw new Error('Total price network response was not ok');
                 }
                 const totalPriceData = await totalPriceResponse.json();
                 setTotalPrice(totalPriceData);
 
-                // Handle cart data response
                 if (!cartResponse.ok) {
                     throw new Error('Cart network response was not ok');
                 }
@@ -32,7 +30,6 @@ function Cart() {
                 setCart(cartData);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                // Handle errors or set default values for states
             } finally {
                 setLoading(false);
             }
@@ -42,12 +39,10 @@ function Cart() {
     }, [refreshCart, totalPrice]);
 
     const deleteFromCart = async (productId) => {
-        // console.log("URL:", `api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
 
         try {
             const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
             const response = await fetch(`api/cart/deletefromcart?productId=${productId}`, { headers });
-            // const response = await fetch(`api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -82,7 +77,7 @@ function Cart() {
                     border: '1px solid #ccc',
                     borderRadius: '5px',
                     fontWeight: 'bold',
-                    fontSize: '24px', // Increased font size for total price
+                    fontSize: '24px',
                 }}
             >
                 {totalPrice !== null && (
