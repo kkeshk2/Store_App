@@ -1,35 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../custom.css';
 
 function Cart() {
     const [cart, setCart] = useState(null);
+    const [totalPrice, setTotalPrice] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { id: userAccountId } = useParams();
     const [refreshCart, setRefreshCart] = useState(false);
     useEffect(() => {
         const fetchData = async () => {
+
             try {
                 const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
-                const response = await fetch(`api/cart/getonebasedonaccountid`, { headers });
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                const [totalPriceResponse, cartResponse] = await Promise.all([
+                    fetch(`api/cart/gettotalprice`, { headers }),
+                    fetch(`api/cart/getonebasedonaccountid`, { headers })
+                ]);
+
+                // Handle total price response
+                if (!totalPriceResponse.ok) {
+                    throw new Error('Total price network response was not ok');
                 }
+                const totalPriceData = await totalPriceResponse.json();
+                setTotalPrice(totalPriceData);
 
-                const data = await response.json(); // Parse the response as JSON
-
-                console.log("NETWORK GOOD");
-                console.log(data);
-                setCart(data); // Set the product state with the parsed data
+                // Handle cart data response
+                if (!cartResponse.ok) {
+                    throw new Error('Cart network response was not ok');
+                }
+                const cartData = await cartResponse.json();
+                setCart(cartData);
             } catch (error) {
-                console.error('Error fetching product:', error);
+                console.error('Error fetching data:', error);
+                // Handle errors or set default values for states
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [userAccountId, refreshCart]);
+    }, [refreshCart, totalPrice]);
 
     const deleteFromCart = async (productId) => {
         // console.log("URL:", `api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
@@ -62,6 +72,23 @@ function Cart() {
 
     return (
         <div style={{ maxWidth: '800px', margin: 'auto' }}>
+            <div
+                style={{
+                    position: 'absolute',
+                    top: '70px',
+                    right: '10px',
+                    backgroundColor: '#fff',
+                    padding: '20px',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    fontWeight: 'bold',
+                    fontSize: '24px', // Increased font size for total price
+                }}
+            >
+                {totalPrice !== null && (
+                    <p>Total Price: ${totalPrice}</p>
+                )}
+            </div>
             <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
                 <tbody>
                     <tr>
@@ -116,6 +143,19 @@ function Cart() {
                     })}
                 </tbody>
             </table>
+            <Link to={"/checkout"}>
+                <button
+                    className="btn-continue-to-payment"
+                    style={{
+                        position: 'absolute',
+                        top: '200px',
+                        right: '20px',
+                    }}
+                >
+                    Continue to Payment
+                </button>
+            </Link>
+            
         </div>
     );
 
