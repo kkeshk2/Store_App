@@ -4,7 +4,10 @@ namespace Store_App.Models.Interfaces
 {
     public interface ICart
     {
-        Cart GetOneBasedOnAccountId(int userAccountID);
+        Cart GetOneBasedOnAccountId(int? userAccountId);
         void AddToCart(Cart cart, int productId, int quantity);
+        void DeleteFromCart(int cartId, int productId);
+        double GetTotalPrice(int? accountId);
+        void DeleteAllFromCart(int? accountId);
     }
 }

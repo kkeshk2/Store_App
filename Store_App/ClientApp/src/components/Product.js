@@ -35,11 +35,12 @@ function Product() {
 
   const addToCart = async() => {
     // Add logic to handle adding the product to the cart
-    console.log("URL:", `api/cart/addtocart?accountId=${2}&productId=${productId}&quantity=${selectedQuantity}`);
+    // console.log("URL:", `api/cart/addtocart?accountId=${1}&productId=${productId}&quantity=${selectedQuantity}`);
 
-    try {
-        setLoading(true);
-        const response = await fetch(`api/cart/addtocart?accountId=${1}&productId=${productId}&quantity=${selectedQuantity}`);
+      try {
+          setLoading(true);
+          const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+          const response = await fetch(`api/cart/addtocart?productId=${productId}&quantity=${selectedQuantity}`, { headers });
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -48,10 +49,10 @@ function Product() {
         
         console.log('NETWORK GOOD');
         console.log(data);
-        setAddedToCart(true);
-    } catch (error) {
+      } catch (error) {
         console.error('Error adding to cart:', error);
-    } finally{
+    }
+    finally{
       setLoading(false);
     }
     console.log(`Product ${product.ProductName} added to the cart`);
@@ -79,7 +80,7 @@ function Product() {
             <td colSpan={2}>
               <img
                 src={product.ProductImageLocation || "/emptyImage.jpeg"}
-                alt="Product Image"
+                alt="Product Img"
                 style={{ width: '100%', height: 'auto' }}
               />
             </td>

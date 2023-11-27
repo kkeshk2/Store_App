@@ -22,7 +22,7 @@ namespace Store_App.Models.Classes
         // Success boolean field
         public bool Success { get; set; } = true;
 
-        public Cart GetOneBasedOnAccountId(int userAccountId)
+        public Cart GetOneBasedOnAccountId(int? userAccountId)
         {
             Cart cart = new Cart();
             DataSet userDataset = new DataSet();
@@ -91,15 +91,35 @@ namespace Store_App.Models.Classes
 
             CartProduct cartProd = new CartProduct();
             cartProd.AddOneToCartProductDatabase(cart.CartId, productId, quantity);
+        }
 
-            //CartProduct newCartProd = new CartProduct();
-            //newCartProd = newCartProd.GetOne(cart.CartId, productId);
-            //cart.CartProducts.Add(newCartProd);
+        public void DeleteFromCart(int cartId, int productId)
+        {
+            CartProduct cartProd = new CartProduct(); 
+            cartProd = cartProd.GetOne(cartId, productId);
+            cartProd.DeleteFromCartProductDatabase(cartProd.CartProductId);
+        }
 
-            //Product prod = new Product();
-            //cart.Products.Add(prod.GetOne(newCartProd.ProductId));
+        public double GetTotalPrice(int? accountId)
+        {
+            Cart currentCart = GetOneBasedOnAccountId(accountId);
+            CartProduct currentCartProduct = new CartProduct();
 
+            double totalPrice = 0;
+            for (int i = 0; i < currentCart.Products.Count(); i++)
+            {
+                currentCartProduct = currentCartProduct.GetOne(currentCart.CartId, currentCart.Products[i].ProductId);
+                totalPrice += ((double)currentCart.Products[i].ProductPrice) * (currentCartProduct.Quantity);
+            }
 
+            return totalPrice;
+        }
+
+        public void DeleteAllFromCart(int? accountId)
+        {
+            CartProduct cartProd = new CartProduct();
+            Cart currentCart = GetOneBasedOnAccountId(accountId);
+            cartProd.DeleteCartProductsForOneCart(currentCart.CartId);
 
         }
     }

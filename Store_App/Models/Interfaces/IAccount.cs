@@ -9,7 +9,7 @@ namespace Store_App.Models.Interfaces
         public string AccountName { get; set; }
 
         public static abstract Account accessAccountByLogin(string accountEmail, string accountPassword);
-        public static abstract Account accessAccountById(Int32 accountId);
+        public static abstract Account accessAccountById(int accountId);
         public static abstract Account createAccount(string accountEmail, string accountPassword, string accountName);
         public void updateAccount(string accountEmail, string accountName);
         public void updateAccountPassword(string accountPassword);

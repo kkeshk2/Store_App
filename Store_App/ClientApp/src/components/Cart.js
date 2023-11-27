@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import '../custom.css';
 
 function Cart() {
     const [cart, setCart] = useState(null);
+    const [loading, setLoading] = useState(true);
     const { id: userAccountId } = useParams();
+    const [refreshCart, setRefreshCart] = useState(false);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`api/cart/getonebasedonaccountid?userAccountId=${userAccountId}`);
+                const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                const response = await fetch(`api/cart/getonebasedonaccountid`, { headers });
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -19,14 +23,42 @@ function Cart() {
                 setCart(data); // Set the product state with the parsed data
             } catch (error) {
                 console.error('Error fetching product:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchData();
-    }, [userAccountId]);
+    }, [userAccountId, refreshCart]);
 
-    const productName = cart && cart.Products && cart.Products.length > 0 ? cart.Products[0].ProductName : '';
+    const deleteFromCart = async (productId) => {
+        // console.log("URL:", `api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
 
+        try {
+            const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+            const response = await fetch(`api/cart/deletefromcart?productId=${productId}`, { headers });
+            // const response = await fetch(`api/cart/deletefromcart?accountId=${1}&productId=${productId}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log('NETWORK GOOD');
+            console.log(data);
+            setRefreshCart(prevState => !prevState);
+        } catch (error) {
+            console.error('Error deleting from cart:', error);
+        }
+        console.log(`Product deleted from the cart`);
+    }
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    if (!cart) {
+        return <p>Error loading cart data</p>;
+    }
 
     return (
         <div style={{ maxWidth: '800px', margin: 'auto' }}>
@@ -34,16 +66,23 @@ function Cart() {
                 <tbody>
                     <tr>
                         <td colSpan={2}>
-                            <img
-                                src={"/cartImage.png" || "/emptyImage.jpeg"}
-                                alt= "Cart Image"
-                                style={{ width: '20%', height: 'auto' }}
-                            />
+                            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                <img
+                                    src={"/cartImage.png" || "/emptyImage.jpeg"}
+                                    alt="Cart Img"
+                                    style={{ width: '10%', height: 'auto', display: 'block', margin: '0 auto' }}
+                                />
+                            </div>
                         </td>
                     </tr>
                     {cart && cart.Products && cart.Products.map(product => {
-                        // Find the corresponding cart product to get the quantity
                         const cartProduct = cart.CartProducts.find(cartProd => cartProd.ProductId === product.ProductId);
+
+                        const handleDelete = async () => {
+                            if (cartProduct) {
+                                await deleteFromCart(cartProduct.ProductId);
+                            }
+                        };
 
                         return (
                             <React.Fragment key={product.ProductId}>
@@ -61,7 +100,15 @@ function Cart() {
                                         <h1>{product.ProductName}</h1>
                                         <p>Price: ${product.ProductPrice}</p>
                                         {cartProduct && <p>Quantity: {cartProduct.Quantity}</p>}
-                                        {/* Add more details as needed */}
+                                        {cartProduct && (
+                                            <button
+                                                className="btn-cart"
+                                                onClick={handleDelete}
+                                                style={{ marginTop: '10px' }}
+                                            >
+                                                Delete from Cart
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             </React.Fragment>
@@ -70,18 +117,6 @@ function Cart() {
                 </tbody>
             </table>
         </div>
-        //<div>
-        //    <h1>Cart for (AccountId: {userAccountId})</h1>
-        //    {cart ? (
-        //        <div>
-        //            <img src="/cartImage.png" alt="Cart Image" style={{ width: '20%', height: '20%' }} />
-        //            {cart.cartId && <p>AccountId: ${cart.cartId}</p>}
-        //            {cart.cartProducts && <p>CartProducts: {cart.cartProducts}</p>}
-        //        </div>
-        //    ) : (
-        //        <p>Loading...</p>
-        //    )}
-        //</div>
     );
 
 
