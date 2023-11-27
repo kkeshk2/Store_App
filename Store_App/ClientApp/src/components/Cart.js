@@ -81,7 +81,6 @@ function Cart() {
                         const handleDelete = async () => {
                             if (cartProduct) {
                                 await deleteFromCart(cartProduct.ProductId);
-                                // After deleting, you might want to refetch the cart data or update it in some way
                             }
                         };
 

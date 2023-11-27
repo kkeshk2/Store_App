@@ -9,6 +9,7 @@ import Cart from './components/Cart';
 import Login from './components/Login'
 import Checkout from './components/Checkout';
 import CreateAccount from './components/CreateAccount'
+import { PaymentSuccessful } from './components/PaymentSuccessful'
 
 
 function App() {
@@ -22,7 +23,8 @@ function App() {
                 <Route path="/fetch-data" element={<FetchData />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/checkout" element={<Checkout />} />
-                <Route path="/create-account" element={<CreateAccount />}/>
+                <Route path="/create-account" element={<CreateAccount />} />
+                <Route path="/payment-successful" element={<PaymentSuccessful />} />
             </Routes>
         </Layout>
     );
