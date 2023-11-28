@@ -53,66 +53,53 @@ function Checkout() {
     }
 
     return (
-        <div style={{ maxWidth: '800px', margin: 'auto', position: 'relative' }}>
+        <div className="checkout-container">
             <h1 style={{ fontWeight: 'bold', textAlign: 'center' }}>Checkout</h1>
-            <div
-                style={{
-                    position: 'absolute',
-                    top: '56px',
-                    right: '-300px',
-                    backgroundColor: '#fff',
-                    padding: '20px',
-                    border: '1px solid #ccc',
-                    borderRadius: '5px',
-                    fontWeight: 'bold',
-                    fontSize: '24px', // Increased font size for total price
-                }}
-            >
+            <div className="total-price-checkout">
                 {totalPrice !== null && (
                     <p>Total Price: ${totalPrice}</p>
                 )}
             </div>
-            <div
-                style={{
-                    backgroundColor: '#fff',
-                    padding: '20px',
-                    border: '1px solid #ccc',
-                    borderRadius: '5px',
-                    marginBottom: '20px',
-                }}
-            >
-                <form style={{ display: 'flex', flexDirection: 'column' }}>
-                    <label htmlFor="name" style={{ marginBottom: '8px' }}>Name:</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        style={{ marginBottom: '15px', padding: '8px', borderRadius: '5px' }}
-                        required
-                    />
-                    <label htmlFor="creditCardNumber" style={{ marginBottom: '8px' }}>Credit Card Number:</label>
-                    <input
-                        type="text"
-                        id="creditCardNumber"
-                        name="creditCardNumber"
-                        value={formData.creditCardNumber}
-                        onChange={handleInputChange}
-                        style={{ marginBottom: '15px', padding: '8px', borderRadius: '5px' }}
-                        required
-                    />
-                    <label htmlFor="shippingAddress" style={{ marginBottom: '8px' }}>Shipping Address:</label>
-                    <textarea
-                        id="shippingAddress"
-                        name="shippingAddress"
-                        value={formData.shippingAddress}
-                        onChange={handleInputChange}
-                        style={{ marginBottom: '15px', padding: '8px', borderRadius: '5px', minHeight: '100px' }}
-                        required
-                    />
+            <div className="form-container">
+                <form className="form">
+                    <div className="input-group">
+                        <label htmlFor="name">Name:</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <label htmlFor="creditCardNumber">Credit Card Number:</label>
+                        <input
+                            type="text"
+                            id="creditCardNumber"
+                            name="creditCardNumber"
+                            value={formData.creditCardNumber}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <label htmlFor="shippingAddress">Shipping Address:</label>
+                        <textarea
+                            id="shippingAddress"
+                            name="shippingAddress"
+                            value={formData.shippingAddress}
+                            onChange={handleInputChange}
+                            style={{ minHeight: '100px' }}
+                            required
+                        />
+                    </div>
+
                     <Link to={"/payment-successful"}>
-                        < button className="btn-pay">Pay Now</button>
+                        <button className="btn-pay">Pay Now</button>
                     </Link>
                 </form>
             </div>

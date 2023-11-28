@@ -27,22 +27,6 @@ code {
   background: linear-gradient(to right, #0062a8, #004777);
 }
 
-.btn-continue-to-payment {
-    color: #fff;
-    background: linear-gradient(to right, #0074cc, #0062a8);
-    border: 1px solid #005688;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
-}
-
-.btn-continue-to-payment:hover {
-    background: linear-gradient(to right, #0062a8, #004777);
-}
-
 .btn-cart {
     color: #fff;
     background: #ff0000; /* Red color */
@@ -142,4 +126,130 @@ code {
 .product-price {
   color: red; /* or any other color you prefer */
 }
+
+/* Styles for larger screens */
+.cart-container {
+    max-width: 800px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px; /* Add padding to adjust content within the container */
+}
+
+.cart-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.total-price-cart-container {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 24px;
+    margin-right: 10px; /* Adds some spacing between the elements */
+}
+
+.btn-continue-to-payment {
+    color: #fff;
+    background: linear-gradient(to right, #0074cc, #0062a8);
+    border: 1px solid #005688;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-continue-to-payment:hover {
+    background: linear-gradient(to right, #0062a8, #004777);
+}
+
+/* Media query for smaller screens (e.g., mobile) */
+@media screen and (max-width: 768px) {
+    .cart-container {
+        padding: 0 10px; /* Adjust padding for smaller screens */
+    }
+
+    .total-price-cart-container {
+        font-size: 18px; /* Adjust font size for smaller screens */
+    }
+
+    .btn-continue-to-payment {
+        padding: 8px 16px;
+        margin-bottom: 10px;
+    }
+}
+
+.checkout-container {
+    max-width: 800px;
+    margin: auto;
+    position: relative;
+}
+
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.total-price-checkout {
+    flex: 0 0 100%; /* Full width on smaller screens */
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* CSS styles for label-over-box and equal width input boxes */
+.form-container {
+    display: flex;
+    justify-content: center;
+}
+
+.form {
+    width: 80%;
+    max-width: 600px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+label {
+    margin-bottom: 5px;
+}
+
+input,
+textarea {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+
+.checkout-form {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+    .form-container {
+        flex: 0 0 100%; /* Full width on smaller screens */
+        max-width: 100%;
+        margin: 0;
+    }
+}
+
 
