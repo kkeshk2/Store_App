@@ -66,25 +66,22 @@ function Cart() {
     }
 
     return (
-        <div style={{ maxWidth: '800px', margin: 'auto' }}>
-            <div
-                style={{
-                    position: 'absolute',
-                    top: '70px',
-                    right: '10px',
-                    backgroundColor: '#fff',
-                    padding: '20px',
-                    border: '1px solid #ccc',
-                    borderRadius: '5px',
-                    fontWeight: 'bold',
-                    fontSize: '24px',
-                }}
-            >
-                {totalPrice !== null && (
-                    <p>Total Price: ${totalPrice}</p>
-                )}
+        <div className="cart-container">
+            <div className="cart-header">
+                
+                <div className="total-price-cart-container">
+                    {totalPrice !== null && (
+                        <p>Total Price: ${totalPrice}</p>
+                    )}    
+                    <Link to="/checkout">
+                        <button className="btn-continue-to-payment">
+                            Continue to Payment
+                        </button>
+                    </Link>
+                </div>
             </div>
-            <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
+            
+            <table className="cart-table">
                 <tbody>
                     <tr>
                         <td colSpan={2}>
@@ -138,23 +135,8 @@ function Cart() {
                     })}
                 </tbody>
             </table>
-            <Link to={"/checkout"}>
-                <button
-                    className="btn-continue-to-payment"
-                    style={{
-                        position: 'absolute',
-                        top: '200px',
-                        right: '20px',
-                    }}
-                >
-                    Continue to Payment
-                </button>
-            </Link>
-            
         </div>
     );
-
-
 }
 
 export default Cart;
