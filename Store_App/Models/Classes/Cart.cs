@@ -88,6 +88,15 @@ namespace Store_App.Models.Classes
 
         public void AddToCart(Cart cart, int productId, int quantity)
         {
+            if (cart == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (productId <= 0 || quantity <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
 
             CartProduct cartProd = new CartProduct();
             cartProd.AddOneToCartProductDatabase(cart.CartId, productId, quantity);
