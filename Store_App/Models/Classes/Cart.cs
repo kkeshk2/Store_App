@@ -24,6 +24,10 @@ namespace Store_App.Models.Classes
 
         public Cart GetOneBasedOnAccountId(int? userAccountId)
         {
+            if (userAccountId <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
             Cart cart = new Cart();
             DataSet userDataset = new DataSet();
 
@@ -104,6 +108,11 @@ namespace Store_App.Models.Classes
 
         public void DeleteFromCart(int cartId, int productId)
         {
+            if (cartId <= 0 || productId <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
             CartProduct cartProd = new CartProduct(); 
             cartProd = cartProd.GetOne(cartId, productId);
             cartProd.DeleteFromCartProductDatabase(cartProd.CartProductId);
@@ -126,6 +135,10 @@ namespace Store_App.Models.Classes
 
         public void DeleteAllFromCart(int? accountId)
         {
+            if (accountId <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
             CartProduct cartProd = new CartProduct();
             Cart currentCart = GetOneBasedOnAccountId(accountId);
             cartProd.DeleteCartProductsForOneCart(currentCart.CartId);

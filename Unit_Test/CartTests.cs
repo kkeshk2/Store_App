@@ -46,4 +46,42 @@ public class CartTests
         Assert.ThrowsException<ArgumentNullException>(() => returnedCart.AddToCart(null, 3, 5));
 
     }
+
+    [TestMethod]
+    public void TestDeleteFromCart_isValid()
+    {
+        Cart myCart = new Cart();
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => myCart.DeleteFromCart(-1, 1));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => myCart.DeleteFromCart(1, -1));
+
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => myCart.DeleteFromCart(-2, 2));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => myCart.DeleteFromCart(2, -3));
+    }
+
+    [TestMethod]
+    public void TestDeleteAllFromCart_isValid()
+    {
+        Cart myCart = new Cart();
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => myCart.DeleteAllFromCart(-1));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => myCart.DeleteAllFromCart(-2));
+    }
+
+    [TestMethod]
+    public void TestGetTotalPrice_isValid()
+    {
+        Cart myCart = new Cart();
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => myCart.GetTotalPrice(-1));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => myCart.GetTotalPrice(-2));
+    }
+
+    [TestMethod]
+    public void TestGetTotalPrice()
+    {
+        Cart myCart = new Cart();
+        double totalPrice = 1349.97;
+        Assert.AreEqual(totalPrice, myCart.GetTotalPrice(1));
+
+        totalPrice = 1499.97;
+        Assert.AreEqual(totalPrice, myCart.GetTotalPrice(2));
+    }
 }
