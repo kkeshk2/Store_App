@@ -20,7 +20,7 @@ function NavMenu() {
         if (localStorage.getItem("authtoken")) {
             try {
                 const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
-                const response = await fetch(`api/account/verify`, { headers });
+                const response = await fetch(`api/account/verifyaccount`, { headers });
                 if (!response.ok) {
                     localStorage.removeItem("authtoken")
                     window.location.reload()
@@ -43,13 +43,16 @@ function NavMenu() {
                     <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed} navbar>
                         <ul className="navbar-nav flex-grow">
                             <NavItem>
-                                <NavLink tag={Link} className="text-dark" onClick={HandleLogOut} to="/">Log Out</NavLink>
-                            </NavItem>
-                            <NavItem>
                                 <NavLink tag={Link} className="text-dark" to="/cart">Cart</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/checkout">Checkout</NavLink>
+                                <NavLink tag={Link} className="text-dark" to="/account">Account</NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink tag={Link} className="text-dark" to="/invoice-list">Invoices</NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink tag={Link} className="text-dark" onClick={HandleLogOut} to="/">Log Out</NavLink>
                             </NavItem>
                         </ul>
                     </Collapse>
@@ -70,9 +73,6 @@ function NavMenu() {
                         </NavItem>
                         <NavItem>
                             <NavLink tag={Link} className="text-dark" to="/create-account">Create Account</NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/checkout">Checkout</NavLink>
                         </NavItem>
                     </ul>
                 </Collapse>

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Store_App.Models.Classes;
 using Newtonsoft.Json;
+using Store_App.Models.ProductModel;
 
 namespace Store_App.Controllers
 {
@@ -9,47 +9,42 @@ namespace Store_App.Controllers
     public class ProductController : ControllerBase
     {
 
-        [HttpGet("getone")]
-        public ActionResult<string> GetOne(int prodID)
+        [HttpGet("accessproduct")]
+        public ActionResult<string> AccessProduct(int productId)
         {
-            Product product = new Product();
-            Product retrievedProduct = product.GetOne(prodID); // Replace with your logic
-            if (retrievedProduct != null)
+            try
             {
-                return JsonConvert.SerializeObject(retrievedProduct);
+                IProduct product = new Product();
+                product.AccessProduct(productId);
+                return JsonConvert.SerializeObject(product);
             }
-            else
+            catch (InvalidOperationException)
             {
-                Product notFoundProduct = new Product
-                {
-                    Errors = new List<string> { "Product not found" },
-                    Success = false
-                };
-                return JsonConvert.SerializeObject(notFoundProduct);
+                return new StatusCodeResult(404);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
             }
         }
 
-        [HttpGet("getall")]
-        public IActionResult GetAll()
+        [HttpGet("accessproductlist")]
+        public ActionResult<string> GetAll()
         {
-            Product product = new Product();
-            List<Product> productList = product.GetAll(); 
-
-            if (productList != null)
+            try
             {
-                return Ok(productList); // Return the list of products as JSON
+                IProductList productList = new ProductList();
+                productList.AccessProductList();
+                return JsonConvert.SerializeObject(productList);
             }
-            else
+            catch (InvalidOperationException)
             {
-                Product notFoundProduct = new Product
-                {
-                    Errors = new List<string> { "Products not found" },
-                    Success = false
-                };
-                return NotFound(notFoundProduct); // Return a 404 Not Found response with the error message
+                return new StatusCodeResult(404);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
             }
         }
-
-
     }
 }

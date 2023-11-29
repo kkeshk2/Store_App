@@ -10,7 +10,7 @@ namespace Store_App
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            string connectionstr = "KareemConnection";
+            string connectionstr = "AlexConnection";
 
             string connectionString = config["ConnectionStrings:" + connectionstr];
             if (connectionString == null)

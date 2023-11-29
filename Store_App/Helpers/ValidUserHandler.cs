@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Store_App.Models.Classes;
+using Store_App.Models.AccountModel;
 
 namespace Store_App.Helpers
 {
@@ -10,7 +10,7 @@ namespace Store_App.Helpers
         {
             HttpContext? httpContext = GetHttpContext(context);
             int? userId = HttpContextHelper.GetUserId(httpContext);
-            Account? account = GetAccount(userId);
+            IAccount? account = GetAccount(userId);
 
             if (account != null) context.Succeed(requirement);
             else context.Fail();
@@ -23,10 +23,12 @@ namespace Store_App.Helpers
             return null;
         }
 
-        private static Account? GetAccount(int? userId)
+        private static IAccount? GetAccount(int? userId)
         {
             if (userId == null) return null;
-            return Account.accessAccountById((int) userId);
+            IAccount account = new Account();
+            account.AccessAccount((int) userId);
+            return account;
         }
     }
 }

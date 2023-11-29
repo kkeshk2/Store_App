@@ -1,180 +1,311 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import '../custom.css'; 
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+    Input,
+    Row,
+    Col,
+    Button,
+    ButtonGroup,
+    Card,
+    CardBody,
+    CardTitle,
+    CardSubtitle,
+    AccordionBody,
+    AccordionHeader,
+    AccordionItem,
+    UncontrolledAccordion,
+    Table,
+    Modal,
+    ModalFooter,
+    ModalHeader,
+    ModalBody
+} from 'reactstrap'
+import '../custom.css';
 
 
 function Product() {
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { id: productId } = useParams();
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [cartContains, setCartContains] = useState(0);
+    const { id: productId } = useParams();
+    const [selectedQuantity, setSelectedQuantity] = useState(1);
+    const navigate = useNavigate();
+    const [modal, setModal] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`api/product/getone?prodID=${productId}`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+    let verified = true
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`api/product/accessproduct?productId=${productId}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log('NETWORK GOOD');
+                console.log(data);
+                setProduct(data);
+            } catch (error) {
+                console.error('Error fetching product:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const fetchCart = async () => {
+            try {
+                const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                const response = await fetch(`api/cart/contains?productId=${productId}`, { headers });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log('NETWORK GOOD');
+                console.log(data);
+                setCartContains(data);
+            } catch (error) {
+                console.error('Error fetching cart:', error);
+            }
+        };
+
+        const verifyUser = async () => {
+            if (localStorage.getItem("authtoken")) {
+                try {
+                    const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                    const response = await fetch(`api/account/verifyaccount`, { headers });
+                    if (!response.ok) {
+                        localStorage.removeItem("authtoken")
+                        window.location.reload()
+                    }
+                } catch (Exception) {
+                    localStorage.removeItem("authtoken")
+                    window.location.reload()
+                }
+            }
         }
 
-        const data = await response.json();
-        console.log('NETWORK GOOD');
-        console.log(data);
-        setProduct(data);
-      } catch (error) {
-        console.error('Error fetching product:', error);
-      } finally {
-        setLoading(false);
-      }
+        fetchData()
+        fetchCart()
+        verifyUser()
+
+    }, [productId]);
+
+    if (!localStorage.getItem("authtoken")) {
+        verified = false
+    }
+
+    const handleQuantity = (event) => {
+        setSelectedQuantity(event.target.value)
+    }
+
+    const addToCart = async () => {
+        if (verified === false) {
+            setModal(true)
+        } else {
+            try {
+                const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                const response = await fetch(`api/cart/addtocart?productId=${productId}&quantity=${selectedQuantity}`, { headers });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log('NETWORK GOOD');
+                console.log(data);
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+            }
+            console.log(`Product ${product.ProductName} added to the cart`);
+            window.location.reload()
+        }
     };
 
-    fetchData();
-  }, [productId]);
-
-  const addToCart = async() => {
-    // Add logic to handle adding the product to the cart
-    // console.log("URL:", `api/cart/addtocart?accountId=${1}&productId=${productId}&quantity=${selectedQuantity}`);
-
-      try {
-          const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
-          const response = await fetch(`api/cart/addtocart?productId=${productId}&quantity=${selectedQuantity}`, { headers });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+    const deleteFromCart = async () => {
+        try {
+            const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+            const response = await fetch(`api/cart/deletefromcart?productId=${productId}`, { headers });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            console.log('NETWORK GOOD');
+            console.log(data);
+        } catch (error) {
+            console.error('Error adding to cart:', error);
         }
+        console.log(`Item deleted.`);
+        window.location.reload()
+    };
 
-        const data = await response.json();
-        console.log('NETWORK GOOD');
-        console.log(data);
-      } catch (error) {
-        console.error('Error adding to cart:', error);
-      }
-    console.log(`Product ${product.ProductName} added to the cart`);
-    // You can dispatch an action or perform other actions here
-  };
+    const updateCart = async () => {
+        if (verified === false) {
+            setModal(true)
+        } else if (selectedQuantity === "0") {
+            deleteFromCart()
+        } else {
+            try {
+                const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                const response = await fetch(`api/cart/updatecart?productId=${productId}&quantity=${selectedQuantity}`, { headers });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log('NETWORK GOOD');
+                console.log(data);
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+            }
+            console.log(`Cart updated.`);
+            window.location.reload()
+        }
+    };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
 
-  if (!product) {
-    return <p>Error loading product data</p>;
-  }
 
-  return (
-    <div style={{ maxWidth: '800px', margin: 'auto' }}>
-      <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
-        <tbody>
-          <tr>
-            <td colSpan={2}>
-              <img
-                src={product.ProductImageLocation || "/emptyImage.jpeg"}
-                alt="Product Image"
-                style={{ width: '100%', height: 'auto' }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td style={{ textAlign: 'center', padding: '10px', backgroundColor: '#f5f5f5' }} colSpan={2}>
-              <h1>{product.ProductName}</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
-              <strong>Price</strong>
-            </td>
-            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
-              {product.ProductPrice && `$${product.ProductPrice.toFixed(2)}`}
-            </td>
-          </tr>
-          <tr>
-            <td style={{ padding: '10px' }}>
-              <strong>Manufacturer</strong>
-            </td>
-            <td style={{ padding: '10px' }}>
-              {product.ProductManufacturer}
-            </td>
-          </tr>
-          <tr>
-            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
-              <strong>Rating</strong>
-            </td>
-            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
-              {product.ProductRating}
-            </td>
-          </tr>
-          <tr>
-            <td style={{ padding: '10px' }}>
-              <strong>Description</strong>
-            </td>
-            <td style={{ padding: '10px' }}>
-              {product.ProductDescription}
-            </td>
-          </tr>
-          <tr>
-            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
-              <strong>Category</strong>
-            </td>
-            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
-              {product.ProductCategory}
-            </td>
-          </tr>
-          <tr>
-            <td style={{ padding: '10px' }}>
-              <strong>Dimensions</strong>
-            </td>
-            <td style={{ padding: '10px' }}>
-              {product.ProductLength && product.ProductWidth && product.ProductHeight && (
-                `${product.ProductLength} x ${product.ProductWidth} x ${product.ProductHeight} (inches)`
-              )}
-            </td>
-          </tr>
-          <tr>
-            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
-              <strong>Weight</strong>
-            </td>
-            <td style={{ padding: '10px', backgroundColor: '#f5f5f5' }}>
-              {product.ProductWeight && `${product.ProductWeight} lbs`}
-            </td>
-          </tr>
-          <tr>
-            <td style={{ padding: '10px' }}>
-              <strong>SKU</strong>
-            </td>
-            <td style={{ padding: '10px' }}>
-              {product.ProductSKU}
-            </td>
-          </tr>
-          <tr>
-            <td colSpan={2} style={{ textAlign: 'left', padding: '10px' }}>
-              <button onClick={addToCart} className="btn-primary" style={{ marginRight: '10px'}}>Add to Cart</button>
-              <label htmlFor="quantity" style={{ marginRight: '10px'}}>Quantity:</label>
-              <select
-                id="quantity"
-                name="quantity"
-                value={selectedQuantity}
-                onChange={(e) => setSelectedQuantity(parseInt(e.target.value))}
-                style={{
-                  padding: '10px',
-                  fontSize: '16px',
-                  borderRadius: '5px',
-                  border: '1px solid #ccc',
-                  backgroundColor: '#fff',
-                  cursor: 'pointer',
-                }}
-              >
-                {[1, 2, 3, 4, 5].map((number) => (
-                  <option key={number} value={number}>
-                    {number}
-                  </option>
-                ))}
-              </select>
-            </td>
-            
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    const toggleModal = () => {
+        setModal(!modal)
+    }
+
+    const renderProduct = (product) => {
+        return (
+            <div className="d-flex flex-wrap justify-content-center">
+                <Modal isOpen={modal} toggle={toggleModal} style={{ maxWidth: "20rem" }}>
+                    <ModalHeader toggle={toggleModal}>
+                        Please Log In
+                    </ModalHeader>
+                    <ModalBody>
+                        <div>
+                            You must be logged in to use this feature.
+                        </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button type="" color="login" onClick={() => navigate("/login")}>
+                            Log In
+                        </Button>
+                    </ModalFooter>
+                </Modal>
+                <Card style={{ maxWidth: '40rem' }}>
+                    <CardBody>
+                        <CardTitle tag="h2">
+                            {product.ProductName}
+                        </CardTitle>
+                        <Row>
+                            <Col>
+                                <CardSubtitle tag="h4">
+                                    By {product.ProductManufacturer}
+                                </CardSubtitle>
+                            </Col>
+                            <Col style={{ textAlign: "right" }}>
+                                <CardSubtitle tag="h4">
+                                    {'\u2605'}{product.ProductRating}
+                                </CardSubtitle>
+                            </Col>
+                        </Row>
+                        <br></br>
+                        <img
+                            alt={product.ProductName}
+                            src={product.ProductImageLocation}
+                            width="100%"
+                        />
+                        <br></br><br></br>
+                        <Row className="align-items-center">
+                            <Col>
+                                <CardSubtitle tag="h2" hidden={product.ProductSale !== 0}>
+                                    ${product.ProductPrice}
+                                </CardSubtitle>
+                                <CardSubtitle tag="h2" hidden={product.ProductSale === 0}>
+                                    <s style={{ color: "darkred" }}>${product.ProductPrice}</s> ${product.ProductPrice - product.ProductSale}
+                                </CardSubtitle>
+                            </Col>
+                            <Col xs={"auto"}>
+                                <ButtonGroup hidden={cartContains !== 0}>
+                                    <Input type="select" style={{ width: 80 }} onChange={e => handleQuantity(e)}>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </Input>
+                                    <Button type="submit" style={{ width: 120 }} color="login" onClick={addToCart}>
+                                        Add to Cart
+                                    </Button>
+                                </ButtonGroup>
+                                <ButtonGroup hidden={cartContains === 0}>
+                                    <Input type="select" style={{ width: 80 }} onChange={e => handleQuantity(e)}>
+                                        <option value="" disabled selected hidden>{cartContains}</option>
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </Input>
+                                    <Button type="submit" style={{ width: 120 }} color="login" onClick={updateCart}>
+                                        Update Cart
+                                    </Button>
+                                </ButtonGroup>
+                            </Col>
+                        </Row>
+                        <br></br>
+                        <UncontrolledAccordion defaultOpen={['1']} stayOpen>
+                            <AccordionItem>
+                                <AccordionHeader targetId="1">
+                                    Description
+                                </AccordionHeader>
+                                <AccordionBody accordionId="1">
+                                    {product.ProductDescription}
+                                </AccordionBody>
+                            </AccordionItem>
+                            <AccordionItem>
+                                <AccordionHeader targetId="2">
+                                    Details
+                                </AccordionHeader>
+                                <AccordionBody accordionId="2">
+                                    <Table striped>
+                                        <tbody>
+                                            <tr>
+                                                <th>Category</th>
+                                                <td>{product.ProductCategory} </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Dimensions</th>
+                                                <td>{product.ProductLength}" x {product.ProductWidth}" x {product.ProductHeight}"</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Weight</th>
+                                                <td>{product.ProductWeight} lbs.</td>
+                                            </tr>
+                                            <tr>
+                                                <th>SKU</th>
+                                                <td>{product.ProductSKU}</td>
+                                            </tr>
+                                        </tbody>
+                                    </Table>
+                                </AccordionBody>
+                            </AccordionItem>
+                        </UncontrolledAccordion>
+                    </CardBody>
+                </Card>
+            </div>
+        );
+    }
+
+    return (
+        renderProduct(product)
+    );
 }
 
 export default Product;

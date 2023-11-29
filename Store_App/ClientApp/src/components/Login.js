@@ -24,6 +24,30 @@ export default function Login() {
     const [status, setStatus] = useState(0)
     const navigate = useNavigate();
 
+    useEffect(() => {
+
+        const verifyUser = async () => {
+            if (localStorage.getItem("authtoken")) {
+                try {
+                    const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                    const response = await fetch(`api/account/verifyaccount`, { headers });
+                    if (!response.ok) {
+                        localStorage.removeItem("authtoken")
+                    }
+                } catch (Exception) {
+                    localStorage.removeItem("authtoken")
+                }
+            }
+
+            if (localStorage.getItem("authtoken")) {
+                navigate("/")
+                window.location.reload()
+            }
+        }
+
+        verifyUser();
+    }, []);
+
     const HandleSubmit = async event => {
         event.preventDefault();
         const URIEmail = encodeURIComponent(email)
@@ -57,19 +81,6 @@ export default function Login() {
 
     const HandleRedirect = (event) => {
         navigate("/")
-    }
-
-    if (localStorage.getItem("authtoken")) {
-        return (
-            <div>
-                <Row><Col md="4" style={{ textAlign: "center" }}>
-                    <h5>You are already logged in.</h5>
-                </Col></Row>
-                <Row><Col md="4" style={{ textAlign: "center" }}>
-                    <Button color="login" onClick={HandleRedirect}> Okay </Button>
-                </Col></Row>
-            </div>
-        )
     }
 
     return (

@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using Newtonsoft.Json;
 using Store_App.Helpers;
-using Store_App.Models.Classes;
-
+using System.Text.Json;
+using Newtonsoft.Json;
+using Store_App.Models.CartModel;
+using Microsoft.Identity.Client;
+using Store_App.Models.ProductModel;
 
 namespace Store_App.Controllers
 {
@@ -12,118 +13,171 @@ namespace Store_App.Controllers
     [Route("/api/[controller]")]
     public class CartController : Controller
     {
-        [HttpGet("getonebasedonaccountid")]
+        [HttpGet("accesscart")]
         [Authorize("ValidUser")]
-        public ActionResult<string> GetOneBasedOnAccountId()
+        public ActionResult<string> AccessCart()
         {
-            int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
-            Cart retrievedCart = cart.GetOneBasedOnAccountId(userAccountId);
-            if (retrievedCart != null)
+            try
             {
-                return JsonConvert.SerializeObject(retrievedCart);
+                int? accountId = HttpContextHelper.GetUserId(HttpContext);
+                if (accountId == null) return new StatusCodeResult(401);
+
+                ICart cart = new Cart();
+                cart.AccessCart((int)accountId);
+
+                return JsonConvert.SerializeObject(cart);
             }
-            else
+            catch (InvalidOperationException)
             {
-                Cart notFoundCart = new Cart
-                {
-                    Errors = new List<string> { "Product not found" },
-                    Success = false
-                };
-                return JsonConvert.SerializeObject(notFoundCart);
+                return new StatusCodeResult(404);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
             }
         }
 
         [HttpGet("addtocart")]
         [Authorize("ValidUser")]
-        public ActionResult<string> AddToCart(int productId, int quantity)
+        public ActionResult AddToCart(int productId, int quantity)
         {
-            int? accountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
-            Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
-            if (retrievedCart != null)
+            try
             {
-                cart.AddToCart(retrievedCart, productId, quantity);
-                return Ok(new { Success = true, Message = "Product added to cart successfully", Cart = cart });
+                int? accountId = HttpContextHelper.GetUserId(HttpContext);
+                if (accountId == null) return new StatusCodeResult(401);
 
+                ICart cart = new Cart();
+                cart.AccessCart((int)accountId);
+                cart.AddToCart(productId, quantity);
+                return new OkResult();
             }
-            else
+            catch (InvalidOperationException)
             {
-                Cart notFoundCart = new Cart
-                {
-                    Errors = new List<string> { "Product not found" },
-                    Success = false
-                };
-                return JsonConvert.SerializeObject(notFoundCart);
+                return new StatusCodeResult(400);
             }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
+            }
+        }
 
+        [HttpGet("contains")]
+        [Authorize("ValidUser")]
+        public ActionResult<string> Contains(int productId)
+        {
+            try
+            {
+                int? accountId = HttpContextHelper.GetUserId(HttpContext);
+                if (accountId == null) return new StatusCodeResult(401);
+
+                ICart cart = new Cart();
+                cart.AccessCart((int)accountId);
+                var response = cart.Contains(productId);
+                return JsonConvert.SerializeObject(response);
+            }
+            catch (InvalidOperationException)
+            {
+                return new StatusCodeResult(400);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
+            }
         }
 
         [HttpGet("deletefromcart")]
         [Authorize("ValidUser")]
-        public ActionResult<string> DeleteFromCart(int productId)
+        public ActionResult DeleteFromCart(int productId)
         {
-            int? accountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
-            Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
-            if (retrievedCart != null)
+            try
             {
-                cart.DeleteFromCart(retrievedCart.CartId, productId);
-                return Ok(new { Success = true, Message = "Product deleted from cart successfully", Cart = cart });
+                int? accountId = HttpContextHelper.GetUserId(HttpContext);
+                if (accountId == null) return new StatusCodeResult(401);
 
+                ICart cart = new Cart();
+                cart.AccessCart((int)accountId);
+                cart.DeleteItem(productId);
+                return new OkResult();
             }
-            else
+            catch (InvalidOperationException)
             {
-                Cart notFoundCart = new Cart
-                {
-                    Errors = new List<string> { "Product not found" },
-                    Success = false
-                };
-                return JsonConvert.SerializeObject(notFoundCart);
+                return new StatusCodeResult(400);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
             }
         }
 
-        [HttpGet("gettotalprice")]
+        [HttpGet("clearcart")]
         [Authorize("ValidUser")]
-        public ActionResult<string> GetTotalPrice()
+        public ActionResult ClearCart()
         {
-            int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
-            double totalPrice = cart.GetTotalPrice(userAccountId);
-            if (totalPrice >= 0)
+            try
             {
-                return JsonConvert.SerializeObject(totalPrice);
+                int? accountId = HttpContextHelper.GetUserId(HttpContext);
+                if (accountId == null) return new StatusCodeResult(401);
+
+                ICart cart = new Cart();
+                cart.AccessCart((int)accountId);
+                cart.ClearCart();
+                return new OkResult();
             }
-            else
+            catch (InvalidOperationException)
             {
-                Cart notFoundCart = new Cart
-                {
-                    Errors = new List<string> { "Error Getting Total Price" },
-                    Success = false
-                };
-                return JsonConvert.SerializeObject(notFoundCart);
+                return new StatusCodeResult(400);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
             }
         }
 
-        [HttpGet("deleteallfromcart")]
+        [HttpGet("updatecart")]
         [Authorize("ValidUser")]
-        public ActionResult<string> DeleteAllFromCart()
+        public ActionResult UpdateCart(int productId, int quantity)
         {
-            int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
-            if (userAccountId != null)
+            try
             {
-                cart.DeleteAllFromCart(userAccountId);
-                return Ok(new { Success = true, Message = "Product deleted from cart successfully", Cart = cart });
+                int? accountId = HttpContextHelper.GetUserId(HttpContext);
+                if (accountId == null) return new StatusCodeResult(401);
+
+                ICart cart = new Cart();
+                cart.AccessCart((int)accountId);
+                cart.UpdateCart(productId, quantity);
+                return new OkResult();
             }
-            else
+            catch (InvalidOperationException)
             {
-                Cart notFoundCart = new Cart
-                {
-                    Errors = new List<string> { "Error Deleting Products from Cart" },
-                    Success = false
-                };
-                return JsonConvert.SerializeObject(notFoundCart);
+                return new StatusCodeResult(400);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpGet("gettotal")]
+        [Authorize("ValidUser")]
+        public ActionResult<string> GetCartTotal()
+        {
+            try
+            {
+                int? accountId = HttpContextHelper.GetUserId(HttpContext);
+                if (accountId == null) return new StatusCodeResult(401);
+
+                ICart cart = new Cart();
+                cart.AccessCart((int)accountId);
+                var result = cart.GetProductList().Sum(p => p.GetUnitPrice() * p.GetQuantity());
+                return new OkObjectResult(result);
+            }
+            catch (InvalidOperationException)
+            {
+                return new StatusCodeResult(400);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(500);
             }
         }
     }

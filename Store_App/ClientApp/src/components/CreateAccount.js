@@ -30,6 +30,30 @@ export default function CreateAccount() {
     const [status, setStatus] = useState(0)
     const navigate = useNavigate()
 
+    useEffect(() => {
+
+        const verifyUser = async () => {
+            if (localStorage.getItem("authtoken")) {
+                try {
+                    const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
+                    const response = await fetch(`api/account/verifyaccount`, { headers });
+                    if (!response.ok) {
+                        localStorage.removeItem("authtoken")
+                    }
+                } catch (Exception) {
+                    localStorage.removeItem("authtoken")
+                }
+            }
+
+            if (localStorage.getItem("authtoken")) {
+                navigate("/")
+                window.location.reload()
+            }
+        }
+
+        verifyUser();
+    }, []);
+
     const handleChange = (field, value) => {
         setFields({
             ...fields,
