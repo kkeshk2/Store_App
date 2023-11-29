@@ -119,6 +119,10 @@ namespace Store_App.Models.Classes
         
        public Product GetOne(int id)
        {
+           if (id <= 0)
+           {
+               throw new ArgumentOutOfRangeException();
+           }
            Product product = new Product();
            DataSet userDataset = new DataSet();
            string connectionString = ConnectionString.getConnectionString();
