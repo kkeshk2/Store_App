@@ -10,5 +10,7 @@ namespace Store_App.Models.Interfaces
         void AddOneToCartProductDatabase(int cartId, int productId, int quantity);
         void DeleteFromCartProductDatabase(int cartProductId);
         void DeleteCartProductsForOneCart(int cartId);
+        public void UpdateCartProductQuantity(int cartProductId, int newQuantity);
+
     }
 }

@@ -43,7 +43,17 @@ namespace Store_App.Controllers
             Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
             if (retrievedCart != null)
             {
-                cart.AddToCart(retrievedCart, productId, quantity);
+                //See if the cart already has the product
+                CartProduct? foundProduct = retrievedCart.CartProducts.FirstOrDefault(cartProduct => cartProduct.ProductId == productId);
+                if (foundProduct != null) //This means that we already have this in the cart
+                {
+                    foundProduct.UpdateCartProductQuantity(foundProduct.CartProductId, foundProduct.Quantity + quantity);
+                }
+                else
+                {
+                    cart.AddToCart(retrievedCart, productId, quantity);
+                }
+
                 return Ok(new { Success = true, Message = "Product added to cart successfully", Cart = cart });
 
             }

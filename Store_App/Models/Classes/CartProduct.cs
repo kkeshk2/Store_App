@@ -147,6 +147,44 @@ namespace Store_App.Models.Classes
             return cart_product_list;
         }
 
+        //We use this method for validation of adding to cart. If you are adding 2 of the same product, just add to the quantity
+        public void UpdateCartProductQuantity(int cartProductId, int newQuantity)
+        {
+            string connectionString = ConnectionString.getConnectionString();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    Console.WriteLine("Opening Connection ...");
+                    connection.Open();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e.Message);
+                }
+
+                SqlCommand command = new SqlCommand("UPDATE CartProduct SET cartProductQuantity = @newQuantity WHERE cartProductId = @cartProductId", connection);
+                command.Parameters.AddWithValue("@newQuantity", newQuantity);
+                command.Parameters.AddWithValue("@cartProductId", cartProductId);
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Cart product quantity updated successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error updating cart product quantity: " + ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+
         public void AddOneToCartProductDatabase(int cartId, int productId, int quantity)
         {
             SqlConnection connection;
