@@ -27,6 +27,8 @@ namespace Unit_Test
             var accountEmail = "user1@example.com";
             var accountPassword = "pass1";
             Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin(null, accountPassword));
+            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin("", accountPassword));
+            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin(accountEmail, ""));
             Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin(accountEmail, null));
         }
 
@@ -46,9 +48,8 @@ namespace Unit_Test
         [TestMethod]
         public void TestAccessAccountByEmail_isValid()
         {
-            var accountEmail = "user1@example.com";
             Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByEmail(null));
+            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByEmail(""));
         }
-
     }
 }

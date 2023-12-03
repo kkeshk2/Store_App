@@ -17,8 +17,7 @@ namespace Store_App.Controllers
         public ActionResult<string> GetOneBasedOnAccountId()
         {
             int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
-            Cart retrievedCart = cart.GetOneBasedOnAccountId(userAccountId);
+            Cart retrievedCart = Cart.GetOneBasedOnAccountId(userAccountId);
             if (retrievedCart != null)
             {
                 return JsonConvert.SerializeObject(retrievedCart);
@@ -39,22 +38,21 @@ namespace Store_App.Controllers
         public ActionResult<string> AddToCart(int productId, int quantity)
         {
             int? accountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
-            Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
+            Cart retrievedCart = Cart.GetOneBasedOnAccountId(accountId);
             if (retrievedCart != null)
             {
                 //See if the cart already has the product
                 CartProduct? foundProduct = retrievedCart.CartProducts.FirstOrDefault(cartProduct => cartProduct.ProductId == productId);
                 if (foundProduct != null) //This means that we already have this in the cart
                 {
-                    foundProduct.UpdateCartProductQuantity(foundProduct.CartProductId, foundProduct.Quantity + quantity);
+                    CartProduct.UpdateCartProductQuantity(foundProduct.CartProductId, foundProduct.Quantity + quantity);
                 }
                 else
                 {
-                    cart.AddToCart(retrievedCart, productId, quantity);
+                    Cart.AddToCart(retrievedCart, productId, quantity);
                 }
 
-                return Ok(new { Success = true, Message = "Product added to cart successfully", Cart = cart });
+                return Ok(new { Success = true, Message = "Product added to cart successfully" });
 
             }
             else
@@ -74,12 +72,11 @@ namespace Store_App.Controllers
         public ActionResult<string> DeleteFromCart(int productId)
         {
             int? accountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
-            Cart retrievedCart = cart.GetOneBasedOnAccountId(accountId);
+            Cart retrievedCart = Cart.GetOneBasedOnAccountId(accountId);
             if (retrievedCart != null)
             {
-                cart.DeleteFromCart(retrievedCart.CartId, productId);
-                return Ok(new { Success = true, Message = "Product deleted from cart successfully", Cart = cart });
+                Cart.DeleteFromCart(retrievedCart.CartId, productId);
+                return Ok(new { Success = true, Message = "Product deleted from cart successfully"});
 
             }
             else
@@ -98,8 +95,7 @@ namespace Store_App.Controllers
         public ActionResult<string> GetTotalPrice()
         {
             int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
-            double totalPrice = Math.Round(cart.GetTotalPrice(userAccountId), 2);
+            double totalPrice = Math.Round(Cart.GetTotalPrice(userAccountId), 2);
             if (totalPrice >= 0)
             {
                 return JsonConvert.SerializeObject(totalPrice);
@@ -120,11 +116,10 @@ namespace Store_App.Controllers
         public ActionResult<string> DeleteAllFromCart()
         {
             int? userAccountId = (int?)HttpContextHelper.GetUserId(HttpContext);
-            Cart cart = new Cart();
             if (userAccountId != null)
             {
-                cart.DeleteAllFromCart(userAccountId);
-                return Ok(new { Success = true, Message = "Product deleted from cart successfully", Cart = cart });
+                Cart.DeleteAllFromCart(userAccountId);
+                return Ok(new { Success = true, Message = "Product deleted from cart successfully"});
             }
             else
             {

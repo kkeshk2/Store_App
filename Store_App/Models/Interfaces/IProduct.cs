@@ -4,8 +4,8 @@ namespace Store_App.Models.Interfaces
 {
     public interface IProduct
     {
-        List<Product> GetAll();
-        Product GetOne(int id);
+        public static abstract List<Product> GetAll();
+        public static abstract Product GetOne(int id);
         Product Save(Product model);
         Product Update(int id, Product model);
         public string ToString();

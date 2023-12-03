@@ -12,8 +12,7 @@ namespace Store_App.Controllers
         [HttpGet("getone")]
         public ActionResult<string> GetOne(int cartId, int productId)
         {
-            CartProduct cartProd = new CartProduct();
-            CartProduct retrievedCartProd = cartProd.GetOne(cartId, productId);
+            CartProduct retrievedCartProd = CartProduct.GetOne(cartId, productId);
             if (retrievedCartProd != null)
             {
                 return JsonConvert.SerializeObject(retrievedCartProd);

@@ -6,6 +6,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics.Metrics;
 using System.Data;
 using Microsoft.Identity.Client;
+using String = System.String;
 
 namespace Store_App.Models.Classes
 {
@@ -25,9 +26,9 @@ namespace Store_App.Models.Classes
             this.AccountName = accountName;
         }
 
-        public static Account accessAccountByLogin(string accountEmail, string accountPassword)
+        public static Account accessAccountByLogin(string? accountEmail, string? accountPassword)
         {
-            if (accountEmail == null || accountPassword == null)
+            if (String.IsNullOrEmpty(accountEmail) || String.IsNullOrEmpty(accountPassword))
             {
                 throw new ArgumentNullException();
 
@@ -63,9 +64,9 @@ namespace Store_App.Models.Classes
             }
         }
 
-        public static int accessAccountByEmail(string accountEmail)
+        public static int accessAccountByEmail(string? accountEmail)
         {
-            if (accountEmail == null)
+            if (String.IsNullOrEmpty(accountEmail))
             {
                 throw new ArgumentNullException();
 

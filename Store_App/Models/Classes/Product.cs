@@ -28,7 +28,7 @@ namespace Store_App.Models.Classes
         // Success boolean field
         public bool Success { get; set; } = true;
 
-        public List<Product> GetAll()
+        public static List<Product> GetAll()
         {
             // List of Products from the Database
             List<Product> product_list = new List<Product>();
@@ -117,7 +117,7 @@ namespace Store_App.Models.Classes
             return product_list; // Placeholder return
         }
         
-       public Product GetOne(int id)
+       public static Product GetOne(int id)
        {
            if (id <= 0)
            {

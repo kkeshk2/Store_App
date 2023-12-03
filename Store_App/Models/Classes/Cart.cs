@@ -22,7 +22,7 @@ namespace Store_App.Models.Classes
         // Success boolean field
         public bool Success { get; set; } = true;
 
-        public Cart GetOneBasedOnAccountId(int? userAccountId)
+        public static Cart GetOneBasedOnAccountId(int? userAccountId)
         {
             if (userAccountId <= 0)
             {
@@ -76,21 +76,18 @@ namespace Store_App.Models.Classes
                 }
             }
             // Get all cart products for current cart and append them to CartProducts list
-            CartProduct cartProd = new CartProduct();
-            List<CartProduct> newCartProdList = cartProd.GetCartProductsBasedOnCart(cart.CartId);
+            List<CartProduct> newCartProdList = CartProduct.GetCartProductsBasedOnCart(cart.CartId);
             cart.CartProducts.AddRange(newCartProdList);
 
-
-            Product prod = new Product();
             for (int i = 0; i < newCartProdList.Count(); i++)
             {
-                cart.Products.Add(prod.GetOne(newCartProdList[i].ProductId));
+                cart.Products.Add(Product.GetOne(newCartProdList[i].ProductId));
             }
 
             return cart; // Placeholder return
         }
 
-        public void AddToCart(Cart cart, int productId, int quantity)
+        public static void AddToCart(Cart? cart, int productId, int quantity)
         {
             if (cart == null)
             {
@@ -101,24 +98,21 @@ namespace Store_App.Models.Classes
             {
                 throw new ArgumentOutOfRangeException();
             }
-
-            CartProduct cartProd = new CartProduct();
-            cartProd.AddOneToCartProductDatabase(cart.CartId, productId, quantity);
+            CartProduct.AddOneToCartProductDatabase(cart.CartId, productId, quantity);
         }
 
-        public void DeleteFromCart(int cartId, int productId)
+        public static void DeleteFromCart(int cartId, int productId)
         {
             if (cartId <= 0 || productId <= 0)
             {
                 throw new ArgumentOutOfRangeException();
             }
 
-            CartProduct cartProd = new CartProduct(); 
-            cartProd = cartProd.GetOne(cartId, productId);
-            cartProd.DeleteFromCartProductDatabase(cartProd.CartProductId);
+            CartProduct cartProd = CartProduct.GetOne(cartId, productId);
+            CartProduct.DeleteFromCartProductDatabase(cartProd.CartProductId);
         }
 
-        public double GetTotalPrice(int? accountId)
+        public static double GetTotalPrice(int? accountId)
         {
             Cart currentCart = GetOneBasedOnAccountId(accountId);
             CartProduct currentCartProduct = new CartProduct();
@@ -126,22 +120,21 @@ namespace Store_App.Models.Classes
             double totalPrice = 0;
             for (int i = 0; i < currentCart.Products.Count(); i++)
             {
-                currentCartProduct = currentCartProduct.GetOne(currentCart.CartId, currentCart.Products[i].ProductId);
+                currentCartProduct = CartProduct.GetOne(currentCart.CartId, currentCart.Products[i].ProductId);
                 totalPrice += ((double)currentCart.Products[i].ProductPrice) * (currentCartProduct.Quantity);
             }
 
             return totalPrice;
         }
 
-        public void DeleteAllFromCart(int? accountId)
+        public static void DeleteAllFromCart(int? accountId)
         {
             if (accountId <= 0)
             {
                 throw new ArgumentOutOfRangeException();
             }
-            CartProduct cartProd = new CartProduct();
             Cart currentCart = GetOneBasedOnAccountId(accountId);
-            cartProd.DeleteCartProductsForOneCart(currentCart.CartId);
+            CartProduct.DeleteCartProductsForOneCart(currentCart.CartId);
 
         }
     }
