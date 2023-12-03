@@ -22,6 +22,15 @@ namespace Unit_Test
         }
 
         [TestMethod]
+        public void TestAccessAccountByLogin_isValid()
+        {
+            var accountEmail = "user1@example.com";
+            var accountPassword = "pass1";
+            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin(null, accountPassword));
+            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin(accountEmail, null));
+        }
+
+        [TestMethod]
         public void TestAccessAccountByEmail()
         {
             // Arrange
@@ -32,6 +41,13 @@ namespace Unit_Test
 
             // Assert
             Assert.AreEqual(1, count);
+        }
+
+        [TestMethod]
+        public void TestAccessAccountByEmail_isValid()
+        {
+            var accountEmail = "user1@example.com";
+            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByEmail(null));
         }
 
     }
