@@ -12,7 +12,7 @@ namespace Store_App
 
             string connectionstr = "KareemConnection";
 
-            string connectionString = config["ConnectionStrings:" + connectionstr];
+            string? connectionString = config["ConnectionStrings:" + connectionstr];
             if (connectionString == null)
             {
                 throw new NullReferenceException("Connection String doesn't exist");

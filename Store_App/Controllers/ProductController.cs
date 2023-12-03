@@ -12,8 +12,7 @@ namespace Store_App.Controllers
         [HttpGet("getone")]
         public ActionResult<string> GetOne(int prodID)
         {
-            Product product = new Product();
-            Product retrievedProduct = product.GetOne(prodID); // Replace with your logic
+            Product retrievedProduct = Product.GetOne(prodID);
             if (retrievedProduct != null)
             {
                 return JsonConvert.SerializeObject(retrievedProduct);
@@ -32,8 +31,7 @@ namespace Store_App.Controllers
         [HttpGet("getall")]
         public IActionResult GetAll()
         {
-            Product product = new Product();
-            List<Product> productList = product.GetAll(); 
+            List<Product> productList = Product.GetAll(); 
 
             if (productList != null)
             {

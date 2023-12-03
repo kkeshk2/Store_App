@@ -26,7 +26,7 @@ namespace Store_App.Models.Classes
         public Product Product { get; set; }
         */
 
-        public CartProduct GetOne(int cartId, int productId)
+        public static CartProduct GetOne(int cartId, int productId)
         {
             if (cartId <= 0 || productId <= 0)
             {
@@ -90,7 +90,7 @@ namespace Store_App.Models.Classes
 
             return retrievedCartProduct;
         }
-        public List<CartProduct> GetCartProductsBasedOnCart(int cartId)
+        public static List<CartProduct> GetCartProductsBasedOnCart(int cartId)
         {
             if (cartId <= 0)
             {
@@ -156,7 +156,7 @@ namespace Store_App.Models.Classes
         }
 
         //We use this method for validation of adding to cart. If you are adding 2 of the same product, just add to the quantity
-        public void UpdateCartProductQuantity(int cartProductId, int newQuantity)
+        public static void UpdateCartProductQuantity(int cartProductId, int newQuantity)
         {
             if (cartProductId <= 0 || newQuantity <= 0)
             {
@@ -197,7 +197,7 @@ namespace Store_App.Models.Classes
         }
 
 
-        public void AddOneToCartProductDatabase(int cartId, int productId, int quantity)
+        public static void AddOneToCartProductDatabase(int cartId, int productId, int quantity)
         {
 
             if (cartId <= 0 || productId <= 0 || quantity <= 0)
@@ -242,7 +242,7 @@ namespace Store_App.Models.Classes
             }
         }
 
-        public void DeleteFromCartProductDatabase(int cartProductId)
+        public static void DeleteFromCartProductDatabase(int cartProductId)
         {
             if (cartProductId <= 0)
             {
@@ -282,7 +282,7 @@ namespace Store_App.Models.Classes
             }
         }
 
-        public void DeleteCartProductsForOneCart(int cartId)
+        public static void DeleteCartProductsForOneCart(int cartId)
         {
 
             if (cartId <= 0)
