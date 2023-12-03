@@ -27,6 +27,11 @@ namespace Store_App.Models.Classes
 
         public static Account accessAccountByLogin(string accountEmail, string accountPassword)
         {
+            if (accountEmail == null || accountPassword == null)
+            {
+                throw new ArgumentNullException();
+
+            }
             using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
                 try
@@ -60,6 +65,11 @@ namespace Store_App.Models.Classes
 
         public static int accessAccountByEmail(string accountEmail)
         {
+            if (accountEmail == null)
+            {
+                throw new ArgumentNullException();
+
+            }
             using (SqlConnection connection = new SqlConnection(ConnectionString.getConnectionString()))
             {
                 try

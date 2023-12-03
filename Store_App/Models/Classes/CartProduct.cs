@@ -28,6 +28,11 @@ namespace Store_App.Models.Classes
 
         public CartProduct GetOne(int cartId, int productId)
         {
+            if (cartId <= 0 || productId <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
             CartProduct retrievedCartProduct = new CartProduct();
             DataSet userDataset = new DataSet();
 
@@ -87,7 +92,10 @@ namespace Store_App.Models.Classes
         }
         public List<CartProduct> GetCartProductsBasedOnCart(int cartId)
         {
-            // TODO: Implement this
+            if (cartId <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
             List<CartProduct> cart_product_list = new List<CartProduct>();
             DataSet userDataset = new DataSet();
 
@@ -150,6 +158,10 @@ namespace Store_App.Models.Classes
         //We use this method for validation of adding to cart. If you are adding 2 of the same product, just add to the quantity
         public void UpdateCartProductQuantity(int cartProductId, int newQuantity)
         {
+            if (cartProductId <= 0 || newQuantity <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
             string connectionString = ConnectionString.getConnectionString();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -187,6 +199,11 @@ namespace Store_App.Models.Classes
 
         public void AddOneToCartProductDatabase(int cartId, int productId, int quantity)
         {
+
+            if (cartId <= 0 || productId <= 0 || quantity <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
             SqlConnection connection;
             SqlCommand command;
             string connectionString = ConnectionString.getConnectionString();
@@ -227,6 +244,10 @@ namespace Store_App.Models.Classes
 
         public void DeleteFromCartProductDatabase(int cartProductId)
         {
+            if (cartProductId <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
             SqlConnection connection;
             string connectionString = ConnectionString.getConnectionString();
             using (connection = new SqlConnection(connectionString))
@@ -263,6 +284,11 @@ namespace Store_App.Models.Classes
 
         public void DeleteCartProductsForOneCart(int cartId)
         {
+
+            if (cartId <= 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
             SqlConnection connection;
             string connectionString = ConnectionString.getConnectionString();
             using (connection = new SqlConnection(connectionString))
