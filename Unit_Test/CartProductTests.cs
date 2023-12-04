@@ -1,5 +1,4 @@
-﻿using Store_App.Models.Classes;
-using Store_App.Models.Interfaces;
+﻿using Store_App.Models.CartModel;
 
 namespace Unit_Test;
 
@@ -7,89 +6,53 @@ namespace Unit_Test;
 public class CartProductTests
 {
     [TestMethod]
-    public void TestGetOne()
+    public void TestGetProductId()
     {
-        int cartId = 1;
         int productId = 1;
-        CartProduct returnedCartProduct = CartProduct.GetOne(cartId, productId);
-        Assert.IsNotNull(returnedCartProduct);
-        Assert.AreEqual(cartId, returnedCartProduct.CartId);
-        Assert.AreEqual(productId, returnedCartProduct.ProductId);
+        CartProduct cartProd = new CartProduct(1, 2);
+        Assert.IsNotNull(cartProd.GetProductId());
+        Assert.AreEqual(productId, cartProd.GetProductId());
 
-        cartId = 1;
         productId = 2;
-        returnedCartProduct = CartProduct.GetOne(cartId, productId);
-        Assert.IsNotNull(returnedCartProduct);
-        Assert.AreEqual(cartId, returnedCartProduct.CartId);
-        Assert.AreEqual(productId, returnedCartProduct.ProductId);
+        cartProd = new CartProduct(2, 1);
+        Assert.IsNotNull(cartProd.GetProductId());
+        Assert.AreEqual(productId, cartProd.GetProductId());
 
-        cartId = 2;
         productId = 1;
-        returnedCartProduct = CartProduct.GetOne(cartId, productId);
-        Assert.IsNotNull(returnedCartProduct);
-        Assert.AreEqual(cartId, returnedCartProduct.CartId);
-        Assert.AreEqual(productId, returnedCartProduct.ProductId);
+        cartProd = new CartProduct(1, 3);
+        Assert.IsNotNull(cartProd.GetProductId());
+        Assert.AreEqual(productId, cartProd.GetProductId());
     }
 
     [TestMethod]
-    public void TestGetOne_isValid()
+    public void TestGetPrice()
     {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.GetOne(-1, 1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.GetOne(1, -1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.GetOne(-2, 2));
+        CartProduct cartProd = new CartProduct(1, 2, 499.99m);
+        Assert.IsNotNull(cartProd.GetPrice());
+        Assert.AreEqual(499.99m, cartProd.GetPrice());
+
+        cartProd = new CartProduct(2, 1, 349.99m);
+        Assert.IsNotNull(cartProd.GetPrice());
+        Assert.AreEqual(349.99m, cartProd.GetPrice());
+
+        cartProd = new CartProduct(1, 3, 499.99m);
+        Assert.IsNotNull(cartProd.GetPrice());
+        Assert.AreEqual(499.99m, cartProd.GetPrice());
     }
 
     [TestMethod]
-    public void TestGetCartProductsBasedOnCart()
+    public void TestGetQuantity()
     {
-        int cartId = 1;
-        List<CartProduct> returnedCartProductList = CartProduct.GetCartProductsBasedOnCart(cartId);
-        Assert.IsNotNull(returnedCartProductList);
-        Assert.AreEqual(2, returnedCartProductList.Count());
+        CartProduct cartProd = new CartProduct(1, 2);
+        Assert.IsNotNull(cartProd.GetQuantity());
+        Assert.AreEqual(2,  cartProd.GetQuantity());
 
-        cartId = 2;
-        returnedCartProductList = CartProduct.GetCartProductsBasedOnCart(cartId);
-        Assert.IsNotNull(returnedCartProductList);
-        Assert.AreEqual(1, returnedCartProductList.Count());
-    }
+        cartProd = new CartProduct(2, 1);
+        Assert.IsNotNull(cartProd.GetQuantity());
+        Assert.AreEqual(1, cartProd.GetQuantity());
 
-    [TestMethod]
-    public void TestGetCartProductsBasedOnCart_isValid()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.GetCartProductsBasedOnCart(-1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.GetCartProductsBasedOnCart(-2));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.GetCartProductsBasedOnCart(0));
-    }
-
-    [TestMethod]
-    public void TestUpdateCartProductQuantity_isValid()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.UpdateCartProductQuantity(-1, 1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.UpdateCartProductQuantity(1, -1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.UpdateCartProductQuantity(0, 0));
-    }
-
-    [TestMethod]
-    public void TestAddOneToCartProductDatabase_isValid()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.AddOneToCartProductDatabase(-1, 1, 1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.AddOneToCartProductDatabase(1, -1, 1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.AddOneToCartProductDatabase(1, 1, -1));
-    }
-
-    [TestMethod]
-    public void TestDeleteFromCartProductDatabase_isValid()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.DeleteFromCartProductDatabase(-1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.DeleteFromCartProductDatabase(-2));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.DeleteFromCartProductDatabase(0));
-    }
-
-    [TestMethod]
-    public void TestDeleteCartProductsForOneCart_isValid()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.DeleteCartProductsForOneCart(-1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.DeleteCartProductsForOneCart(-2));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => CartProduct.DeleteCartProductsForOneCart(0));
+        cartProd = new CartProduct(1, 3);
+        Assert.IsNotNull(cartProd.GetQuantity());
+        Assert.AreEqual(3, cartProd.GetQuantity());
     }
 }
