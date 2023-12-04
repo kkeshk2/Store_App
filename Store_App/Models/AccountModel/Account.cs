@@ -3,6 +3,8 @@ using Store_App.Helpers;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
 using Store_App.Exceptions;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 
 namespace Store_App.Models.AccountModel
 {
@@ -11,7 +13,17 @@ namespace Store_App.Models.AccountModel
 
         [JsonIgnore] private int AccountId;
         [JsonProperty] private string? Email;
-        [JsonIgnore] private readonly IAccountValidator Validator = new AccountValidator();
+        [JsonIgnore] private string? Password;
+        [JsonIgnore] private static readonly IAccountValidator Validator = new AccountValidator();
+
+        public Account() { }
+
+        public Account(int accountId, string? email, string? password)
+        {
+            AccountId = accountId;
+            Email = email;
+            Password = password;
+        }
 
         public void AccessAccount(string email, string password)
         {
@@ -50,6 +62,7 @@ namespace Store_App.Models.AccountModel
 
             AccountId = reader.GetInt32("accountId");
             Email = reader.GetString("email");
+            Password = reader.GetString("password");
         }
 
 
@@ -119,6 +132,26 @@ namespace Store_App.Models.AccountModel
                 helper.AddParameter("@accountId", AccountId);
                 helper.ExecuteNonQuery();
             }
+            AccessAccount(AccountId);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not null && obj is Account account)
+            {
+                bool equals = true;
+                equals = equals && account.AccountId == AccountId;
+                equals = equals && account.Email == Email;
+                equals = equals && account.Password == Password;
+                return equals;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return AccountId.GetHashCode();   
         }
     }
 }
