@@ -66,7 +66,6 @@ namespace Unit_Test
             // Assert
             Assert.IsNotNull(createdAccount);
             Assert.AreEqual(accountEmail, createdAccount.AccountEmail);
-            // Add more assertions if needed
         }
 
         [TestMethod]
@@ -86,6 +85,7 @@ namespace Unit_Test
             Assert.AreEqual(accountEmail, account.AccountEmail);
             Assert.AreEqual(accountName, account.AccountName);
 
+            //resets test_data to avoid database confliction
             account = test_Data;
         }
     }
