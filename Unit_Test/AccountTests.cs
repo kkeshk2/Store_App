@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Store_App.Models.Classes;
+using Store_App.Models.AccountModel;
 
 namespace Unit_Test
 {
@@ -7,86 +7,67 @@ namespace Unit_Test
     public class AccountTests
     {
         [TestMethod]
-        public void TestAccessAccountByLogin()
+        public void TestAccountConstructorEqual()
         {
-            // Arrange
-            var accountEmail = "user1@example.com";
-            var accountPassword = "pass1";
-
-            // Act
-            var account = Account.accessAccountByLogin(accountEmail, accountPassword);
-
-            // Assert
-            Assert.IsNotNull(account);
-            Assert.AreEqual(accountEmail, account.AccountEmail);
+            IAccount account1 = new Account();
+            IAccount account2 = new Account(0, null, null);
+            Assert.AreEqual(account1, account2);
         }
 
         [TestMethod]
-        public void TestAccessAccountByLogin_isValid()
+        public void TestAccountConstructorNotEqual()
         {
-            var accountEmail = "user1@example.com";
-            var accountPassword = "pass1";
-            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin(null, accountPassword));
-            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin("", accountPassword));
-            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin(accountEmail, ""));
-            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByLogin(accountEmail, null));
+            IAccount account1 = new Account(1, "email", "password");
+            IAccount account2 = new Account(1, "email", null);
+            IAccount account3 = new Account(1, null, "password");
+            IAccount account4 = new Account(1, null, null);
+            Assert.AreNotEqual(account1, account2);
+            Assert.AreNotEqual(account1, account3);
+            Assert.AreNotEqual(account1, account4);
         }
 
         [TestMethod]
-        public void TestAccessAccountByEmail()
+        public void TestAccessAccountEqual()
         {
-            // Arrange
-            var accountEmail = "user1@example.com";
-
-            // Act
-            var count = Account.accessAccountByEmail(accountEmail);
-
-            // Assert
-            Assert.AreEqual(1, count);
+            IAccount account1 = new Account();
+            IAccount account2 = new Account(1, "user1@example.com", "pass1");
+            account1.AccessAccount(1);
+            Assert.AreEqual(account1, account2);
         }
 
         [TestMethod]
-        public void TestAccessAccountByEmail_isValid()
+        public void TestAccessAccountNotEqual()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByEmail(null));
-            Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByEmail(""));
-        }
-        
-        [TestMethod]
-        public void TestCreateAccount()
-        {
-            // Arrange
-            var accountEmail = "test1@example.com";
-            var accountPassword = "testpass1";
-            var accountName = "user10";
-
-            // Act
-            var createdAccount = Account.createAccount(accountEmail, accountPassword, accountName);
-
-            // Assert
-            Assert.IsNotNull(createdAccount);
-            Assert.AreEqual(accountEmail, createdAccount.AccountEmail);
+            IAccount account1 = new Account();
+            IAccount account2 = new Account(2, "user2@example.com", "pass2");
+            account1.AccessAccount(1);
+            Assert.AreNotEqual(account1, account2);
         }
 
         [TestMethod]
-        public void TestUpdateAccount()
+        public void TestAccountList()
         {
-            var test_Data = new Account(1, "user1@example.com", "User 1");
+            List<IAccount> accounts1 = new List<IAccount>();
+            List<IAccount> accounts2 = new List<IAccount>();
+            IAccount account1 = new Account();
+            IAccount account2 = new Account();
+            accounts1.Add(account1);
+            accounts2.Add(account2);
+            Assert.IsTrue(accounts1.SequenceEqual(accounts2));
+        }
 
-            // Arrange
-            var accountEmail = "updated@example.com";
-            var accountName = "updatedUser";
-
-            // Act
-            var account = new Account(test_Data.AccountId, test_Data.AccountEmail, test_Data.AccountName);
-            account.updateAccount(accountEmail, accountName);
-
-            // Assert
-            Assert.AreEqual(accountEmail, account.AccountEmail);
-            Assert.AreEqual(accountName, account.AccountName);
-
-            //resets test_data to avoid database confliction
-            account = test_Data;
+        [TestMethod]
+        public void TestAccountListNotEqual()
+        {
+            List<IAccount> accounts1 = new List<IAccount>();
+            List<IAccount> accounts2 = new List<IAccount>();
+            IAccount account1 = new Account();
+            IAccount account2 = new Account();
+            account1.AccessAccount(1);
+            account2.AccessAccount(2);
+            accounts1.Add(account1);
+            accounts2.Add(account2);
+            Assert.IsFalse(accounts1.SequenceEqual(accounts2));
         }
     }
 }
