@@ -1,9 +1,9 @@
 using Store_App.Helpers;
 
-namespace TestProject
+namespace Unit_Test
 {
     [TestClass]
-    public class UnitTest1
+    public class HelperTests
     {
         [TestMethod]
         public void TestMethod1()
