@@ -51,5 +51,42 @@ namespace Unit_Test
             Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByEmail(null));
             Assert.ThrowsException<ArgumentNullException>(() => Account.accessAccountByEmail(""));
         }
+        
+        [TestMethod]
+        public void TestCreateAccount()
+        {
+            // Arrange
+            var accountEmail = "test1@example.com";
+            var accountPassword = "testpass1";
+            var accountName = "user10";
+
+            // Act
+            var createdAccount = Account.createAccount(accountEmail, accountPassword, accountName);
+
+            // Assert
+            Assert.IsNotNull(createdAccount);
+            Assert.AreEqual(accountEmail, createdAccount.AccountEmail);
+            // Add more assertions if needed
+        }
+
+        [TestMethod]
+        public void TestUpdateAccount()
+        {
+            var test_Data = new Account(1, "user1@example.com", "User 1");
+
+            // Arrange
+            var accountEmail = "updated@example.com";
+            var accountName = "updatedUser";
+
+            // Act
+            var account = new Account(test_Data.AccountId, test_Data.AccountEmail, test_Data.AccountName);
+            account.updateAccount(accountEmail, accountName);
+
+            // Assert
+            Assert.AreEqual(accountEmail, account.AccountEmail);
+            Assert.AreEqual(accountName, account.AccountName);
+
+            account = test_Data;
+        }
     }
 }
