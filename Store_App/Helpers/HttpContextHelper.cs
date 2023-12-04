@@ -1,42 +1,55 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Store_App.Exceptions;
 
 namespace Store_App.Helpers
 {
-    public class HttpContextHelper
+    public class HttpContextHelper : IHttpContextHelper
     {
-        public static int? GetUserId(HttpContext? context)
+        public int GetAccountId(HttpContext? context)
         {
-            string? header = GetHeader(context);
-            string? bearer = GetBearer(header);
-            string? token = GetToken(bearer);
-            int? userId = GetUserId(token);
+            if (context is null)
+            {
+                throw new UnauthorizedException("User not authorized to access this resouce.");
+            }
+       
+            string header = GetHeader(context);
+            string bearer = GetBearer(header);
+            string token = bearer.Split(" ")[1];
+            int accountId = GetAccountId(token);
 
-            return userId;
+            return accountId;
         }
 
-        private static string? GetHeader(HttpContext? context)
+        private string GetHeader(HttpContext context)
         {
-            if (context == null) return null;
-            return context.Request.Headers["Authorization"];
+            var header = context.Request.Headers["Authorization"].ToString();
+            
+            if (string.IsNullOrEmpty(header))
+            {
+                throw new UnauthorizedException("User not authorized to access this resouce.");
+            }
+
+            return header;
         }
 
-        private static string? GetBearer(string? header)
+        private string GetBearer(string header)
         {
-            if (header == null) return null;
-            if (header.Contains("Bearer") == false) return null;
-            return header[header.IndexOf("Bearer")..];
+            var index = header.IndexOf("Bearer");
+
+            if (index == -1)
+            {
+                throw new UnauthorizedException("User not authorized to access this resouce.");
+            }
+
+            return header[index..];
         }
 
-        private static string? GetToken(string? bearer)
+        private int GetAccountId(string token)
         {
-            if (bearer == null) return null;
-            return bearer.Split(" ")[1];
+            IJWTHelper helper = new JWTHelper();
+            return helper.GetAccountId(token);
         }
 
-        private static int? GetUserId(string? token)
-        {
-            if (token == null) return null;
-            return JWTHelper.GetUserId(token);
-        }
     }
 }

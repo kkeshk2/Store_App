@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Store_App.Models.Classes;
+using Store_App.Exceptions;
+using Store_App.Models.AccountModel;
 
 namespace Store_App.Helpers
 {
@@ -8,25 +9,31 @@ namespace Store_App.Helpers
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ValidUserRequirement requirement)
         {
-            HttpContext? httpContext = GetHttpContext(context);
-            int? userId = HttpContextHelper.GetUserId(httpContext);
-            Account? account = GetAccount(userId);
+            if (context.Resource is HttpContext httpContext)
+            {
+                return HandleRequirement(context, httpContext, requirement);
+            }
 
-            if (account != null) context.Succeed(requirement);
-            else context.Fail();
+            context.Fail();
             return Task.CompletedTask;
         }
 
-        private static HttpContext? GetHttpContext(AuthorizationHandlerContext context)
+        private static Task HandleRequirement(AuthorizationHandlerContext context, HttpContext httpContext, ValidUserRequirement requirement)
         {
-            if (context.Resource is HttpContext httpContext) return httpContext;
-            return null;
-        }
-
-        private static Account? GetAccount(int? userId)
-        {
-            if (userId == null) return null;
-            return Account.accessAccountById((int) userId);
+            try
+            {
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(httpContext);
+                var account = new Account();
+                account.AccessAccount(accountId);
+                context.Succeed(requirement);
+                return Task.CompletedTask;
+            }
+            catch (AccountNotFoundException)
+            {
+                context.Fail();
+                return Task.CompletedTask;
+            }
         }
     }
 }
