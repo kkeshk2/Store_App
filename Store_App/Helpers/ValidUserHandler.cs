@@ -34,6 +34,11 @@ namespace Store_App.Helpers
                 context.Fail();
                 return Task.CompletedTask;
             }
+            catch (UnauthorizedException)
+            {
+                context.Fail();
+                return Task.CompletedTask;
+            }
         }
     }
 }
