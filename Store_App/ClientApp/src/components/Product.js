@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Input,
@@ -110,7 +110,7 @@ function Product() {
         } else {
             setCartContains(0)
         }
-    }, [productId]);
+    }, [navigate, productId]);
 
     if (!localStorage.getItem("authtoken")) {
         verified = false

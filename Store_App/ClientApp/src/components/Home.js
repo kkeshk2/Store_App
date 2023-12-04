@@ -41,7 +41,7 @@ function Home() {
             }
         };
         populateProducts();
-    }, []);
+    }, [navigate]);
 
     const handleSelection = (event) => {
         setSelection(event.target.value)

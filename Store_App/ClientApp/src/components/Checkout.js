@@ -81,7 +81,7 @@ export default function Checkout() {
 
         verifyUser();
         getTotal();
-    }, []);
+    }, [navigate]);
 
     const handleCreditCard = (field, value) => {
         setCreditCard({

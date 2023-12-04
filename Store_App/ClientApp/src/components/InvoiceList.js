@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardBody, CardSubtitle, Col, Row } from 'reactstrap'
 
@@ -50,7 +50,7 @@ export default function InvoiceList() {
 
         verifyUser();
         fetchInvoiceList();
-    }, []);
+    }, [navigate]);
 
 
     const renderInvoiceList = (invoiceList) => {

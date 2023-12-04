@@ -52,7 +52,7 @@ function Cart() {
 
         verifyUser();
         populateCart();
-    }, []);
+    }, [navigate]);
 
     const updateCart = async (productId, quantity) => {
         try {

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams, } from 'react-router-dom';
 import { Card, CardBody, CardImg, CardSubtitle, Col, Row } from 'reactstrap'
 
@@ -64,7 +64,7 @@ export default function Invoice() {
 
         verifyUser();
         fetchInvoice();       
-    }, [invoiceId]);
+    }, [invoiceId, navigate]);
 
     const renderInvoice = (invoice) => {
         return (

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -46,7 +46,7 @@ export default function Login() {
         }
 
         verifyUser();
-    }, []);
+    }, [navigate]);
 
     const HandleSubmit = async event => {
         event.preventDefault();
