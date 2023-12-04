@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Store_App.Helpers;
-using Store_App.Models.ProductModel;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace Store_App.Models.InvoiceModel
 {
@@ -10,20 +11,31 @@ namespace Store_App.Models.InvoiceModel
 
         public void AccessInvoiceList(int accountId)
         {
-            using (var helper = new SqlHelper("SELECT * FROM Invoice WHERE accountId = @accountId"))
+            using (ISqlHelper helper = new SqlHelper("SELECT invoiceId FROM Invoice WHERE accountId = @accountId"))
             {
-                helper.AddParameter("@accountId", accountId);
-                using (var reader = helper.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        IInvoice invoice = new Invoice();
-                        invoice.AccessInvoice(reader);
-                        Invoices.Add(invoice);
-                    }
-                }
+                AccessInvoiceList(helper, accountId);
             }
-            Invoices.ForEach(p => p.AccessInvoiceProducts());
+        }
+
+        private void AccessInvoiceList(ISqlHelper helper, int accountId)
+        {
+            helper.AddParameter("@accountId", accountId);
+            using (var reader = helper.ExecuteReader())
+            {
+                AccessInvoiceList(reader, accountId);
+                reader.Close();
+            }
+        }
+
+        private void AccessInvoiceList(SqlDataReader reader, int accountId)
+        {
+            while (reader.Read())
+            {
+                IInvoice invoice = new Invoice();
+                var invoiceId = reader.GetInt32("invoiceId");
+                invoice.AccessInvoice(invoiceId, accountId);
+                Invoices.Add(invoice);
+            }
         }
     }
 }

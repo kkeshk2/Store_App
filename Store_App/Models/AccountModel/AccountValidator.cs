@@ -1,46 +1,52 @@
-﻿using System.Text.RegularExpressions;
+﻿using Store_App.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace Store_App.Models.AccountModel
 {
     public class AccountValidator : IAccountValidator
     {
-        public bool Validate(string accountEmail, string accountPassword, string accountName)
+        private static readonly IDictionary<string, string> RegexDictionary = CreateRegexDictionary();
+        
+        private static IDictionary<string, string> CreateRegexDictionary()
         {
-            bool valid = true;
-            valid = valid && ValidateEmail(accountEmail);
-            valid = valid && ValidatePassword(accountPassword);
-            valid = valid && ValidateName(accountName);
-            return valid;
+            IDictionary<string, string> RegexDictionary = new Dictionary<string, string>
+            {
+                { "email", "^[^@\\s@]+@[^@\\s]+\\.[^@\\s]+$" },
+                { "password", "^[^\\s]{8,128}$" }
+            };
+            return RegexDictionary;
         }
 
-        public bool ValidateEmail(string accountEmail)
+        public void ValidateAccount(string email, string password)
         {
-            bool valid = true;
-            if (!string.IsNullOrEmpty(accountEmail))
-            {
-                valid = Regex.Match(accountEmail, "^[^@\\s@]+@[^@\\s]+\\.[^@\\s]+$").Success;
-            }
-            return valid;
+            ValidateEmail(email);
+            ValidatePassword(password);
         }
 
-        public bool ValidateName(string accountName)
+        public void ValidateEmail(string email)
         {
-            bool valid = true;
-            if (!string.IsNullOrEmpty(accountName))
+            if (string.IsNullOrEmpty(email))
             {
-                valid = Regex.Match(accountName, "^[A-Za-z][A-Za-z\\.\\-\\x20]{0,127}$").Success;
+                throw new InvalidInputException("Email is invalid.");
             }
-            return valid;
+
+            if (!Regex.IsMatch(email, RegexDictionary["email"])) 
+            {
+                throw new InvalidInputException("Email is invalid.");
+            }
         }
 
-        public bool ValidatePassword(string accountPassword)
+        public void ValidatePassword(string password)
         {
-            bool valid = true;
-            if (!string.IsNullOrEmpty(accountPassword))
+            if (string.IsNullOrEmpty(password))
             {
-                valid = Regex.Match(accountPassword, "^[^\\s]{8,128}$").Success;
+                throw new InvalidInputException("Password is invalid.");
             }
-            return valid;
+
+            if (!Regex.IsMatch(password, RegexDictionary["password"]))
+            {
+                throw new InvalidInputException("Password is invalid.");
+            }
         }
     }
 }

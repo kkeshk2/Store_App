@@ -1,114 +1,83 @@
 ﻿using System.Data;
 using Store_App.Helpers;
 using Newtonsoft.Json;
-using Microsoft.IdentityModel.Tokens;
-using Store_App.Models.ProductModel;
+using System.Data.SqlClient;
 
 namespace Store_App.Models.CartModel
 {
     public class Cart : ICart
     {
-        [JsonProperty] private int CartId;
         [JsonIgnore] private int AccountId;
-        [JsonProperty] private List<ICartProduct> ProductList = new();
+        [JsonProperty] private int Size;
+        [JsonProperty] private decimal Total;      
+        [JsonProperty] private List<ICartProduct> Products = new();
 
         public void AccessCart(int accountId)
         {
-            if (!CartExists(accountId)) CreateCart(accountId);
-            using (var helper = new SqlHelper("SELECT * FROM Cart WHERE accountId = @accountId"))
-            {
-                helper.AddParameter("accountId", accountId);
-                using (var reader = helper.ExecuteReader())
-                {
-                    reader.Read();
-                    CartId = reader.GetInt32("cartId");
-                    AccountId = reader.GetInt32("accountId");
-                    reader.Close();
-                }    
-            }
+            AccountId = accountId;
             AccessCartProducts();
         }
 
         private void AccessCartProducts()
         {
-            using (var helper = new SqlHelper("SELECT * FROM CartProduct WHERE cartId = @cartId"))
+            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Cart WHERE accountId = @accountId"))
             {
-                helper.AddParameter("@cartId", CartId);
-                using (var reader = helper.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var productId = reader.GetInt32("productId");
-                        var quantity = reader.GetInt32("cartProductQuantity");
-                        ProductList.Add(new CartProduct(productId, quantity));
-                    }
-                    reader.Close();
-                }
+                helper.AddParameter("@accountId", AccountId);
+                AccessCartProducts(helper);
+                CalculateCartTotal();
+            }
+        }
+
+        private void AccessCartProducts(ISqlHelper helper)
+        {
+            
+            using (var reader = helper.ExecuteReader())
+            {
+                AccessCartProducts(reader);
+                reader.Close();
+            }
+        }
+
+        private void AccessCartProducts(SqlDataReader reader)
+        {
+            while (reader.Read())
+            {
+                var productId = reader.GetInt32("productId");
+                var quantity = reader.GetInt32("quantity");
+                Products.Add(new CartProduct(productId, quantity));
             }
         }
 
         public void AddToCart(int productId, int quantity)
         {
-            if (Contains(productId) != 0) return;
-            using (var helper = new SqlHelper("INSERT INTO CartProduct (cartId, productId, cartProductQuantity) VALUES (@cartId, @productId, @cartProductQuantity)"))
+            if (Products.Count(p => p.GetProductId() == productId) != 0) return;
+            using (ISqlHelper helper = new SqlHelper("INSERT INTO Cart (accountId, productId, quantity) VALUES (@accountId, @productId, @quantity)"))
             {
-                helper.AddParameter("@cartId", CartId);
+                helper.AddParameter("@accountId", AccountId);
                 helper.AddParameter("@productId", productId);
-                helper.AddParameter("@cartProductQuantity", quantity);
+                helper.AddParameter("@quantity", quantity);
                 helper.ExecuteNonQuery();
             }
             AccessCart(AccountId);
         }
 
-        private static bool CartExists(int accountId)
+        private void CalculateCartTotal()
         {
-            using (var helper = new SqlHelper("SELECT * FROM Cart WHERE accountId = @accountId"))
-            {
-                helper.AddParameter("accountId", accountId);
-                using (var reader = helper.ExecuteReader())
-                {
-                    var result = reader.Read();                 
-                    reader.Close();
-                    return result;
-                }
-            }
-        }
+            Size = 0;
+            Total = 0;
 
-        public int Contains(int productId)
-        {
-            using (var helper = new SqlHelper("SELECT * FROM CartProduct WHERE cartId = @cartId AND productId = @productId"))
+            foreach (ICartProduct product in Products)
             {
-                helper.AddParameter("@cartId", CartId);
-                helper.AddParameter("@productId", productId);
-                using (var reader = helper.ExecuteReader())
-                {
-                    var result = 0;
-                    if (reader.Read())
-                    {
-                        result = reader.GetInt32("cartProductQuantity");
-                    }    
-                    reader.Close();
-                    return result;
-                }
+                Size += product.GetQuantity();
+                Total += product.GetQuantity() * product.GetPrice();
             }
         }
 
         public void ClearCart()
         {
-            using (var helper = new SqlHelper("DELETE FROM CartProduct WHERE cartId = @cartId"))
+            using (ISqlHelper helper = new SqlHelper("DELETE FROM Cart WHERE accountId = @accountId"))
             {
-                helper.AddParameter("@cartId", CartId);
-                helper.ExecuteNonQuery();
-            }
-            AccessCart(AccountId);
-        }
-
-        private void CreateCart(int accountId)
-        {
-            if (CartExists(accountId)) throw new InvalidOperationException();
-            using (var helper = new SqlHelper("INSERT INTO Cart (accountId) VALUES (@accountId)"))
-            {
-                helper.AddParameter("accountId", accountId);
+                helper.AddParameter("@accountId", AccountId);
                 helper.ExecuteNonQuery();
             }
             AccessCart(AccountId);
@@ -116,26 +85,26 @@ namespace Store_App.Models.CartModel
 
         public void DeleteItem(int productId)
         {
-            using (var helper = new SqlHelper("DELETE FROM CartProduct WHERE cartId = @cartId AND productId = @productId"))
+            using (ISqlHelper helper = new SqlHelper("DELETE FROM Cart WHERE accountId = @accountId AND productId = @productId"))
             {
-                helper.AddParameter("@cartId", CartId);
+                helper.AddParameter("@accountId", AccountId);
                 helper.AddParameter("@productId", productId);
                 helper.ExecuteNonQuery();
             }
             AccessCart(AccountId);
         }
 
-        public List<ICartProduct> GetProductList()
+        public List<ICartProduct> GetCartProducts()
         {
-            return ProductList;
+            return Products;
         }
 
         public void UpdateCart(int productId, int quantity)
         {
-            using (var helper = new SqlHelper("UPDATE CartProduct SET cartProductQuantity = @cartProductQuantity WHERE cartId = @cartId AND productId = @productId"))
+            using (ISqlHelper helper = new SqlHelper("UPDATE Cart SET quantity = @quantity WHERE accountId = @accountId AND productId = @productId"))
             {
-                helper.AddParameter("@cartProductQuantity", quantity);
-                helper.AddParameter("@cartId", CartId);
+                helper.AddParameter("@quantity", quantity);
+                helper.AddParameter("@accountId", AccountId);
                 helper.AddParameter("@productId", productId);
                 helper.ExecuteNonQuery();
             }

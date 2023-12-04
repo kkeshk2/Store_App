@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Store_App.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Store_App.Models.AccountModel;
+using Store_App.Exceptions;
 
 namespace Store_App.Controllers
 {
@@ -20,7 +20,11 @@ namespace Store_App.Controllers
                 account.AccessAccount(email, password);
                 return account.GenerateToken();
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (UnauthorizedException)
             {
                 return new StatusCodeResult(401);
             }
@@ -36,14 +40,17 @@ namespace Store_App.Controllers
         {
             try
             {
-                int? userId = HttpContextHelper.GetUserId(HttpContext);
-                if (userId == null) return new StatusCodeResult(401);
-
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 IAccount account = new Account();
-                account.AccessAccount((int) userId);
+                account.AccessAccount(accountId);
                 return JsonConvert.SerializeObject(account);
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (UnauthorizedException)
             {
                 return new StatusCodeResult(401);
             }
@@ -61,21 +68,21 @@ namespace Store_App.Controllers
         }
 
         [HttpGet("createaccount")]
-        public ActionResult<string> CreateAccount(string email, string password, string name)
+        public ActionResult<string> CreateAccount(string email, string password)
         {
             try
             {
                 IAccount account = new Account();
-                account.CreateAccount(email, password, name);
+                account.CreateAccount(email, password);
                 return account.GenerateToken();
             }
-            catch (ArgumentException)
+            catch (InvalidInputException)
             {
                 return new StatusCodeResult(400);
             }
-            catch (InvalidOperationException)
+            catch (EmailTakenException)
             {
-                return new StatusCodeResult(401);
+                return new StatusCodeResult(403);
             }
             catch (Exception)
             {
@@ -89,50 +96,28 @@ namespace Store_App.Controllers
         {           
             try
             {
-                int? userId = HttpContextHelper.GetUserId(HttpContext);
-                if (userId == null) return new StatusCodeResult(401);
-
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 IAccount account = new Account();
-                account.AccessAccount((int) userId);
-                account.UpdateAccountEmail(email);
+                account.AccessAccount((int) accountId);
+                account.UpdateEmail(email);
                 return new StatusCodeResult(200);
             }
-            catch (ArgumentException)
+            catch (InvalidInputException)
             {
                 return new StatusCodeResult(400);
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
             {
                 return new StatusCodeResult(401);
             }
-            catch (Exception)
-            {
-                return new StatusCodeResult(500);
-            }
-        }
-
-        [HttpGet("updateaccountname")]
-        [Authorize("ValidUser")]
-        public ActionResult<string> UpdateAccountName(string name)
-        {         
-            try
-            {
-                int? userId = HttpContextHelper.GetUserId(HttpContext);
-                if (userId == null) return new StatusCodeResult(401);
-
-                IAccount account = new Account();
-                account.AccessAccount((int) userId);
-                account.UpdateAccountName(name);
-
-                return new StatusCodeResult(200);
-            }
-            catch (ArgumentException)
-            {
-                return new StatusCodeResult(400);
-            }
-            catch (InvalidOperationException)
+            catch (UnauthorizedException)
             {
                 return new StatusCodeResult(401);
+            }
+            catch (EmailTakenException)
+            {
+                return new StatusCodeResult(403);
             }
             catch (Exception)
             {
@@ -146,20 +131,23 @@ namespace Store_App.Controllers
         {
             try
             {
-                int? userId = HttpContextHelper.GetUserId(HttpContext);
-                if (userId == null) return new StatusCodeResult(401);
-
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 IAccount account = new Account();
-                account.AccessAccount((int)userId);
-                account.UpdateAccountPassword(password);
+                account.AccessAccount(accountId);
+                account.UpdatePassword(password);
 
                 return new StatusCodeResult(200);
             }
-            catch (ArgumentException)
+            catch (InvalidInputException)
             {
                 return new StatusCodeResult(400);
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (UnauthorizedException)
             {
                 return new StatusCodeResult(401);
             }

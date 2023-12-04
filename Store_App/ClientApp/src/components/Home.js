@@ -1,40 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import '../custom.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import {
-    Alert,
     Input,
     Label,
     Form,
-    FormGroup,
-    FormText,
-    FormFeedback,
     Row,
     Col,
-    Button,
-    Dropdown,
-    Nav,
-    NavItem,
-    NavLink,
     Card,
     CardBody,
     CardImg,
-    CardTitle,
     CardSubtitle
 } from 'reactstrap'
 
 function Home() {
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [selection, setSelection] = useState("")
     const [search, setSearch] = useState("")
     const [isChecked, setIsChecked] = useState(false);
+    const navigate = useNavigate()
 
     useEffect(() => {
         const populateProducts = async () => {
             try {
                 const response = await fetch('api/product/accessproductlist');
+                if (response.status === 404) {
+                    navigate("/not-found")
+                    window.location.reload()
+                } else if (response.status === 500) {
+                    navigate("/server-error")
+                    window.location.reload()
+                }  
                 const data = await response.json();
                 setProducts(data.Products);
 
@@ -54,7 +51,7 @@ function Home() {
         setSearch(event.target.value)
     }
 
-    const handleCheck = (event) => {
+    const handleCheck = () => {
         setIsChecked(!isChecked)
     }
 
@@ -65,7 +62,7 @@ function Home() {
                     <Row>
                         <Col xs="3">
                             <Input type="select" size="sm" onChange={e => handleSelection(e)}>
-                                <option value="" selected>Choose Category</option>
+                                <option value="" selected placeholder>Category</option>
                                 <option value="Graphics Card">Graphics Cards</option>
                                 <option value="Processor">Processors</option>
                                 <option value="Cooling">Cooling</option>
@@ -90,41 +87,45 @@ function Home() {
             <div className="d-flex flex-wrap justify-content-center">
                 {products.map((product) => (
                     <Card style={{ margin: "10px", maxWidth: "24rem", width: "24rem" }}
-                        hidden={(selection != "" && selection.toLowerCase() != product.ProductCategory.toLowerCase()) ||
-                            (search != "" && (!product.ProductName.toLowerCase().includes(search.toLowerCase()))) ||
-                            (isChecked && product.ProductSale == 0)
+                        hidden={(selection !== "" && selection.toLowerCase() !== product.Category.toLowerCase()) ||
+                            (search !== "" && (!product.Name.toLowerCase().includes(search.toLowerCase()))) ||
+                            (isChecked && product.Sale === 0)
                         }
                     >
                         <CardBody>
+                            <Link to={`/product/${product.ProductId}`} style={{ color: "inherit", textDecoration: "none" }}>
                             <CardSubtitle style={{ fontSize: 20, fontWeight: 600 }}>
-                                {product.ProductName}
+                                {product.Name}
                             </CardSubtitle>
+                            </Link>
                             <Row>
                                 <Col>
                                     <CardSubtitle tag="h6">
-                                        By {product.ProductManufacturer}
+                                        By {product.Manufacturer}
                                     </CardSubtitle>
                                 </Col>
                                 <Col style={{ textAlign: "right" }}>
                                     <CardSubtitle tag="h6">
-                                        {'\u2605'}{product.ProductRating}
+                                        {'\u2605'}{product.Rating}
                                     </CardSubtitle>
                                 </Col>
                             </Row>
                             <br></br>
+                            <Link to={`/product/${product.ProductId}`} style={{ color: "inherit", textDecoration: "none" }}>
                             <CardImg
-                                alt={product.ProductName}
-                                src={product.ProductImageLocation}
+                                alt={product.Name}
+                                src={product.ImageLocation}
                                 height="62.5%"
                             />
+                            </Link>
                             <br></br><br></br>
                             <Row>
                                 <Col>
-                                    <CardSubtitle tag="h4" hidden={product.ProductSale !== 0}>
-                                        ${product.ProductPrice}
+                                    <CardSubtitle tag="h4" hidden={product.Sale !== 0}>
+                                        ${product.Price}
                                     </CardSubtitle>
-                                    <CardSubtitle tag="h4" hidden={product.ProductSale === 0}>
-                                        <s style={{ color: "darkred" }}>${product.ProductPrice}</s> ${product.ProductPrice - product.ProductSale}
+                                    <CardSubtitle tag="h4" hidden={product.Sale === 0}>
+                                        <s style={{ color: "darkred" }}>${product.Price}</s> ${product.Price - product.Sale}
                                     </CardSubtitle>
                                 </Col>
                             </Row>

@@ -1,6 +1,6 @@
-﻿import React, { Component, useState, useEffect } from 'react';
-import { Link, useNavigate, useParams, redirect } from 'react-router-dom';
-import { Button, ButtonGroup, Card, CardBody, CardImg, CardSubtitle, CardTitle, Col, Input, Row } from 'reactstrap'
+﻿import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Card, CardBody, CardSubtitle, Col, Row } from 'reactstrap'
 
 export default function InvoiceList() {
 
@@ -12,6 +12,16 @@ export default function InvoiceList() {
             try {
                 const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
                 const response = await fetch(`api/invoice/accessinvoicelist`, { headers });
+                if (response.status === 401) {
+                    navigate("/unauthorized")
+                    window.location.reload()
+                } else if (response.status === 404) {
+                    navigate("/not-found")
+                    window.location.reload()
+                } else if (response.status === 500) {
+                    navigate("/server-error")
+                    window.location.reload()
+                }  
                 const data = await response.json();
                 setInvoiceList(data.Invoices)                                
             } catch (error) {
@@ -60,33 +70,33 @@ export default function InvoiceList() {
                                         <CardSubtitle tag="h4">Invoice #{invoice.InvoiceId}</CardSubtitle>
                                     </Col>
                                     <Col style={{ textAlign: "right" }}>
-                                        <CardSubtitle tag="h4">Total ${invoice.InvoiceTotal}</CardSubtitle>
+                                        <CardSubtitle tag="h4">Total ${invoice.Total}</CardSubtitle>
                                     </Col>
                                 </Row>
                                 <br />
                                 <Row>
                                     <Col>
-                                        <CardSubtitle>{invoice.InvoiceDate.substring(0, 10)}</CardSubtitle>
+                                        <CardSubtitle>{invoice.Date.substring(0, 10)}</CardSubtitle>
                                     </Col>
                                     <Col style={{ textAlign: "right" }}>
-                                        <CardSubtitle>{invoice.InvoiceDate.substring(11, 19)}</CardSubtitle>
+                                        <CardSubtitle>{invoice.Date.substring(11, 19)}</CardSubtitle>
                                     </Col>
                                 </Row>
                                 <br />
-                                <Row hidden={invoice.InvoiceSize === 1}>
+                                <Row hidden={invoice.Size === 1}>
                                     <Col>
-                                        <CardSubtitle>{invoice.InvoiceSize} Items</CardSubtitle>
+                                        <CardSubtitle>{invoice.Size} Items</CardSubtitle>
                                     </Col>
                                 </Row>
-                                <Row hidden={invoice.InvoiceSize !== 1}>
+                                <Row hidden={invoice.Size !== 1}>
                                     <Col>
-                                        <CardSubtitle>{invoice.InvoiceSize} Item</CardSubtitle>
+                                        <CardSubtitle>{invoice.Size} Item</CardSubtitle>
                                     </Col>
                                 </Row>
                                 <br />
                                 <Row>
                                     <Col>
-                                        Payment Method:<br />Credit Card **** **** **** {invoice.InvoiceCreditCardLast4}
+                                        Payment Method:<br />Credit Card **** **** **** {invoice.CreditCard}
                                     </Col>
                                 </Row>
                                 </CardBody>

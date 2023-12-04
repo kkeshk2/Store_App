@@ -1,76 +1,104 @@
-﻿using System.Text.RegularExpressions;
+﻿using Store_App.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace Store_App.Models.InvoiceModel
 {
     public class CreditCardValidator : ICreditCardValidator
     {
-        public string GetLast4 (string creditCard)
-        {
-            if (!ValidateCreditCardString(creditCard)) throw new ArgumentException();
-            var cardNumber = creditCard.Split((char)31)[0];
-            var last4 = cardNumber[12..16];
-            return last4;
-        }
+        private static IDictionary<string, string> RegexDictionary = GenerateRegexDictionary();
 
-        public bool ValidateCreditCardString(string creditCard)
+        private static IDictionary<string, string> GenerateRegexDictionary()
         {
-            string[] creditCardArray = creditCard.Split((char)31);
-            bool valid = true;
-            valid = valid && ValidateCreditCard(creditCardArray[0]);
-            valid = valid && ValidateCardVC(creditCardArray[1]);
-            valid = valid && ValidateExpMonth(creditCardArray[2]);
-            valid = valid && ValidateExpYear(creditCardArray[3]);
-            return valid;
-        }
-
-        public bool ValidateCreditCard(string creditCard, string expMonth, string expYear, string cardVC)
-        {
-            bool valid = true;
-            valid = valid && ValidateCreditCard(creditCard);
-            valid = valid && ValidateCardVC(cardVC);
-            valid = valid && ValidateExpMonth(expMonth);
-            valid = valid && ValidateExpYear(expYear);
-            return valid;
-        }
-
-        private bool ValidateCreditCard(string creditCard)
-        {
-            bool valid = true;
-            if (!string.IsNullOrEmpty(creditCard))
+            IDictionary<string, string> RegexDictionary = new Dictionary<string, string>
             {
-                valid = Regex.Match(creditCard, "^[0-9]{16,16}$").Success;
-            }
-            return valid;
+                { "creditCardNumber", "^[0-9]{16,16}$" },
+                { "verificationCode", "^[0-9]{3,4}$" },
+                { "expirationMonth", "^[1][012]$|^[0]?[1-9]$" },
+                { "expirationYear", "^[0-9]{4,4}$" }
+            };
+            return RegexDictionary;
         }
 
-        private bool ValidateCardVC(string cardVC)
+        public string ValidateCreditCardReturnLast4 (string creditCard)
         {
-            bool valid = true;
-            if (!string.IsNullOrEmpty(cardVC))
-            {
-                valid = Regex.Match(cardVC, "^[0-9]{3,4}$").Success;
-            }
-            return valid;
+            string[] creditCardArray = creditCard.Split("\t");
+            ValidateCreditCard(creditCardArray[0], creditCardArray[1], creditCardArray[2], creditCardArray[3]);
+            return creditCardArray[0][12..16];
         }
 
-        private bool ValidateExpMonth(string expMonth)
+        public void ValidateCreditCard(string cardNumber, string expirationMonth, string expirationYear, string verificationCode)
         {
-            bool valid = true;
-            if (!string.IsNullOrEmpty(expMonth))
-            {
-                valid = Regex.Match(expMonth, "^[0-9]{2,2}$").Success;
-            }
-            return valid;
+            ValidateCreditCardNumber(cardNumber);
+            ValidateVerificationCode(verificationCode);
+            ValidateExpirationMonth(expirationMonth);
+            ValidateExpirationYear(expirationYear);
+            int expirationYearInteger = Convert.ToInt32(expirationYear);
+            int expirationMonthInteger = Convert.ToInt32(expirationMonth);
+            ValidateExpirationDate(expirationYearInteger, expirationMonthInteger);
         }
 
-        private bool ValidateExpYear(string expYear)
+        private void ValidateCreditCardNumber(string cardNumber)
         {
-            bool valid = true;
-            if (!string.IsNullOrEmpty(expYear))
+            if (string.IsNullOrEmpty(cardNumber))
             {
-                valid = Regex.Match(expYear, "^[0-9]{4,4}$").Success;
+                throw new InvalidInputException("Credit card number is invalid.");
             }
-            return valid;
+
+            if (!Regex.IsMatch(cardNumber, RegexDictionary["creditCardNumber"]))
+            {
+                throw new InvalidInputException("Credit card number is invalid.");
+            }
+        }
+
+        private void ValidateVerificationCode(string verificationCode)
+        {
+            if (string.IsNullOrEmpty(verificationCode))
+            {
+                throw new InvalidInputException("Verification code is invalid.");
+            }
+
+            if (!Regex.IsMatch(verificationCode, RegexDictionary["verificationCode"]))
+            {
+                throw new InvalidInputException("Verification code is invalid.");
+            }
+        }
+
+        private void ValidateExpirationDate(int expirationYear, int expirationMonth)
+        {
+            DateTime expirationDate = new DateTime();
+            expirationDate = expirationDate.AddYears(expirationYear);
+            expirationDate = expirationDate.AddMonths(expirationMonth + 1);
+
+            if (expirationDate <= DateTime.Now)
+            {
+                throw new InvalidInputException("Credit card is expired.");
+            }
+        }
+
+        private void ValidateExpirationMonth(string expirationMonth)
+        {
+            if (string.IsNullOrEmpty(expirationMonth))
+            {
+                throw new InvalidInputException("Verification code is invalid.");
+            }
+
+            if (!Regex.IsMatch(expirationMonth, RegexDictionary["expirationMonth"]))
+            {
+                throw new InvalidInputException("Verification code is invalid.");
+            }
+        }
+
+        private void ValidateExpirationYear(string expirationYear)
+        {
+            if (string.IsNullOrEmpty(expirationYear))
+            {
+                throw new InvalidInputException("Verification code is invalid.");
+            }
+
+            if (!Regex.IsMatch(expirationYear, RegexDictionary["expirationYear"]))
+            {
+                throw new InvalidInputException("Verification code is invalid.");
+            }
         }
     }
 }

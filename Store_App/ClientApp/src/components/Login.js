@@ -1,4 +1,4 @@
-﻿import React, { Component, useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -7,14 +7,14 @@ import {
     Label,
     Form,
     FormGroup,
-    FormText,
-    FormFeedback,
     Row,
     Col,
     Button,
     Nav,
-    NavItem,
-    NavLink
+    NavLink,
+    Card,
+    CardBody,
+    CardTitle,
 } from 'reactstrap'
 
 export default function Login() {
@@ -60,14 +60,14 @@ export default function Login() {
                 localStorage.setItem("authtoken", token)
                 navigate("/")
                 window.location.reload()
-            } else if (response.status === 400) {
-                setStatus(400)
+            } else if (response.status === 401) {
+                setStatus(401)
             } else {
-                setStatus(502)
+                setStatus(500)
             }
         }
         catch (Exception) {
-            setStatus(502)
+            setStatus(500)
         }
     }
 
@@ -79,44 +79,44 @@ export default function Login() {
         setPassword(event.target.value)
     }
 
-    const HandleRedirect = (event) => {
-        navigate("/")
-    }
-
     return (
-        <Form id="login" onSubmit={HandleSubmit}>
-            <Row><Col lg="5" style={{ textAlign: "center" }}>
-                <h2>Log In</h2>
-            </Col></Row>
-            <Row><Col lg="5">
-                <Alert color="danger" isOpen={status === 400}> Your email or password is incorrect. </Alert>
-                <Alert color="warning" isOpen={status === 502}> There was an error logging in. </Alert>
-            </Col></Row>
-            <Row><Col lg="5">
-                <FormGroup>
-                    <Input id="email" type="email" placeholder="Email" required value={email} onChange={HandleEmail}/>
-                </FormGroup>
-            </Col></Row>
-            <Row><Col lg="5">
-                <FormGroup>
-                    <Input id="password" type="password" placeholder="Password" required value={password} onChange={HandlePassword}/>
-                </FormGroup>
-            </Col></Row>
-            <Row><Col lg="5">
-                <FormGroup>
-                    <Button block type="submit" color="login"> Log In </Button>
-                </FormGroup>
-            </Col></Row>
-            <Row><Col lg="5">
-                <Nav justified>
-                    <NavLink href="/"> Forgot Password </NavLink>                     
-                </Nav>
-            </Col></Row>
-            <Row><Col lg="5">
-                <Nav  justified>
-                    <NavLink href="/create-account"> Create Account </NavLink>
-                </Nav>
-            </Col></Row>
-        </Form>
+        <div className="d-flex flex-wrap justify-content-center" style={{ gridColumnGap: "100%" }} >
+            <Card style={{ maxWidth: '20rem', width: '20rem' }}>
+                <CardBody>
+                    <Form id="login" onSubmit={HandleSubmit}>
+                        <Row><Col style={{ textAlign: "center" }}>
+                            <CardTitle tag="h4">Log In</CardTitle>
+                        </Col></Row>
+                        <br />
+                        <Row><Col>
+                            <Alert color="danger" isOpen={status === 401}> Your email or password is incorrect. </Alert>
+                            <Alert color="warning" isOpen={status === 500}> There was an error logging in. </Alert>
+                        </Col></Row>
+                        <Row><Col>
+                            <FormGroup>
+                                <Label for="email">Email</Label>
+                                <Input id="email" type="email" required value={email} onChange={HandleEmail} />
+                            </FormGroup>
+                        </Col></Row>
+                        <Row><Col>
+                            <FormGroup>
+                                <Label for="password">Password</Label>
+                                <Input id="password" type="password" required value={password} onChange={HandlePassword} />
+                            </FormGroup>
+                        </Col></Row>
+                        <Row><Col>
+                            <FormGroup>
+                                <Button block type="submit" color="login"> Log In </Button>
+                            </FormGroup>
+                        </Col></Row>
+                        <Row><Col>
+                            <Nav justified>
+                                <NavLink href="/create-account"> Create Account </NavLink>
+                            </Nav>
+                        </Col></Row>
+                    </Form>
+                </CardBody>
+            </Card>
+        </div>
     )
 }

@@ -4,98 +4,118 @@ using System.Data;
 using Store_App.Helpers;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
+using Store_App.Exceptions;
 
 namespace Store_App.Models.ProductModel
 {
     public class Product : IProduct
     {
         [JsonProperty] private int ProductId;
-        [JsonProperty] private string? ProductName;
-        [JsonProperty] private decimal ProductPrice;
-        [JsonProperty] private decimal ProductSale;
-        [JsonProperty] private decimal ProductRating;
-        [JsonProperty] private string? ProductManufacturer;
-        [JsonProperty] private string? ProductDescription;
-        [JsonProperty] private string? ProductCategory;
-        [JsonProperty] private decimal ProductLength;
-        [JsonProperty] private decimal ProductWidth;
-        [JsonProperty] private decimal ProductHeight;
-        [JsonProperty] private decimal ProductWeight;
-        [JsonProperty] private string? ProductSKU;
-        [JsonProperty] private string? ProductImageLocation;
+        [JsonProperty] private string? Name;
+        [JsonProperty] private decimal Price;
+        [JsonProperty] private decimal Sale;
+        [JsonProperty] private decimal Rating;
+        [JsonProperty] private string? Manufacturer;
+        [JsonProperty] private string? Description;
+        [JsonProperty] private string? Category;
+        [JsonProperty] private decimal Length;
+        [JsonProperty] private decimal Width;
+        [JsonProperty] private decimal Height;
+        [JsonProperty] private decimal Weight;
+        [JsonProperty] private string? SKU;
+        [JsonProperty] private string? ImageLocation;
 
-        public int GetProductId()
-        {
-            return ProductId;
-        }
-
-        public decimal GetProductPrice()
-        {
-            return ProductPrice - ProductSale;
-        }
+        public Product() {}
 
         public void AccessProduct(int productId)
         {
-            using (var helper = new SqlHelper("SELECT * FROM Product WHERE productId = @productId"))
+            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Product WHERE productId = @productId"))
             {
-                helper.AddParameter("@productId", productId);
-                using (var reader = helper.ExecuteReader())
-                {
-                    reader.Read();
-                    AccessProduct(reader);
-                    reader.Close();
-                }
-                AccessProductSale();
+                AccessProduct(helper, productId);
+            }
+            AccessProductSale();
+        }
+
+        private void AccessProduct(ISqlHelper helper, int productId)
+        {
+            helper.AddParameter("@productId", productId);
+            using (var reader = helper.ExecuteReader())
+            {
+                AccessProduct(reader);
+                reader.Close();
             }
         }
 
-        public void AccessProduct(SqlDataReader reader)
+        private void AccessProduct(SqlDataReader reader)
         {
-            
+            if (!reader.Read())
+            {
+                throw new ProductNotFoundException("Product not found.");
+            }
+
             ProductId = reader.GetInt32("productId");
-            ProductName = reader.GetString("productName");
-            ProductPrice = reader.GetDecimal("productPrice");
+            Name = reader.GetString("name");
+            Price = reader.GetDecimal("price");
             AccessProductDetails(reader);
             AccessProductDimensions(reader);
-            
         }
 
         private void AccessProductDetails(SqlDataReader reader)
         {
-            ProductManufacturer = reader.GetString("productManufacturer");
-            ProductRating = reader.GetDecimal("productRating");
-            ProductDescription = reader.GetString("productDescription");
-            ProductCategory = reader.GetString("productCategory");
-            ProductSKU = reader.GetString("productSKU");
-            ProductImageLocation = reader.GetString("productImageLocation");
+            Manufacturer = reader.GetString("manufacturer");
+            Rating = reader.GetDecimal("rating");
+            Description = reader.GetString("description");
+            Category = reader.GetString("category");
+            SKU = reader.GetString("sku");
+            ImageLocation = reader.GetString("imageLocation");
         }
 
         private void AccessProductDimensions(SqlDataReader reader)
         {
-            ProductLength = reader.GetDecimal("productLength");
-            ProductWidth = reader.GetDecimal("productWidth");
-            ProductHeight = reader.GetDecimal("productHeight");
-            ProductWeight = reader.GetDecimal("productWeight");
+            Length = reader.GetDecimal("Length");
+            Width = reader.GetDecimal("Width");
+            Height = reader.GetDecimal("Height");
+            Weight = reader.GetDecimal("Weight");
         }
 
         public void AccessProductSale()
         {
-            using (var helper = new SqlHelper("SELECT saleAmount FROM Sale WHERE productId = @productId AND saleStartDate <= @currentDate AND saleEndDate >= @currentDate"))
+            using (ISqlHelper helper = new SqlHelper("SELECT amount FROM Sale WHERE productId = @productId AND startDate <= @currentDate AND endDate >= @currentDate"))
             {
-                decimal saleAmount = 0;
-                var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-                helper.AddParameter("@currentDate", currentDate);
-                helper.AddParameter("@productId", ProductId);
-                using (var reader = helper.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        saleAmount = reader.GetDecimal("saleAmount");
-                    }
-                    reader.Close();
-                    ProductSale = saleAmount;
-                }
+                AccessProductSale(helper);
             }
         }
+
+        private void AccessProductSale(ISqlHelper helper)
+        {
+            var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            helper.AddParameter("@currentDate", currentDate);
+            helper.AddParameter("@productId", ProductId);
+            using (var reader = helper.ExecuteReader())
+            {
+                AccessProductSale(reader);
+                reader.Close();
+            }
+        }
+
+        private void AccessProductSale(SqlDataReader reader)
+        {
+            decimal saleAmount = 0;
+            if (reader.Read())
+            {
+                saleAmount = reader.GetDecimal("Amount");
+            }
+            Sale = saleAmount;
+        }
+
+        public decimal GetPrice()
+        {
+            return Price - Sale;
+        }
+
+        public int GetProductId()
+        {
+            return ProductId;
+        } 
     }
 }

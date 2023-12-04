@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../custom.css';
-import { Button, ButtonGroup, Card, CardBody, CardImg, CardSubtitle, CardTitle, Col, Input, Row } from 'reactstrap'
+import { Button, ButtonGroup, Card, CardBody, CardImg, CardSubtitle, Col, Input, Row } from 'reactstrap'
 
 function Cart() {
     const [cart, setCart] = useState([])
@@ -13,19 +13,19 @@ function Cart() {
             try {
                 const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
                 const response = await fetch(`api/cart/accesscart`, { headers });
+                if (response.status === 401) {
+                    navigate("/unauthorized")
+                    window.location.reload()
+                } else if (response.status === 404) {
+                    navigate("/not-found")
+                    window.location.reload()
+                } else if (response.status === 500) {
+                    navigate("/server-error")
+                    window.location.reload()
+                }              
                 const data = await response.json();
-                setCart(data.ProductList);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        const getTotal = async () => {
-            try {
-                const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
-                const response = await fetch(`api/cart/gettotal`, { headers });
-                const data = await response.json();
-                setTotal(data);
+                setCart(data.Products);
+                setTotal(data.Total);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -52,16 +52,22 @@ function Cart() {
 
         verifyUser();
         populateCart();
-        getTotal();
     }, []);
 
     const updateCart = async (productId, quantity) => {
         try {
             const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
             const response = await fetch(`api/cart/updatecart?productId=${productId}&quantity=${quantity}`, { headers });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (response.status === 401) {
+                navigate("/unauthorized")
+                window.location.reload()
+            } else if (response.status === 404) {
+                navigate("/not-found")
+                window.location.reload()
+            } else if (response.status === 500) {
+                navigate("/server-error")
+                window.location.reload()
+            }  
             const data = await response.json();
             console.log('NETWORK GOOD');
             console.log(data);
@@ -76,9 +82,16 @@ function Cart() {
         try {
             const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
             const response = await fetch(`api/cart/deletefromcart?productId=${productId}`, { headers });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (response.status === 401) {
+                navigate("/unauthorized")
+                window.location.reload()
+            } else if (response.status === 404) {
+                navigate("/not-found")
+                window.location.reload()
+            } else if (response.status === 500) {
+                navigate("/server-error")
+                window.location.reload()
+            }  
             const data = await response.json();
             console.log('NETWORK GOOD');
             console.log(data);
@@ -93,9 +106,16 @@ function Cart() {
         try {
             const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
             const response = await fetch(`api/cart/clearcart`, { headers });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (response.status === 401) {
+                navigate("/unauthorized")
+                window.location.reload()
+            } else if (response.status === 404) {
+                navigate("/not-found")
+                window.location.reload()
+            } else if (response.status === 500) {
+                navigate("/server-error")
+                window.location.reload()
+            }  
             const data = await response.json();
             console.log('NETWORK GOOD');
             console.log(data);
@@ -123,7 +143,7 @@ function Cart() {
                                     <Col xs="4">
                                         <Link to={`/product/${Item.Product.ProductId}`}>
                                             <CardImg
-                                                src={Item.Product.ProductImageLocation}
+                                                src={Item.Product.ImageLocation}
                                                 style={{ paddingBottom: "10px", paddingTop: "10px" }}
                                                 href="/"
                                             />
@@ -131,17 +151,17 @@ function Cart() {
                                     </Col>
                                     <Col>
                                         <div className="d-flex align-items-start" style={{ height: "50%" }}>                                  
-                                            <CardSubtitle tag="h6" hidden={Item.Product.ProductSale !== 0}>
+                                            <CardSubtitle tag="h6" hidden={Item.Product.Sale !== 0}>
                                                 <Link to={`/product/${Item.Product.ProductId}`} style={{ color: "inherit", textDecoration: "none" }}>
-                                                    {Item.Product.ProductName}
+                                                    {Item.Product.Name}
                                                 </Link><br />
-                                                ${Item.Product.ProductPrice}
+                                                ${Item.Product.Price}
                                             </CardSubtitle>
-                                            <CardSubtitle tag="h6" hidden={Item.Product.ProductSale === 0}>
+                                            <CardSubtitle tag="h6" hidden={Item.Product.Sale === 0}>
                                                 <Link to={`/product/${Item.Product.ProductId}`} style={{ color: "inherit", textDecoration: "none" }}>
-                                                    {Item.Product.ProductName}
+                                                    {Item.Product.Name}
                                                 </Link><br />
-                                                <s style={{ color: "darkred" }}>${Item.Product.ProductPrice}</s> ${Item.Product.ProductPrice - Item.Product.ProductSale}
+                                                <s style={{ color: "darkred" }}>${Item.Product.Price}</s> ${Item.Product.Price - Item.Product.Sale}
                                             </CardSubtitle>
                                         </div>
                                         <div className="d-flex align-items-end" style={{ height: "50%" }}>
@@ -180,7 +200,7 @@ function Cart() {
                             </Row>
                             <Row>
                                 <Col>
-                                    <Button disabled={total === 0} block color="login">
+                                    <Button disabled={total === 0} block color="login" onClick={() => navigate("/checkout")}>
                                         Checkout
                                     </Button>
                                 </Col>

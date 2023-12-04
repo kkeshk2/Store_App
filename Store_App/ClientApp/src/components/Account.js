@@ -1,34 +1,26 @@
-﻿import React, { Component, useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
     Alert,
-    ButtonGroup,
     Input,
-    Label,
     Form,
     FormGroup,
-    FormText,
     FormFeedback,
     Row,
     Col,
     Button,
-    Nav,
-    NavItem,
-    NavLink,
     Card,
     CardBody,
     CardTitle,
     Modal,
     ModalHeader,
     ModalBody,
-    ModalFooter
 } from 'reactstrap'
 
 export default function Account() {
     const emailRegex = /^[^@\s@]+@[^@\s]+\.[^@\s]+$/
     const passRegex = /^[^\s]{8,128}$/
-    const nameRegex = /^[A-Za-z][A-Za-z\.\-\x20]{0,127}$/
 
     const [fields, setFields] = useState({})
     const [validation, setValidation] = useState({})
@@ -37,11 +29,11 @@ export default function Account() {
     const [account, setAccount] = useState([])
 
     const [emailModal, setEmailModal] = useState(false)
-    const [nameModal, setNameModal] = useState(false)
     const [passwordModal, setPasswordModal] = useState(false)
 
     const toggleEmailModal = () => {
         setEmailModal(!emailModal)
+        setStatus(0)
         setFields({
             ...fields,
             [`email`]: null
@@ -49,17 +41,9 @@ export default function Account() {
         validation["email"] = null
     }
 
-    const toggleNameModal = () => {
-        setNameModal(!nameModal)
-        setFields({
-            ...fields,
-            [`name`]: null
-        })
-        validation["name"] = null
-    }
-
     const togglePasswordModal = () => {
         setPasswordModal(!passwordModal)
+        setStatus(0)
         setFields({
             ...fields,
             [`password`]: null,
@@ -73,7 +57,7 @@ export default function Account() {
         const fetchAccount = async () => {
             try {
                 const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
-                const response = await fetch(`api/account/getaccount`, { headers });
+                const response = await fetch(`api/account/accessaccount`, { headers });
                 const data = await response.json();
                 setAccount(data);
             } catch (error) {
@@ -126,56 +110,25 @@ export default function Account() {
                     ...status,
                     [`email`]: 400
                 })
+            } else if (response.status === 403) {
+                setStatus({
+                    ...status,
+                    [`email`]: 403
+                })
             } else if (response.status === 401) {
-                setStatus({
-                    ...status,
-                    [`email`]: 401
-                })
-            } else {
-                setStatus({
-                    ...status,
-                    [`email`]: 502
-                })
-            }
-        }
-        catch (Exception) {
-            setStatus({
-                ...status,
-                [`email`]: 502
-            })
-        }
-    }
-
-    const HandleSubmitName = async event => {
-        event.preventDefault();
-        const URIName = encodeURIComponent(fields["name"])
-        try {
-            const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
-            const response = await fetch(`api/account/updateaccountname?name=${URIName}`, { headers });
-            if (response.ok) {
-                navigate("/account")
+                navigate("/unauthorized")
                 window.location.reload()
-            } else if (response.status === 400) {
-                setStatus({
-                    ...status,
-                    [`name`]: 400
-                })
-            } else if (response.status === 401) {
-                setStatus({
-                    ...status,
-                    [`name`]: 401
-                })
             } else {
                 setStatus({
                     ...status,
-                    [`name`]: 502
+                    [`email`]: 500
                 })
             }
         }
         catch (Exception) {
             setStatus({
                 ...status,
-                [`name`]: 502
+                [`email`]: 500
             })
         }
     }
@@ -195,28 +148,25 @@ export default function Account() {
                     [`password`]: 400
                 })
             } else if (response.status === 401) {
-                setStatus({
-                    ...status,
-                    [`password`]: 401
-                })
+                navigate("/unauthorized")
+                window.location.reload()
             } else {
                 setStatus({
                     ...status,
-                    [`password`]: 502
+                    [`password`]: 500
                 })
             }
         }
         catch (Exception) {
             setStatus({
                 ...status,
-                [`password`]: 502
+                [`password`]: 500
             })
         }
     }
 
     let validEmail = true;
     let validPassword = true;
-    let validName = true;
 
     if (fields["email"] != null) {
         if (emailRegex.test(fields["email"])) {
@@ -224,15 +174,6 @@ export default function Account() {
         } else {
             validation["email"] = 0
             validEmail = false;
-        }
-    }
-
-    if (fields["name"] != null) {
-        if (nameRegex.test(fields["name"])) {
-            validation["name"] = 1
-        } else {
-            validation["name"] = 0
-            validName = false;
         }
     }
 
@@ -256,7 +197,7 @@ export default function Account() {
 
 
     return (
-        <div>
+        <div className="d-flex flex-wrap justify-content-center" style={{ gridColumnGap: "100%" }} >
             <Modal isOpen={emailModal} toggle={toggleEmailModal} style={{maxWidth: "20rem"} }>
                 <ModalHeader toggle={toggleEmailModal}>
                     Update Email
@@ -264,33 +205,14 @@ export default function Account() {
                 <ModalBody>
                     <Form onSubmit={HandleSubmitEmail}>
                         <Alert color="danger" isOpen={status["email"] === 400}> Invalid Input. </Alert>
-                        <Alert color="danger" isOpen={status["email"] === 401}> That email is already taken. </Alert>
-                        <Alert color="warning" isOpen={status["email"] === 502}> There was an error while updating your email. </Alert>
+                        <Alert color="danger" isOpen={status["email"] === 403}> That email is already taken. </Alert>
+                        <Alert color="warning" isOpen={status["email"] === 500}> There was an error while updating your email. </Alert>
                         <FormGroup>
                             <Input id="email" type="email" placeholder="Email" required value={fields["email"]} onChange={e => handleChange("email", e.target.value)} invalid={validation["email"] === 0} />
                             <FormFeedback invalid>A valid email address is required.</FormFeedback>
                         </FormGroup>
                         <FormGroup>
                             <Button block type="submit" color="login" disabled={validEmail === false}>Update Email</Button>
-                        </FormGroup>
-                    </Form>
-                </ModalBody>
-            </Modal>
-            <Modal isOpen={nameModal} toggle={toggleNameModal} style={{ maxWidth: "20rem" }}>
-                <ModalHeader toggle={toggleNameModal}>
-                    Update Name
-                </ModalHeader>
-                <ModalBody>
-                    <Form onSubmit={HandleSubmitName}>
-                        <Alert color="danger" isOpen={status["name"] === 400}> Invalid Input. </Alert>
-                        <Alert color="danger" isOpen={status["name"] === 401}> Invalid Credentials. </Alert>
-                        <Alert color="warning" isOpen={status["name"] === 502}> There was an error while updating your name. </Alert>
-                        <FormGroup>
-                            <Input id="name" placeholder="Name" required value={fields["name"]} onChange={e => handleChange("name", e.target.value)} invalid={validation["name"] === 0} />
-                            <FormFeedback invalid>Names must start with a letter.<br></br><br></br> Names may not contain numbers or special characters except "." and "-".</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Button block type="submit" color="login" disabled={validName === false}>Update Name</Button>
                         </FormGroup>
                     </Form>
                 </ModalBody>
@@ -302,8 +224,7 @@ export default function Account() {
                 <ModalBody>
                     <Form onSubmit={HandleSubmitPassword}>
                         <Alert color="danger" isOpen={status["password"] === 400}> Invalid Input. </Alert>
-                        <Alert color="danger" isOpen={status["password"] === 401}> Invalid Credentials. </Alert>
-                        <Alert color="warning" isOpen={status["password"] === 502}> There was an error while updating your password. </Alert>
+                        <Alert color="warning" isOpen={status["password"] === 500}> There was an error while updating your password. </Alert>
                         <FormGroup>
                             <Input id="password" type="password" placeholder="Password" required value={fields["password"]} onChange={e => handleChange("password", e.target.value)} invalid={validation["password"] === 0} />
                             <FormFeedback invalid>Passwords must contain at least 8 characters and no whitespace.</FormFeedback>
@@ -313,12 +234,12 @@ export default function Account() {
                             <FormFeedback invalid>Passwords do not match.</FormFeedback>
                         </FormGroup>
                         <FormGroup>
-                            <Button block type="submit" color="login" disabled={validPassword === false}>Password</Button>
+                            <Button block type="submit" color="login" disabled={validPassword === false}>Update Password</Button>
                         </FormGroup>
                     </Form>
                 </ModalBody>
             </Modal>
-            <Card style={{ maxWidth: '40rem'}}>
+            <Card style={{ maxWidth: '40rem', width: '40rem'}}>
                 <CardBody>
                     <CardTitle style={{ padding: '10px' }} tag="h4">
                         Manage Account
@@ -328,23 +249,10 @@ export default function Account() {
                             Email:
                         </Col>
                         <Col xs="6">
-                            {account.AccountEmail}
+                            {account.Email}
                         </Col>
                         <Col xs="3" style={{ textAlign: "right" }}>
                             <Button color="login" size="sm" type="auto" onClick={toggleEmailModal}>
-                                Update
-                            </Button>
-                        </Col>
-                    </Row>
-                    <Row style={{ padding: '10px' }}>
-                        <Col xs="3">
-                            Name:
-                        </Col>
-                        <Col xs="6">
-                            {account.AccountName}
-                        </Col>
-                        <Col xs="3" style={{ textAlign: "right" }}>
-                            <Button color="login" size="sm" type="auto" onClick={toggleNameModal}>
                                 Update
                             </Button>
                         </Col>

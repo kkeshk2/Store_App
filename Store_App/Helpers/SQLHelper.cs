@@ -2,17 +2,17 @@
 
 namespace Store_App.Helpers
 {
-    public class SqlHelper : IDisposable
+    public class SqlHelper : ISqlHelper
     {
         private SqlConnection SqlConnection { get; set; }
         private SqlCommand SqlCommand { get; set; }
 
         public SqlHelper(string command) {
-            var configBuilder = new ConfigurationBuilder();
+            IConfigurationBuilder configBuilder = new ConfigurationBuilder();
             configBuilder.AddJsonFile("appsettings.json");
             var config = configBuilder.Build();
 
-            string? connectionString = config.GetConnectionString("AlexConnection");
+            string? connectionString = config.GetConnectionString("Connection");
             SqlConnection = new SqlConnection(connectionString);
             SqlConnection.Open();
 
@@ -40,6 +40,11 @@ namespace Store_App.Helpers
         public SqlDataReader ExecuteReader()
         {
             return SqlCommand.ExecuteReader();
+        }
+
+        public object ExecuteScalar()
+        {
+            return SqlCommand.ExecuteScalar();
         }
     }
 }

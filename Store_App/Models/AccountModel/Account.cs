@@ -1,141 +1,121 @@
-﻿using System;
-using System.Data.SqlClient;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Diagnostics.Metrics;
-using System.Data;
-using Microsoft.Identity.Client;
+﻿using System.Data;
 using Store_App.Helpers;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Mvc;
+using System.Data.SqlClient;
+using Store_App.Exceptions;
 
 namespace Store_App.Models.AccountModel
 {
     public class Account : IAccount
     {
 
-        [JsonIgnore] private int AccountId = -1;
-        [JsonProperty] private string? AccountEmail;
-        [JsonProperty] private string? AccountName;
-        [JsonIgnore] private readonly IAccountValidator _validator = new AccountValidator();
+        [JsonIgnore] private int AccountId;
+        [JsonProperty] private string? Email;
+        [JsonIgnore] private readonly IAccountValidator Validator = new AccountValidator();
 
-        public void AccessAccount(string accountEmail)
+        public void AccessAccount(string email, string password)
         {
-            using (var helper = new SqlHelper("SELECT accountId, accountEmail, accountName FROM Account WHERE accountEmail = @accountEmail"))
+            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Account WHERE email = @email AND password = @password"))
             {
-                helper.AddParameter("@accountEmail", accountEmail);
-
-                using (var reader = helper.ExecuteReader())
-                {
-                    AccessAccount(reader);
-                }
-            }
-        }
-
-        public void AccessAccount(string accountEmail, string accountPassword)
-        {
-            using (var helper = new SqlHelper("SELECT accountId, accountEmail, accountName FROM Account WHERE accountEmail = @accountEmail AND accountPassword = @accountPassword"))
-            {
-                helper.AddParameter("@accountEmail", accountEmail);
-                helper.AddParameter("@accountPassword", accountPassword);
-
-                using (var reader = helper.ExecuteReader())
-                {
-                    AccessAccount(reader);
-                }
+                helper.AddParameter("@email", email);
+                helper.AddParameter("@password", password);
+                AccessAccount(helper);
             }
         }
 
         public void AccessAccount(int accountId)
         {
-            using (var helper = new SqlHelper("SELECT accountId, accountEmail, accountName FROM Account WHERE accountId = @accountId"))
+            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Account WHERE accountId = @accountId"))
             {
                 helper.AddParameter("@accountId", accountId);
+                AccessAccount(helper);
+            }
+        }
 
-                using (var reader = helper.ExecuteReader())
-                {
-                    AccessAccount(reader);
-                }
+        private void AccessAccount(ISqlHelper helper)
+        {
+            using (var reader = helper.ExecuteReader())
+            {
+                AccessAccount(reader);
+                reader.Close();
             }
         }
 
         private void AccessAccount(SqlDataReader reader)
         {
-            reader.Read();
+            if (!reader.Read())
+            {
+                throw new AccountNotFoundException("The requested account was not found.");
+            }
+
             AccountId = reader.GetInt32("accountId");
-            AccountEmail = reader.GetString("accountEmail");
-            AccountName = reader.GetString("accountName");
-            reader.Close();
+            Email = reader.GetString("email");
         }
 
-        private static bool AccountExists(string accountEmail)
-        {
-            using (var helper = new SqlHelper("SELECT * FROM Account WHERE accountEmail = @accountEmail"))
-            {
-                helper.AddParameter("@accountEmail", accountEmail);
 
-                using (var reader = helper.ExecuteReader())
-                {
-                    var result = reader.Read();
-                    reader.Close();
-                    return result;
-                }
+        private void CheckIfEmailIsTaken(string email)
+        {
+            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Account WHERE email = @email"))
+            {
+                helper.AddParameter("@email", email);
+                CheckIfEmailIsTaken(helper);
             }
         }
 
-        public void CreateAccount(string accountEmail, string accountPassword, string accountName)
+        private void CheckIfEmailIsTaken(ISqlHelper helper)
         {
-            if (!_validator.Validate(accountEmail, accountPassword, accountName)) throw new ArgumentException();
-            if (AccountExists(accountEmail)) throw new InvalidOperationException();
-            using (var helper = new SqlHelper("INSERT INTO Account (accountEmail, accountPassword, accountName) VALUES (@accountEmail, @accountPassword, @accountName)"))
+            using (var reader = helper.ExecuteReader())
             {
-                helper.AddParameter("@accountEmail", accountEmail);
-                helper.AddParameter("@accountPassword", accountPassword);
-                helper.AddParameter("@accountName", accountName);
+                CheckIfEmailIsTaken(reader);
+            }
+        }
+
+        private void CheckIfEmailIsTaken(SqlDataReader reader)
+        {
+            if (reader.Read())
+            {
+                throw new EmailTakenException("That email is already taken.");
+            }
+        }
+
+        public void CreateAccount(string email, string password)
+        {
+            Validator.ValidateAccount(email, password);
+            CheckIfEmailIsTaken(email);
+            using (ISqlHelper helper = new SqlHelper("INSERT INTO Account (email, password) VALUES (@email, @password)"))
+            {
+                helper.AddParameter("@email", email);
+                helper.AddParameter("@password", password);
                 helper.ExecuteNonQuery();
             }
-            AccessAccount(accountEmail, accountPassword);
+            AccessAccount(email, password);
         }
 
         public string GenerateToken()
         {
-            if (AccountId == -1) throw new InvalidOperationException();
-            return JWTHelper.GetToken(AccountId);
+            IJWTHelper helper = new JWTHelper();
+            return helper.GetToken(AccountId);
         }
 
-        public void UpdateAccountEmail(string accountEmail)
-        {
-            if (!_validator.ValidateEmail(accountEmail)) throw new ArgumentException();
-            if (AccountExists(accountEmail)) throw new InvalidOperationException();
-            using (var helper = new SqlHelper("UPDATE Account SET accountEmail = @accountEmail WHERE accountId = @accountId"))
+        public void UpdateEmail(string email)
+        {          
+            Validator.ValidateEmail(email);
+            CheckIfEmailIsTaken(email);
+            using (ISqlHelper helper = new SqlHelper("UPDATE Account SET email = @email WHERE accountId = @accountId"))
             {
-                helper.AddParameter("@accountEmail", accountEmail);
+                helper.AddParameter("@email", email);
                 helper.AddParameter("@accountId", AccountId);
                 helper.ExecuteNonQuery();
             }
             AccessAccount(AccountId);
         }
 
-        public void UpdateAccountName(string accountName)
+        public void UpdatePassword(string password)
         {
-            if (!_validator.ValidateName(accountName)) throw new InvalidOperationException();
-            using (var helper = new SqlHelper("UPDATE Account SET accountName = @accountName WHERE accountId = @accountId"))
+            Validator.ValidatePassword(password);
+            using (ISqlHelper helper = new SqlHelper("UPDATE Account SET password = @password WHERE accountId = @accountId"))
             {
-                helper.AddParameter("@accountName", accountName);
-                helper.AddParameter("@accountId", AccountId);
-                helper.ExecuteNonQuery();
-                
-            }
-            AccessAccount(AccountId);
-        }
-
-        public void UpdateAccountPassword(string accountPassword)
-        {
-            if (!_validator.ValidatePassword(accountPassword)) throw new InvalidOperationException();
-            using (var helper = new SqlHelper("UPDATE Account SET accountPassword = @accountPassword WHERE accountId = @accountId"))
-            {
-                helper.AddParameter("@accountPassword", accountPassword);
+                helper.AddParameter("@password", password);
                 helper.AddParameter("@accountId", AccountId);
                 helper.ExecuteNonQuery();
             }

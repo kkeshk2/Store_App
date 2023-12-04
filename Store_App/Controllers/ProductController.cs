@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Store_App.Exceptions;
 using Store_App.Models.ProductModel;
 
 namespace Store_App.Controllers
@@ -18,7 +19,7 @@ namespace Store_App.Controllers
                 product.AccessProduct(productId);
                 return JsonConvert.SerializeObject(product);
             }
-            catch (InvalidOperationException)
+            catch (ProductNotFoundException)
             {
                 return new StatusCodeResult(404);
             }
@@ -37,7 +38,7 @@ namespace Store_App.Controllers
                 productList.AccessProductList();
                 return JsonConvert.SerializeObject(productList);
             }
-            catch (InvalidOperationException)
+            catch (ProductNotFoundException)
             {
                 return new StatusCodeResult(404);
             }

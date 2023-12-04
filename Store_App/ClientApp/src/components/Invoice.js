@@ -1,6 +1,6 @@
-﻿import React, { Component, useState, useEffect } from 'react';
-import { Link, useNavigate, useParams, redirect } from 'react-router-dom';
-import { Button, ButtonGroup, Card, CardBody, CardImg, CardSubtitle, CardTitle, Col, Input, Row } from 'reactstrap'
+﻿import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useParams, } from 'react-router-dom';
+import { Card, CardBody, CardImg, CardSubtitle, Col, Row } from 'reactstrap'
 
 export default function Invoice() {
 
@@ -21,15 +21,21 @@ export default function Invoice() {
                 const data = await response.json();
                 if (response.ok) {
                     setInvoice(data);
-                    setBillingAddress(data.InvoiceBillingAddress);
-                    setShippingAddress(data.InvoiceShippingAddress);
-                    setDate(data.InvoiceDate.substring(0, 10));
-                    setTime(data.InvoiceDate.substring(11, 19));
-                    setProduct(data.InvoiceProducts);
-                } else {
-                    navigate("/")
+                    setBillingAddress(data.BillingAddress);
+                    setShippingAddress(data.ShippingAddress);
+                    setDate(data.Date.substring(0, 10));
+                    setTime(data.Date.substring(11, 19));
+                    setProduct(data.Products);
+                } else if (response.status === 401) {
+                    navigate("/unauthorized")
                     window.location.reload()
-                }
+                } else if (response.status === 404) {
+                    navigate("/not-found")
+                    window.location.reload()
+                } else if (response.status === 500) {
+                    navigate("/server-error")
+                    window.location.reload()
+                }  
             } catch (error) {
                 console.error('Error fetching data:', error);
                 navigate("/")
@@ -71,7 +77,7 @@ export default function Invoice() {
                                     <h4>Invoice #{invoice.InvoiceId}</h4>
                                 </Col>
                                 <Col style={{ textAlign: "right" }}>
-                                    <h4>Total: ${invoice.InvoiceTotal}</h4>
+                                    <h4>Total: ${invoice.Total}</h4>
                                 </Col>
                             </Row>
                             <br />
@@ -87,7 +93,7 @@ export default function Invoice() {
                             <Row>
                                 <Col>
                                     Payment Method:<br />
-                                    Credit Card **** **** **** {invoice.InvoiceCreditCardLast4}
+                                    Credit Card **** **** **** {invoice.CreditCard}
                                 </Col>
                             </Row>
                             <br />
@@ -97,7 +103,7 @@ export default function Invoice() {
                                     {billingAddress.Name}<br />
                                     {billingAddress.Line1}<br />
                                     <div hidden={billingAddress.Line2 === null}>{billingAddress.Line2}</div>
-                                    {billingAddress.City}, {billingAddress.State} {billingAddress.PostalCode}
+                                    {billingAddress.City}, {billingAddress.State} {billingAddress.Postal}
                                 </Col>
                             </Row>
                             <br />
@@ -107,14 +113,14 @@ export default function Invoice() {
                                     {shippingAddress.Name}<br />
                                     {shippingAddress.Line1}<br />
                                     <div hidden={shippingAddress.Line2 === null}>{shippingAddress.Line2}</div>
-                                    {shippingAddress.City}, {shippingAddress.State} {shippingAddress.PostalCode}
+                                    {shippingAddress.City}, {shippingAddress.State} {shippingAddress.Postal}
                                 </Col>
                             </Row>
                             <br />
                             <Row>
                                 <Col>
                                     Tracking Number:<br />
-                                    {invoice.InvoiceTrackingNumber}
+                                    {invoice.TrackingNumber}
                                 </Col>
                             </Row>
                         </CardBody>
@@ -128,7 +134,7 @@ export default function Invoice() {
                                     <Col xs="4">
                                         <Link to={`/product/${Item.Product.ProductId}`}>
                                         <CardImg
-                                            src={Item.Product.ProductImageLocation}
+                                            src={Item.Product.ImageLocation}
                                             style={{ paddingBottom: "10px", paddingTop: "10px" }}
                                             href="/"
                                             />
@@ -138,9 +144,9 @@ export default function Invoice() {
                                         <div className="d-flex flex-wrap align-items-start">
                                             <CardSubtitle tag="h6">
                                                 <Link to={`/product/${Item.Product.ProductId}`} style={{ color: "inherit", textDecoration: "none" }}>
-                                                    {Item.Product.ProductName}
+                                                    {Item.Product.Name}
                                                 </Link><br/><br/>
-                                                {Item.Quantity} x ${Item.UnitPrice}
+                                                {Item.Quantity} x ${Item.Price}
                                             </CardSubtitle>
                                         </div>
                                     </Col>

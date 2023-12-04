@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Store_App.Helpers;
-using System.Text.Json;
 using Newtonsoft.Json;
 using Store_App.Models.CartModel;
-using Microsoft.Identity.Client;
-using Store_App.Models.ProductModel;
+using Store_App.Exceptions;
 
 namespace Store_App.Controllers
 {
@@ -19,15 +17,21 @@ namespace Store_App.Controllers
         {
             try
             {
-                int? accountId = HttpContextHelper.GetUserId(HttpContext);
-                if (accountId == null) return new StatusCodeResult(401);
-
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 ICart cart = new Cart();
-                cart.AccessCart((int)accountId);
-
+                cart.AccessCart(accountId);
                 return JsonConvert.SerializeObject(cart);
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (UnauthorizedException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (ProductNotFoundException)
             {
                 return new StatusCodeResult(404);
             }
@@ -35,6 +39,7 @@ namespace Store_App.Controllers
             {
                 return new StatusCodeResult(500);
             }
+
         }
 
         [HttpGet("addtocart")]
@@ -43,41 +48,24 @@ namespace Store_App.Controllers
         {
             try
             {
-                int? accountId = HttpContextHelper.GetUserId(HttpContext);
-                if (accountId == null) return new StatusCodeResult(401);
-
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 ICart cart = new Cart();
-                cart.AccessCart((int)accountId);
+                cart.AccessCart(accountId);
                 cart.AddToCart(productId, quantity);
                 return new OkResult();
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
             {
-                return new StatusCodeResult(400);
+                return new StatusCodeResult(401);
             }
-            catch (Exception)
+            catch (UnauthorizedException)
             {
-                return new StatusCodeResult(500);
+                return new StatusCodeResult(401);
             }
-        }
-
-        [HttpGet("contains")]
-        [Authorize("ValidUser")]
-        public ActionResult<string> Contains(int productId)
-        {
-            try
+            catch (ProductNotFoundException)
             {
-                int? accountId = HttpContextHelper.GetUserId(HttpContext);
-                if (accountId == null) return new StatusCodeResult(401);
-
-                ICart cart = new Cart();
-                cart.AccessCart((int)accountId);
-                var response = cart.Contains(productId);
-                return JsonConvert.SerializeObject(response);
-            }
-            catch (InvalidOperationException)
-            {
-                return new StatusCodeResult(400);
+                return new StatusCodeResult(404);
             }
             catch (Exception)
             {
@@ -91,17 +79,24 @@ namespace Store_App.Controllers
         {
             try
             {
-                int? accountId = HttpContextHelper.GetUserId(HttpContext);
-                if (accountId == null) return new StatusCodeResult(401);
-
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 ICart cart = new Cart();
-                cart.AccessCart((int)accountId);
+                cart.AccessCart(accountId);
                 cart.DeleteItem(productId);
                 return new OkResult();
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
             {
-                return new StatusCodeResult(400);
+                return new StatusCodeResult(401);
+            }
+            catch (UnauthorizedException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (ProductNotFoundException)
+            {
+                return new StatusCodeResult(404);
             }
             catch (Exception)
             {
@@ -115,17 +110,24 @@ namespace Store_App.Controllers
         {
             try
             {
-                int? accountId = HttpContextHelper.GetUserId(HttpContext);
-                if (accountId == null) return new StatusCodeResult(401);
-
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 ICart cart = new Cart();
-                cart.AccessCart((int)accountId);
+                cart.AccessCart(accountId);
                 cart.ClearCart();
                 return new OkResult();
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
             {
-                return new StatusCodeResult(400);
+                return new StatusCodeResult(401);
+            }
+            catch (UnauthorizedException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (ProductNotFoundException)
+            {
+                return new StatusCodeResult(404);
             }
             catch (Exception)
             {
@@ -139,41 +141,24 @@ namespace Store_App.Controllers
         {
             try
             {
-                int? accountId = HttpContextHelper.GetUserId(HttpContext);
-                if (accountId == null) return new StatusCodeResult(401);
-
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 ICart cart = new Cart();
-                cart.AccessCart((int)accountId);
+                cart.AccessCart(accountId);
                 cart.UpdateCart(productId, quantity);
                 return new OkResult();
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
             {
-                return new StatusCodeResult(400);
+                return new StatusCodeResult(401);
             }
-            catch (Exception)
+            catch (UnauthorizedException)
             {
-                return new StatusCodeResult(500);
+                return new StatusCodeResult(401);
             }
-        }
-
-        [HttpGet("gettotal")]
-        [Authorize("ValidUser")]
-        public ActionResult<string> GetCartTotal()
-        {
-            try
+            catch (ProductNotFoundException)
             {
-                int? accountId = HttpContextHelper.GetUserId(HttpContext);
-                if (accountId == null) return new StatusCodeResult(401);
-
-                ICart cart = new Cart();
-                cart.AccessCart((int)accountId);
-                var result = cart.GetProductList().Sum(p => p.GetUnitPrice() * p.GetQuantity());
-                return new OkObjectResult(result);
-            }
-            catch (InvalidOperationException)
-            {
-                return new StatusCodeResult(400);
+                return new StatusCodeResult(404);
             }
             catch (Exception)
             {

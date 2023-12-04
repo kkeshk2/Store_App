@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Store_App.Helpers;
-using System.Diagnostics;
 using Newtonsoft.Json;
-using System.Text.RegularExpressions;
-using Store_App.Models.CartModel;
 using Store_App.Models.InvoiceModel;
+using Store_App.Exceptions;
 
 namespace Store_App.Controllers
 {
@@ -19,106 +17,111 @@ namespace Store_App.Controllers
         [Authorize("ValidUser")]
         public ActionResult<string> Test(string creditCard, string billingAddress, string shippingAddress)
         {
-            int? userId = HttpContextHelper.GetUserId(HttpContext);
-            if (userId == null) return new StatusCodeResult(401);
             try
             {
-                ICreditCardValidator validator = new CreditCardValidator();
-                string last4 = validator.GetLast4(creditCard);
-                IAddress billingAddressObject = new Address();
-                billingAddressObject.AddAddress(billingAddress);
-                IAddress shippingAddressObject = new Address();
-                shippingAddressObject.AddAddress(shippingAddress);
-                IInvoice invoice = new Invoice();
-                invoice.CreateInvoice((int) userId, last4, billingAddressObject, shippingAddressObject);
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
+                IInvoiceCreator invoiceCreator = new InvoiceCreator();
+                IInvoice invoice = invoiceCreator.CreateInvoice(accountId, creditCard, billingAddress, shippingAddress);
                 return JsonConvert.SerializeObject(invoice);
-            }
-            catch (ArgumentException)
+            } 
+            catch (InvalidInputException)
             {
                 return new StatusCodeResult(400);
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
             {
-                return new StatusCodeResult(400);
+                return new StatusCodeResult(401);
+            }
+            catch (UnauthorizedException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (ProductNotFoundException)
+            {
+                return new StatusCodeResult(404);
+            }
+            catch (InvoiceNotFoundException)
+            {
+                return new StatusCodeResult(404);
             }
             catch (Exception)
             {
                 return new StatusCodeResult(500);
             }
+
         }
 
         [HttpGet("accessinvoice")]
         [Authorize("ValidUser")]
         public ActionResult<string> GetInvoice(int invoiceId)
         {
-            int? userId = HttpContextHelper.GetUserId(HttpContext);
-            if (userId == null) return new StatusCodeResult(401);
-
             try
             {
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 IInvoice invoice = new Invoice();
-                invoice.AccessInvoice(invoiceId);
+                invoice.AccessInvoice(invoiceId, accountId);
 
                 return JsonConvert.SerializeObject(invoice);
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
             {
-                return new StatusCodeResult(400);
+                return new StatusCodeResult(401);
+            }
+            catch (UnauthorizedException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (ProductNotFoundException)
+            {
+                return new StatusCodeResult(404);
+            }
+            catch (InvoiceNotFoundException)
+            {
+                return new StatusCodeResult(404);
             }
             catch (Exception)
             {
                 return new StatusCodeResult(500);
             }
+
         }
 
         [HttpGet("accessinvoicelist")]
         [Authorize("ValidUser")]
         public ActionResult<string> GetInvoiceList()
         {
-            int? userId = HttpContextHelper.GetUserId(HttpContext);
-            if (userId == null) return new StatusCodeResult(401);
-
+            
             try
             {
+                IHttpContextHelper helper = new HttpContextHelper();
+                int accountId = helper.GetAccountId(HttpContext);
                 IInvoiceList list = new InvoiceList();
-                list.AccessInvoiceList((int) userId);
+                list.AccessInvoiceList(accountId);
 
                 return JsonConvert.SerializeObject(list);
             }
-            catch (InvalidOperationException)
+            catch (AccountNotFoundException)
             {
-                return new StatusCodeResult(400);
+                return new StatusCodeResult(401);
+            }
+            catch (UnauthorizedException)
+            {
+                return new StatusCodeResult(401);
+            }
+            catch (ProductNotFoundException)
+            {
+                return new StatusCodeResult(404);
+            }
+            catch (InvoiceNotFoundException)
+            {
+                return new StatusCodeResult(404);
             }
             catch (Exception)
             {
                 return new StatusCodeResult(500);
             }
-
-
-        }
-
-        [HttpGet("accesslastinvoice")]
-        [Authorize("ValidUser")]
-        public ActionResult<string> GetInvoiceLast()
-        {
-            int? userId = HttpContextHelper.GetUserId(HttpContext);
-            if (userId == null) return new StatusCodeResult(401);
-
-            try
-            {
-                IInvoice invoice = new Invoice();
-                invoice.AccessLastInvoice((int) userId);
-
-                return JsonConvert.SerializeObject(invoice);
-            }
-            catch (InvalidOperationException)
-            {
-                return new StatusCodeResult(400);
-            }
-            catch (Exception)
-            {
-                return new StatusCodeResult(500);
-            }
-        }   
+        } 
     }
 }

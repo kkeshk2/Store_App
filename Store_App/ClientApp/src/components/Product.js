@@ -22,7 +22,6 @@ import {
 } from 'reactstrap'
 import '../custom.css';
 
-
 function Product() {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -38,9 +37,16 @@ function Product() {
         const fetchData = async () => {
             try {
                 const response = await fetch(`api/product/accessproduct?productId=${productId}`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                if (response.status === 401) {
+                    navigate("/unauthorized")
+                    window.location.reload()
+                } else if (response.status === 404) {
+                    navigate("/not-found")
+                    window.location.reload()
+                } else if (response.status === 500) {
+                    navigate("/server-error")
+                    window.location.reload()
+                }  
                 const data = await response.json();
                 console.log('NETWORK GOOD');
                 console.log(data);
@@ -55,14 +61,27 @@ function Product() {
         const fetchCart = async () => {
             try {
                 const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
-                const response = await fetch(`api/cart/contains?productId=${productId}`, { headers });
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                const response = await fetch(`api/cart/accesscart`, { headers });
+                if (response.status === 401) {
+                    navigate("/unauthorized")
+                    window.location.reload()
+                } else if (response.status === 404) {
+                    navigate("/not-found")
+                    window.location.reload()
+                } else if (response.status === 500) {
+                    navigate("/server-error")
+                    window.location.reload()
+                }  
                 const data = await response.json();
                 console.log('NETWORK GOOD');
                 console.log(data);
-                setCartContains(data);
+                const products = data.Products
+                for (let x in products) {
+                    if (products[x].Product.ProductId == productId) {
+                        setCartContains(products[x].Quantity)
+                        setSelectedQuantity(products[x].Quantity)
+                    }
+                }
             } catch (error) {
                 console.error('Error fetching cart:', error);
             }
@@ -85,15 +104,19 @@ function Product() {
         }
 
         fetchData()
-        fetchCart()
         verifyUser()
-
+        if (localStorage.getItem("authtoken")) {
+            fetchCart()
+        } else {
+            setCartContains(0)
+        }
     }, [productId]);
 
     if (!localStorage.getItem("authtoken")) {
         verified = false
     }
 
+    
     const handleQuantity = (event) => {
         setSelectedQuantity(event.target.value)
     }
@@ -105,16 +128,23 @@ function Product() {
             try {
                 const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
                 const response = await fetch(`api/cart/addtocart?productId=${productId}&quantity=${selectedQuantity}`, { headers });
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                if (response.status === 401) {
+                    navigate("/unauthorized")
+                    window.location.reload()
+                } else if (response.status === 404) {
+                    navigate("/not-found")
+                    window.location.reload()
+                } else if (response.status === 500) {
+                    navigate("/server-error")
+                    window.location.reload()
+                }  
                 const data = await response.json();
                 console.log('NETWORK GOOD');
                 console.log(data);
             } catch (error) {
                 console.error('Error adding to cart:', error);
             }
-            console.log(`Product ${product.ProductName} added to the cart`);
+            console.log(`Product ${product.Name} added to the cart`);
             window.location.reload()
         }
     };
@@ -123,9 +153,16 @@ function Product() {
         try {
             const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
             const response = await fetch(`api/cart/deletefromcart?productId=${productId}`, { headers });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (response.status === 401) {
+                navigate("/unauthorized")
+                window.location.reload()
+            } else if (response.status === 404) {
+                navigate("/not-found")
+                window.location.reload()
+            } else if (response.status === 500) {
+                navigate("/server-error")
+                window.location.reload()
+            }  
             const data = await response.json();
             console.log('NETWORK GOOD');
             console.log(data);
@@ -145,9 +182,16 @@ function Product() {
             try {
                 const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
                 const response = await fetch(`api/cart/updatecart?productId=${productId}&quantity=${selectedQuantity}`, { headers });
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                if (response.status === 401) {
+                    navigate("/unauthorized")
+                    window.location.reload()
+                } else if (response.status === 404) {
+                    navigate("/not-found")
+                    window.location.reload()
+                } else if (response.status === 500) {
+                    navigate("/server-error")
+                    window.location.reload()
+                }  
                 const data = await response.json();
                 console.log('NETWORK GOOD');
                 console.log(data);
@@ -190,34 +234,34 @@ function Product() {
                 <Card style={{ maxWidth: '40rem' }}>
                     <CardBody>
                         <CardTitle tag="h2">
-                            {product.ProductName}
+                            {product.Name}
                         </CardTitle>
                         <Row>
                             <Col>
                                 <CardSubtitle tag="h4">
-                                    By {product.ProductManufacturer}
+                                    By {product.Manufacturer}
                                 </CardSubtitle>
                             </Col>
                             <Col style={{ textAlign: "right" }}>
                                 <CardSubtitle tag="h4">
-                                    {'\u2605'}{product.ProductRating}
+                                    {'\u2605'}{product.Rating}
                                 </CardSubtitle>
                             </Col>
                         </Row>
                         <br></br>
                         <img
-                            alt={product.ProductName}
-                            src={product.ProductImageLocation}
+                            alt={product.Name}
+                            src={product.ImageLocation}
                             width="100%"
                         />
                         <br></br><br></br>
                         <Row className="align-items-center">
                             <Col>
-                                <CardSubtitle tag="h2" hidden={product.ProductSale !== 0}>
-                                    ${product.ProductPrice}
+                                <CardSubtitle tag="h2" hidden={product.Sale !== 0}>
+                                    ${product.Price}
                                 </CardSubtitle>
-                                <CardSubtitle tag="h2" hidden={product.ProductSale === 0}>
-                                    <s style={{ color: "darkred" }}>${product.ProductPrice}</s> ${product.ProductPrice - product.ProductSale}
+                                <CardSubtitle tag="h2" hidden={product.Sale === 0}>
+                                    <s style={{ color: "darkred" }}>${product.Price}</s> ${product.Price - product.Sale}
                                 </CardSubtitle>
                             </Col>
                             <Col xs={"auto"}>
@@ -266,7 +310,7 @@ function Product() {
                                     Description
                                 </AccordionHeader>
                                 <AccordionBody accordionId="1">
-                                    {product.ProductDescription}
+                                    {product.Description}
                                 </AccordionBody>
                             </AccordionItem>
                             <AccordionItem>
@@ -278,19 +322,19 @@ function Product() {
                                         <tbody>
                                             <tr>
                                                 <th>Category</th>
-                                                <td>{product.ProductCategory} </td>
+                                                <td>{product.Category} </td>
                                             </tr>
                                             <tr>
                                                 <th>Dimensions</th>
-                                                <td>{product.ProductLength}" x {product.ProductWidth}" x {product.ProductHeight}"</td>
+                                                <td>{product.Length}" x {product.Width}" x {product.Height}"</td>
                                             </tr>
                                             <tr>
                                                 <th>Weight</th>
-                                                <td>{product.ProductWeight} lbs.</td>
+                                                <td>{product.Weight} lbs.</td>
                                             </tr>
                                             <tr>
                                                 <th>SKU</th>
-                                                <td>{product.ProductSKU}</td>
+                                                <td>{product.SKU}</td>
                                             </tr>
                                         </tbody>
                                     </Table>
