@@ -77,7 +77,7 @@ function Product() {
                 console.log(data);
                 const products = data.Products
                 for (let x in products) {
-                    if (products[x].Product.ProductId == productId) {
+                    if (parseInt(products[x].Product.ProductId) === parseInt(productId)) {
                         setCartContains(products[x].Quantity)
                         setSelectedQuantity(products[x].Quantity)
                     }

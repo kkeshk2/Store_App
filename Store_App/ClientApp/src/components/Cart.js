@@ -131,6 +131,7 @@ function Cart() {
             <div>
                 <div className="text-center" style={{ margin: "10px" }}>
                     <img
+                        alt="Cart"
                         src="\cartImage.png"
                         style={{ width: 80, height: 80 }}
                     />
@@ -143,6 +144,7 @@ function Cart() {
                                     <Col xs="4">
                                         <Link to={`/product/${Item.Product.ProductId}`}>
                                             <CardImg
+                                                alt={Item.Product.Name}
                                                 src={Item.Product.ImageLocation}
                                                 style={{ paddingBottom: "10px", paddingTop: "10px" }}
                                                 href="/"

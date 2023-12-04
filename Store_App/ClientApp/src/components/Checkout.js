@@ -320,17 +320,6 @@ export default function Checkout() {
         }
     }
 
-    if (loading) {
-        return <p>Loading...</p>;
-    }
-
-    if (totalPrice === 0) {
-        return (<div className="outer-container" style={{ paddingTop: '200px', textAlign: 'center' }}>
-                    <h1>There is nothing in the cart to checkout</h1>
-                </div >
-        );
-    }
-
     return (
         <div className="d-flex flex-wrap justify-content-center" style={{ gridColumnGap: "100%" }}>
             <Card style={{ margin: "10px", maxWidth: "40rem", width: "40rem" }}>
