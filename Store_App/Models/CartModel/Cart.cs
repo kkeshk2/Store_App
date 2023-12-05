@@ -24,6 +24,7 @@ namespace Store_App.Models.CartModel
             using (ISqlHelper helper = new SqlHelper("SELECT * FROM Cart WHERE accountId = @accountId"))
             {
                 helper.AddParameter("@accountId", AccountId);
+                Products.Clear();
                 AccessCartProducts(helper);
                 CalculateCartTotal();
             }
