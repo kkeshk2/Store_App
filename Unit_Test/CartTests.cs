@@ -33,9 +33,9 @@ public class CartTests
         cart.AddToCart(3, 1);
         List<ICartProduct> cartProducts = cart.GetCartProducts();
         bool flag = false;
-        for (int i = 0; i < cartProducts.Count; i++)
+        foreach (ICartProduct cartProd in cartProducts)
         {
-            if (cartProducts[i].GetProductId() == 3 && cartProducts[i].GetQuantity() == 1)
+            if (cartProd.GetProductId() == 3 && cartProd.GetQuantity() == 1)
             {
                 flag = true; break;
             }
@@ -60,9 +60,9 @@ public class CartTests
         cart.DeleteItem(2);
         List<ICartProduct> cartProducts = cart.GetCartProducts();
         bool flag = true;
-        for (int i = 0; i < cartProducts.Count; i++)
+        foreach (ICartProduct cartProd in cartProducts)
         {
-            if (cartProducts[i].GetProductId() == 2)
+            if (cartProd.GetProductId() == 2)
             {
                 flag = false; break;
             }
@@ -78,11 +78,12 @@ public class CartTests
         cart.UpdateCart(1, 3);
         List<ICartProduct> cartProducts = cart.GetCartProducts();
         bool flag = false;
-        for (int i = 0; i < cartProducts.Count; i++)
+        foreach (ICartProduct cartProd in cartProducts)
         {
-            if (cartProducts[i].GetProductId() == 1 && cartProducts[i].GetQuantity() == 3);
+            if (cartProd.GetProductId() == 1 && cartProd.GetQuantity() == 3)
             {
-                flag = true; break;
+                flag = true; 
+                break;
             }
         }
         Assert.IsTrue(flag);
