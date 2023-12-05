@@ -40,7 +40,7 @@ export default function CreateAccount() {
 
             if (localStorage.getItem("authtoken")) {
                 navigate("/")
-                window.location.reload()
+                window.location.reload();
             }
         }
 
@@ -65,7 +65,6 @@ export default function CreateAccount() {
                 const token = await response.text()
                 localStorage.setItem("authtoken", token)
                 navigate("/")
-                window.location.reload()
             } else if (response.status === 400) {
                 setStatus(400)
             } else if (response.status === 403) {

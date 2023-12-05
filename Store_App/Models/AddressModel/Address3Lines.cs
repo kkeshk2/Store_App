@@ -75,5 +75,27 @@ namespace Store_App.Models.AddressModel
         {
             return AddressId;
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not null && obj is Address3Lines address)
+            {
+                bool equals = true;
+                equals = equals && address.AddressId == AddressId;
+                equals = equals && address.Name == Name;
+                equals = equals && address.Line1 == Line1;
+                equals = equals && address.City == City;
+                equals = equals && address.State == State;
+                equals = equals && address.Postal == Postal;
+                return equals;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

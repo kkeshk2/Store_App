@@ -14,13 +14,10 @@ export default function InvoiceList() {
                 const response = await fetch(`api/invoice/accessinvoicelist`, { headers });
                 if (response.status === 401) {
                     navigate("/unauthorized")
-                    window.location.reload()
                 } else if (response.status === 404) {
                     navigate("/not-found")
-                    window.location.reload()
                 } else if (response.status === 500) {
                     navigate("/server-error")
-                    window.location.reload()
                 }  
                 const data = await response.json();
                 setInvoiceList(data.Invoices)                                
@@ -45,7 +42,7 @@ export default function InvoiceList() {
 
         if (localStorage.getItem("authtoken") == null) {
             navigate("/")
-            window.location.reload()
+            window.location.reload();
         }
 
         verifyUser();

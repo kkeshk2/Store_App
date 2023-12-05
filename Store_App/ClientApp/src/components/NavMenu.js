@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './NavMenu.css';
 
 
 function NavMenu() {
     const [collapsed, setCollapsed] = useState(true);
+    const navigate = useNavigate()
 
     const toggleNavbar = () => {
         setCollapsed(!collapsed);
@@ -13,26 +14,9 @@ function NavMenu() {
 
     const HandleLogOut = () => {
         localStorage.removeItem("authtoken")
+        navigate("/")
         window.location.reload()
     }
-
-    const HandleVerify = async event => {
-        if (localStorage.getItem("authtoken")) {
-            try {
-                const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
-                const response = await fetch(`api/account/verifyaccount`, { headers });
-                if (!response.ok) {
-                    localStorage.removeItem("authtoken")
-                    window.location.reload()
-                }
-            } catch (Exception) {
-                localStorage.removeItem("authtoken")
-                window.location.reload()
-            }
-        }
-    }
-
-    HandleVerify();
 
     if (localStorage.getItem("authtoken") != null) {
         return (
