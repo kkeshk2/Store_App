@@ -41,7 +41,7 @@ export default function Login() {
 
             if (localStorage.getItem("authtoken")) {
                 navigate("/")
-                window.location.reload()
+                window.location.reload();
             }
         }
 
@@ -59,7 +59,6 @@ export default function Login() {
                 const token = await response.text()
                 localStorage.setItem("authtoken", token)
                 navigate("/")
-                window.location.reload()
             } else if (response.status === 401) {
                 setStatus(401)
             } else {

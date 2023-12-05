@@ -28,18 +28,14 @@ export default function Invoice() {
                     setProduct(data.Products);
                 } else if (response.status === 401) {
                     navigate("/unauthorized")
-                    window.location.reload()
                 } else if (response.status === 404) {
                     navigate("/not-found")
-                    window.location.reload()
                 } else if (response.status === 500) {
                     navigate("/server-error")
-                    window.location.reload()
                 }  
             } catch (error) {
                 console.error('Error fetching data:', error);
                 navigate("/")
-                window.location.reload()
             }
         };
 
@@ -58,7 +54,7 @@ export default function Invoice() {
 
             if (!localStorage.getItem("authtoken")) {
                 navigate("/")
-                window.location.reload()
+                window.location.reload();
             }
         }
 

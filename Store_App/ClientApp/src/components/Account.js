@@ -103,7 +103,6 @@ export default function Account() {
             const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
             const response = await fetch(`api/account/updateaccountemail?email=${URIEmail}`, { headers });
             if (response.ok) {
-                navigate("/account")
                 window.location.reload()
             } else if (response.status === 400) {
                 setStatus({
@@ -117,7 +116,6 @@ export default function Account() {
                 })
             } else if (response.status === 401) {
                 navigate("/unauthorized")
-                window.location.reload()
             } else {
                 setStatus({
                     ...status,
@@ -140,7 +138,6 @@ export default function Account() {
             const headers = { 'Authorization': "Bearer " + localStorage.getItem("authtoken") }
             const response = await fetch(`api/account/updateaccountpassword?password=${URIPassword}`, { headers });
             if (response.ok) {
-                navigate("/account")
                 window.location.reload()
             } else if (response.status === 400) {
                 setStatus({
@@ -149,7 +146,6 @@ export default function Account() {
                 })
             } else if (response.status === 401) {
                 navigate("/unauthorized")
-                window.location.reload()
             } else {
                 setStatus({
                     ...status,

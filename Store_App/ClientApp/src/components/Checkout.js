@@ -45,11 +45,9 @@ export default function Checkout() {
                 } else if (response.status === 401) {
                     setStatus(401)
                     navigate('/unauthorized')
-                    window.location.reload()
                 } else if (response.status === 404) {
                     setStatus(404)
                     navigate('/not-found')
-                    window.location.reload()
                 } else if (response.status === 500) {
                     setStatus(500)
                 }
@@ -75,7 +73,7 @@ export default function Checkout() {
 
             if (!localStorage.getItem("authtoken")) {
                 navigate("/")
-                window.location.reload()
+                window.location.reload();
             }
         }
 
@@ -133,17 +131,14 @@ export default function Checkout() {
                 const data = await response.json()
                 const destination = data.InvoiceId
                 navigate(`/invoice/${destination}`)
-                window.location.reload()
             } else if (response.status === 400) {
                 setStatus(400)
             } else if (response.status === 401) {
                 setStatus(401)
                 navigate('/unauthorized')
-                window.location.reload()
             } else if (response.status === 404) {
                 setStatus(404)
                 navigate('/not-found')
-                window.location.reload()
             } else {
                 setStatus(500)
             }

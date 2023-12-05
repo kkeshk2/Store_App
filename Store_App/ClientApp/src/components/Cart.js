@@ -15,13 +15,10 @@ function Cart() {
                 const response = await fetch(`api/cart/accesscart`, { headers });
                 if (response.status === 401) {
                     navigate("/unauthorized")
-                    window.location.reload()
                 } else if (response.status === 404) {
                     navigate("/not-found")
-                    window.location.reload()
                 } else if (response.status === 500) {
                     navigate("/server-error")
-                    window.location.reload()
                 }              
                 const data = await response.json();
                 setCart(data.Products);
@@ -46,7 +43,7 @@ function Cart() {
 
             if (!localStorage.getItem("authtoken")) {
                 navigate("/")
-                window.location.reload()
+                window.location.reload();
             }
         }
 
@@ -60,13 +57,10 @@ function Cart() {
             const response = await fetch(`api/cart/updatecart?productId=${productId}&quantity=${quantity}`, { headers });
             if (response.status === 401) {
                 navigate("/unauthorized")
-                window.location.reload()
             } else if (response.status === 404) {
                 navigate("/not-found")
-                window.location.reload()
             } else if (response.status === 500) {
                 navigate("/server-error")
-                window.location.reload()
             }  
             const data = await response.json();
             console.log('NETWORK GOOD');
@@ -84,13 +78,10 @@ function Cart() {
             const response = await fetch(`api/cart/deletefromcart?productId=${productId}`, { headers });
             if (response.status === 401) {
                 navigate("/unauthorized")
-                window.location.reload()
             } else if (response.status === 404) {
                 navigate("/not-found")
-                window.location.reload()
             } else if (response.status === 500) {
                 navigate("/server-error")
-                window.location.reload()
             }  
             const data = await response.json();
             console.log('NETWORK GOOD');
@@ -108,13 +99,10 @@ function Cart() {
             const response = await fetch(`api/cart/clearcart`, { headers });
             if (response.status === 401) {
                 navigate("/unauthorized")
-                window.location.reload()
             } else if (response.status === 404) {
                 navigate("/not-found")
-                window.location.reload()
             } else if (response.status === 500) {
                 navigate("/server-error")
-                window.location.reload()
             }  
             const data = await response.json();
             console.log('NETWORK GOOD');
