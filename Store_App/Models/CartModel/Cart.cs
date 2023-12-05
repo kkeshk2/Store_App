@@ -2,6 +2,7 @@
 using Store_App.Helpers;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
+using Store_App.Models.AccountModel;
 
 namespace Store_App.Models.CartModel
 {
@@ -91,12 +92,19 @@ namespace Store_App.Models.CartModel
                 helper.AddParameter("@productId", productId);
                 helper.ExecuteNonQuery();
             }
+
+            Products = new(); // Kareem Added
             AccessCart(AccountId);
         }
 
         public List<ICartProduct> GetCartProducts()
         {
             return Products;
+        }
+
+        public decimal GetTotal()
+        {
+            return Total;
         }
 
         public void UpdateCart(int productId, int quantity)
@@ -109,6 +117,22 @@ namespace Store_App.Models.CartModel
                 helper.ExecuteNonQuery();
             }
             AccessCart(AccountId);
+        }
+
+        // Kareem Added
+        public override bool Equals(object? obj)
+        {
+            if (obj is not null && obj is Cart cart)
+            {
+                bool equals = true;
+                equals = equals && cart.AccountId == AccountId;
+                equals = equals && cart.Size == Size;
+                equals = equals && cart.Total == Total;
+                equals = equals && cart.Products.SequenceEqual(Products);
+                return equals;
+            }
+
+            return false;
         }
     }
 }

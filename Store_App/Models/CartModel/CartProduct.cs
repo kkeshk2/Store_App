@@ -1,6 +1,8 @@
 using Store_App.Models.ProductModel;
 using Store_App.Models.CartModel;
 using Newtonsoft.Json;
+using Microsoft.Identity.Client;
+using System.Drawing;
 
 namespace Store_App.Models.CartModel
 {
@@ -40,6 +42,21 @@ namespace Store_App.Models.CartModel
         public int GetQuantity()
         {
             return Quantity;
-        }        
+        }
+
+        // Kareem Added
+        public override bool Equals(object? obj)
+        {
+            if (obj is not null && obj is CartProduct cartProduct)
+            {
+                bool equals = true;
+                equals = equals && cartProduct.Product == Product;
+                equals = equals && cartProduct.Price == Price;
+                equals = equals && cartProduct.Quantity == Quantity;
+                return equals;
+            }
+
+            return false;
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Store_App.Models.Classes;
+﻿using Store_App.Models.CartModel;
 
 namespace Unit_Test;
 
@@ -6,75 +6,67 @@ namespace Unit_Test;
 public class CartTests
 {
     [TestMethod]
-    public void TestGetOneBasedOnAccountId_isValid()
+    public void TestAccessCartEqual()
     {
-        int accountId = 1;
-        Cart returnedCart = Cart.GetOneBasedOnAccountId(accountId);
-        Assert.IsNotNull(returnedCart);
-
-        accountId = 2;
-        returnedCart = Cart.GetOneBasedOnAccountId(accountId);
-        Assert.IsNotNull(returnedCart);
+        ICart cart1 = new Cart();
+        ICart cart2 = new Cart();
+        cart1.AccessCart(1);
+        cart2.AccessCart(1);
+        Assert.AreEqual(cart1, cart2);
     }
 
     [TestMethod]
-    public void TestGetOneBasedOnAccountId()
+    public void TestAccessCartNotEqual()
     {
-        int accountId = 1;
-        Cart returnedCart = Cart.GetOneBasedOnAccountId(accountId);
-        Assert.AreEqual(accountId, returnedCart.AccountId);
-        
-        accountId = 2;
-        returnedCart = Cart.GetOneBasedOnAccountId(accountId);
-        Assert.AreEqual(accountId, returnedCart.AccountId);
+        ICart cart1 = new Cart();
+        ICart cart2 = new Cart();
+        cart1.AccessCart(1);
+        cart2.AccessCart(2);
+        Assert.AreNotEqual(cart1, cart2);
     }
 
     [TestMethod]
-    public void TestAddToCart_isValid()
+    public void TestAddToCart()
     {
-        Cart returnedCart = Cart.GetOneBasedOnAccountId(1);
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.AddToCart(returnedCart, 1, -1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.AddToCart(returnedCart, -1, 1));
-        Assert.ThrowsException<ArgumentNullException>(() => Cart.AddToCart(null, 1, 1));
-
-        returnedCart = Cart.GetOneBasedOnAccountId(2);
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.AddToCart(returnedCart, 2, 0));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.AddToCart(returnedCart, 0, 4));
-        Assert.ThrowsException<ArgumentNullException>(() => Cart.AddToCart(null, 3, 5));
-
+        ICart cart = new Cart();
+        cart.AccessCart(1);
+        cart.AddToCart(3, 1);
+        List<ICartProduct> cartProducts = cart.GetCartProducts();
+        bool flag = false;
+        for (int i = 0; i < cartProducts.Count; i++)
+        {
+            if (cartProducts[i].GetProductId() == 3 && cartProducts[i].GetQuantity() == 1)
+            {
+                flag = true; break;
+            }
+        }
+        Assert.IsTrue(flag);
     }
 
     [TestMethod]
-    public void TestDeleteFromCart_isValid()
+    public void TestCalculateTotal()
     {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.DeleteFromCart(-1, 1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.DeleteFromCart(1, -1));
-
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.DeleteFromCart(-2, 2));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.DeleteFromCart(2, -3));
+        Cart cart = new Cart();
+        cart.AccessCart(2);
+        decimal totalPrice = 1199.97m;
+        Assert.AreEqual(totalPrice, cart.GetTotal());
     }
 
     [TestMethod]
-    public void TestDeleteAllFromCart_isValid()
+    public void TestDeleteItem()
     {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.DeleteAllFromCart(-1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.DeleteAllFromCart(-2));
-    }
-
-    [TestMethod]
-    public void TestGetTotalPrice_isValid()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.GetTotalPrice(-1));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => Cart.GetTotalPrice(-2));
-    }
-
-    [TestMethod]
-    public void TestGetTotalPrice()
-    {
-        double totalPrice = 1349.97;
-        Assert.AreEqual(totalPrice, Cart.GetTotalPrice(1));
-
-        totalPrice = 1499.97;
-        Assert.AreEqual(totalPrice, Cart.GetTotalPrice(2));
+        ICart cart = new Cart();
+        cart.AccessCart(1);
+        cart.DeleteItem(2);
+        List<ICartProduct> cartProducts = cart.GetCartProducts();
+        bool flag = true;
+        for (int i = 0; i < cartProducts.Count; i++)
+        {
+            if (cartProducts[i].GetProductId() == 2)
+            {
+                flag = false; break;
+            }
+        }
+        Assert.IsTrue(flag);
     }
 }
