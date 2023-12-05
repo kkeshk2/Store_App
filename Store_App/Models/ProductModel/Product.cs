@@ -5,6 +5,7 @@ using Store_App.Helpers;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Store_App.Exceptions;
+using Store_App.Models.CartModel;
 
 namespace Store_App.Models.ProductModel
 {
@@ -116,6 +117,32 @@ namespace Store_App.Models.ProductModel
         public int GetProductId()
         {
             return ProductId;
-        } 
+        }
+
+        // Kareem Added
+        public override bool Equals(object? obj)
+        {
+            if (obj is not null && obj is Product product)
+            {
+                bool equals = true;
+                equals = equals && product.ProductId == ProductId;
+                equals = equals && product.Name == Name;
+                equals = equals && product.Price == Price;
+                equals = equals && product.Sale == Sale;
+                equals = equals && product.Rating == Rating;
+                equals = equals && product.Manufacturer == Manufacturer;
+                equals = equals && product.Description == Description;
+                equals = equals && product.Category == Category;
+                equals = equals && product.Length == Length;
+                equals = equals && product.Width == Width;
+                equals = equals && product.Height == Height;
+                equals = equals && product.Weight == Weight;
+                equals = equals && product.SKU == SKU;
+                equals = equals && product.ImageLocation == ImageLocation;
+                return equals;
+            }
+
+            return false;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Store_App.Helpers;
+using Store_App.Models.CartModel;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -35,6 +36,19 @@ namespace Store_App.Models.ProductModel
                 product.AccessProduct(productId);
                 Products.Add(product);
             }
+        }
+
+        // Kareem Added
+        public override bool Equals(object? obj)
+        {
+            if (obj is not null && obj is ProductList product_list)
+            {
+                bool equals = true;
+                equals = equals && product_list.Products.SequenceEqual(Products);
+                return equals;
+            }
+
+            return false;
         }
     }
 }
