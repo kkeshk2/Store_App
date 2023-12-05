@@ -38,7 +38,6 @@ namespace Store_App.Models.ProductModel
             }
         }
 
-        // Kareem Added
         public override bool Equals(object? obj)
         {
             if (obj is not null && obj is ProductList product_list)

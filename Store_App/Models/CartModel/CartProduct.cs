@@ -44,13 +44,12 @@ namespace Store_App.Models.CartModel
             return Quantity;
         }
 
-        // Kareem Added
         public override bool Equals(object? obj)
         {
             if (obj is not null && obj is CartProduct cartProduct)
             {
                 bool equals = true;
-                equals = equals && cartProduct.Product == Product;
+                equals = equals && cartProduct.Product.Equals(Product);
                 equals = equals && cartProduct.Price == Price;
                 equals = equals && cartProduct.Quantity == Quantity;
                 return equals;

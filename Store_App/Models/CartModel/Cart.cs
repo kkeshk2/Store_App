@@ -93,8 +93,6 @@ namespace Store_App.Models.CartModel
                 helper.AddParameter("@productId", productId);
                 helper.ExecuteNonQuery();
             }
-
-            Products = new(); // Kareem Added
             AccessCart(AccountId);
         }
 
@@ -120,7 +118,6 @@ namespace Store_App.Models.CartModel
             AccessCart(AccountId);
         }
 
-        // Kareem Added
         public override bool Equals(object? obj)
         {
             if (obj is not null && obj is Cart cart)

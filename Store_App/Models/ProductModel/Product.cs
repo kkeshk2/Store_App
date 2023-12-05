@@ -119,7 +119,6 @@ namespace Store_App.Models.ProductModel
             return ProductId;
         }
 
-        // Kareem Added
         public override bool Equals(object? obj)
         {
             if (obj is not null && obj is Product product)
