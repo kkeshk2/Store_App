@@ -69,4 +69,22 @@ public class CartTests
         }
         Assert.IsTrue(flag);
     }
+
+    [TestMethod]
+    public void TestUpdateCart()
+    {
+        ICart cart = new Cart();
+        cart.AccessCart(1);
+        cart.UpdateCart(1, 3);
+        List<ICartProduct> cartProducts = cart.GetCartProducts();
+        bool flag = false;
+        for (int i = 0; i < cartProducts.Count; i++)
+        {
+            if (cartProducts[i].GetProductId() == 1 && cartProducts[i].GetQuantity() == 3);
+            {
+                flag = true; break;
+            }
+        }
+        Assert.IsTrue(flag);
+    }
 }
