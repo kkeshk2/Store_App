@@ -1,8 +1,8 @@
 # Online_Store_App
 
-The online store app is web app that allows custumers to log in and order items from the app. The app will display prompt the user for a log in upon opening. 
+The online store app is web app that allows custumers to log in and order items from the app. Upon opening the app will promp the user for a login. If the user doesn't have an account the user has an option to create an account. Upon logging in the user will be taken to the home page of the app. Here the user can search for an item, select an item to view, and view their cart which has the any items they've added. The search bar will filter the items as the user types into it. Clicking on an item will bring the user to the product page which displays information about the item such as the name, an image, its dimensions, and the price of the item. The user will also have the option of adding the item to their cart which will be saved to their account.
 
-Project Status: **Incomplete, Never Tested**
+Project Status: **Completed, Fully Tested**
 
 Authors:
 * Bach Nguyen <bnguyen24@huskers.unl.edu>
@@ -13,7 +13,7 @@ Authors:
 
 # Dependencies
 
-This project currently has no dependencies
+This app uses a mySQL database that is included within the repository. This database is currently populated with dummy data.
 
 # Building 
 
@@ -25,4 +25,4 @@ There are no instructions on how to start and run the app yet.
 
 # Testing
 
-This project is currently untested
+This project currently has around 30 unit tests that all pass. The app is able to run and there are no known bugs.
