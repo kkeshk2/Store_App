@@ -13,7 +13,7 @@ Authors:
 
 # Dependencies
 
-This app uses a mySQL database that is included within the repository. This database is currently populated with dummy data.
+This app uses a mySQL database. In order to run this app, a running instance of SQL is needed. The database itself can be found within the repository in the folder 'Store_App' and in the file 'storeapp.sql' and is currently populated with dummy data. 
 
 # Building 
 
