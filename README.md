@@ -17,7 +17,7 @@ This app uses a SQL database. In order to run this app, a running instance of SQ
 
 # Building 
 
-There are currently no instructions for installing and building the project.
+This app uses `bootstrap` and `react-router-dom` which are included in `package.json` file. Before using the app, run npm install in order to install these dependencies.
 
 # Running
 
