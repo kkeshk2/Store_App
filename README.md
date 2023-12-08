@@ -21,8 +21,8 @@ This app uses `bootstrap` and `react-router-dom` which are included in `package.
 
 # Running
 
-There are no instructions on how to start and run the app yet.
+To run the app once clone and open the repository within in Visual Studio. Before running the app, verify that the database is running. The app can then be run with IISExpress.
 
 # Testing
 
-This project currently has around 30 unit tests that all pass. The app is able to run and there are no known bugs.
+This project currently has around 118 unit tests that all pass. The app is able to run and there are no known bugs.
