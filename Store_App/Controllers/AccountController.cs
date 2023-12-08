@@ -16,7 +16,7 @@ namespace Store_App.Controllers
         {            
             try
             {
-                IAccount account = new Account();
+                IAccount account = new AccountCreator().GetAccount();
                 account.AccessAccount(email, password);
                 return account.GenerateToken();
             }
@@ -42,7 +42,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                IAccount account = new Account();
+                IAccount account = new AccountCreator().GetAccount();
                 account.AccessAccount(accountId);
                 return JsonConvert.SerializeObject(account);
             }
@@ -72,7 +72,7 @@ namespace Store_App.Controllers
         {
             try
             {
-                IAccount account = new Account();
+                IAccount account = new AccountCreator().GetAccount();
                 account.CreateAccount(email, password);
                 return account.GenerateToken();
             }
@@ -98,7 +98,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                IAccount account = new Account();
+                IAccount account = new AccountCreator().GetAccount();
                 account.AccessAccount((int) accountId);
                 account.UpdateEmail(email);
                 return new StatusCodeResult(200);
@@ -133,7 +133,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                IAccount account = new Account();
+                IAccount account = new AccountCreator().GetAccount();
                 account.AccessAccount(accountId);
                 account.UpdatePassword(password);
 

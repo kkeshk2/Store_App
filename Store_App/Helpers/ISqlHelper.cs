@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data.Common;
+using System.Data.SqlClient;
 
 namespace Store_App.Helpers
 {
@@ -6,7 +7,7 @@ namespace Store_App.Helpers
     {
         public void AddParameter(string parameterName, object value);
         public void ExecuteNonQuery();
-        public SqlDataReader ExecuteReader();
+        public DbDataReader ExecuteReader();
         public object ExecuteScalar();
     }
 }

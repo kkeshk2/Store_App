@@ -6,11 +6,14 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Store_App.Exceptions;
 using Store_App.Models.CartModel;
+using System.Data.Common;
 
 namespace Store_App.Models.ProductModel
 {
     public class Product : IProduct
     {
+        [JsonIgnore] private IDataContext DataContext;
+
         [JsonProperty] private int ProductId;
         [JsonProperty] private string? Name;
         [JsonProperty] private decimal Price;
@@ -26,11 +29,33 @@ namespace Store_App.Models.ProductModel
         [JsonProperty] private string? SKU;
         [JsonProperty] private string? ImageLocation;
 
-        public Product() {}
+        public Product(IDataContext context)
+        {
+            DataContext = context;
+        }
+
+        public Product(int productId, string? name, decimal price, decimal sale, decimal rating, string? manufacturer, string? description, string? category, decimal length, decimal width, decimal height, decimal weight, string? sku, string? imageLocation, IDataContext dataContext)
+        {
+            ProductId = productId;
+            Name = name;
+            Price = price;
+            Sale = sale;
+            Rating = rating;
+            Manufacturer = manufacturer;
+            Description = description;
+            Category = category;
+            Length = length;
+            Width = width;
+            Height = height;
+            Weight = weight;
+            SKU = sku;
+            ImageLocation = imageLocation;
+            DataContext = dataContext;
+        }
 
         public void AccessProduct(int productId)
         {
-            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Product WHERE productId = @productId"))
+            using (ISqlHelper helper = DataContext.GetConnection("SELECT * FROM Product WHERE productId = @productId"))
             {
                 AccessProduct(helper, productId);
             }
@@ -47,7 +72,7 @@ namespace Store_App.Models.ProductModel
             }
         }
 
-        private void AccessProduct(SqlDataReader reader)
+        private void AccessProduct(DbDataReader reader)
         {
             if (!reader.Read())
             {
@@ -61,7 +86,7 @@ namespace Store_App.Models.ProductModel
             AccessProductDimensions(reader);
         }
 
-        private void AccessProductDetails(SqlDataReader reader)
+        private void AccessProductDetails(DbDataReader reader)
         {
             Manufacturer = reader.GetString("manufacturer");
             Rating = reader.GetDecimal("rating");
@@ -71,7 +96,7 @@ namespace Store_App.Models.ProductModel
             ImageLocation = reader.GetString("imageLocation");
         }
 
-        private void AccessProductDimensions(SqlDataReader reader)
+        private void AccessProductDimensions(DbDataReader reader)
         {
             Length = reader.GetDecimal("Length");
             Width = reader.GetDecimal("Width");
@@ -81,7 +106,7 @@ namespace Store_App.Models.ProductModel
 
         public void AccessProductSale()
         {
-            using (ISqlHelper helper = new SqlHelper("SELECT amount FROM Sale WHERE productId = @productId AND startDate <= @currentDate AND endDate >= @currentDate"))
+            using (ISqlHelper helper = DataContext.GetConnection("SELECT amount FROM Sale WHERE productId = @productId AND startDate <= @currentDate AND endDate >= @currentDate"))
             {
                 AccessProductSale(helper);
             }
@@ -99,7 +124,7 @@ namespace Store_App.Models.ProductModel
             }
         }
 
-        private void AccessProductSale(SqlDataReader reader)
+        private void AccessProductSale(DbDataReader reader)
         {
             decimal saleAmount = 0;
             if (reader.Read())
@@ -142,6 +167,11 @@ namespace Store_App.Models.ProductModel
             }
 
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

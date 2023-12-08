@@ -1,12 +1,16 @@
 ﻿using Newtonsoft.Json;
 using Store_App.Helpers;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace Store_App.Models.AddressModel
 {
     public class Address4Lines : IAddress
     {
+        [JsonIgnore] private IDataContext DataContext;
+        [JsonIgnore] private IAddressValidator Validator;
+
         [JsonIgnore] private int AddressId;
         [JsonProperty] private string Name;
         [JsonProperty] private string Line1;
@@ -14,9 +18,8 @@ namespace Store_App.Models.AddressModel
         [JsonProperty] private string City;
         [JsonProperty] private string State;
         [JsonProperty] private string Postal;
-        [JsonIgnore] private IAddressValidator Validator = new AddressValidator();
 
-        public Address4Lines(int addressId, string name, string line1, string line2, string city, string state, string postal)
+        public Address4Lines(int addressId, string name, string line1, string line2, string city, string state, string postal, IDataContext context, IAddressValidator validator)
         {
             AddressId = addressId;
             Name = name;
@@ -25,11 +28,13 @@ namespace Store_App.Models.AddressModel
             City = city;
             State = state;
             Postal = postal;
+            DataContext = context;
+            Validator = validator;
         }
 
         private bool AddressExists()
         {
-            using (ISqlHelper helper = new SqlHelper("SELECT addressId FROM Address WHERE name = @name AND line1 = @line1 AND line2 = @line2 AND city = @city AND state = @state AND postal = @postal"))
+            using (ISqlHelper helper = DataContext.GetConnection("SELECT addressId FROM Address WHERE name = @name AND line1 = @line1 AND line2 = @line2 AND city = @city AND state = @state AND postal = @postal"))
             {
                 helper.AddParameter("@name", Name);
                 helper.AddParameter("@line1", Line1);
@@ -51,7 +56,7 @@ namespace Store_App.Models.AddressModel
             }
         }
 
-        private bool AddressExists(SqlDataReader reader)
+        private bool AddressExists(DbDataReader reader)
         {
             if (!reader.Read()) return false;
             AddressId = reader.GetInt32("addressId");
@@ -62,7 +67,7 @@ namespace Store_App.Models.AddressModel
         {
             Validator.ValidateAddress(Name, Line1, Line2, City, State, Postal);
             if (AddressExists()) return;
-            using (ISqlHelper helper = new SqlHelper("INSERT INTO Address (name, line1, line2, city, state, postal) VALUES (@name, @line1, @line2, @city, @state, @postal) SELECT addressId = SCOPE_IDENTITY()"))
+            using (ISqlHelper helper = DataContext.GetConnection("INSERT INTO Address (name, line1, line2, city, state, postal) VALUES (@name, @line1, @line2, @city, @state, @postal) SELECT addressId = SCOPE_IDENTITY()"))
             {
                 helper.AddParameter("@name", Name);
                 helper.AddParameter("@line1", Line1);

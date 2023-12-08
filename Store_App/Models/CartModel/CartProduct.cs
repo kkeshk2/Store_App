@@ -13,17 +13,17 @@ namespace Store_App.Models.CartModel
         [JsonProperty] private int Quantity;
         
 
-        public CartProduct(int productId, int quantity)
+        public CartProduct(int productId, int quantity, IProductCreator productCreator)
         {
-            Product = new Product();
+            Product = productCreator.GetProduct();
             Product.AccessProduct(productId);
             Price = Product.GetPrice();
             Quantity = quantity;       
         }
 
-        public CartProduct(int productId, int quantity, decimal price)
+        public CartProduct(int productId, int quantity, decimal price, IProductCreator productCreator)
         {
-            Product = new Product();
+            Product = productCreator.GetProduct();
             Product.AccessProduct(productId);
             Quantity = quantity;
             Price = price;
@@ -56,6 +56,11 @@ namespace Store_App.Models.CartModel
             }
 
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

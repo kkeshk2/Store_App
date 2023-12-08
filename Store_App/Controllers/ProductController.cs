@@ -15,7 +15,7 @@ namespace Store_App.Controllers
         {
             try
             {
-                IProduct product = new Product();
+                IProduct product = new ProductCreator().GetProduct();
                 product.AccessProduct(productId);
                 return JsonConvert.SerializeObject(product);
             }
@@ -34,7 +34,7 @@ namespace Store_App.Controllers
         {
             try
             {
-                IProductList productList = new ProductList();
+                IProductList productList = new ProductListCreator().GetProductList();
                 productList.AccessProductList();
                 return JsonConvert.SerializeObject(productList);
             }

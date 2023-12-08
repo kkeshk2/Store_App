@@ -1,93 +1,138 @@
 ﻿using Store_App.Exceptions;
-using Store_App.Helpers;
 using Store_App.Models.AddressModel;
-using Unit_Test.DBScripts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Unit_Test.Test_Classes.AddressTests;
 
 namespace Unit_Test.Unit_Tests.AddressTests
 {
     [TestClass]
     public class AddressFactoryTests
     {
-        [TestInitialize]
-        public void Initialize()
+        [TestMethod]
+        public void TestAddressFactoryEqual1()
         {
-            SqlHelper.SetTesting(true);
-            using (ITestDatabaseBuilder builder = new TestDatabaseBuilder())
-            {
-                builder.ClearDB();
-                builder.CreateDB();
-                builder.PopulateDB();
-            }
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            Assert.AreEqual(factory1, factory2);
         }
 
         [TestMethod]
-        public void TestEqualsOverridePositive()
+        public void TestAddressFactoryEqual2()
         {
-            IAddressFactory address1 = new AddressFactory(1, "John Smith", "123 Main St", null, "Lincoln", "NE", "68500");
-            IAddressFactory address2 = new AddressFactory(1, "John Smith", "123 Main St", null, "Lincoln", "NE", "68500");
-            IAddressFactory address3 = new AddressFactory(1, "John Smith", "123 Main St", "Apt 101", "Lincoln", "NE", "68500");
-            IAddressFactory address4 = new AddressFactory(1, "John Smith", "123 Main St", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", null, "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", null, "Lincoln", "NE", "68500");
+            Assert.AreEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryNotEqual1()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(2, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            Assert.AreNotEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryNotEqual2()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(1, "Jack Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            Assert.AreNotEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryNotEqual3()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "200 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            Assert.AreNotEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryNotEqual4()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 201", "Lincoln", "NE", "68500");
+            Assert.AreNotEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryNotEqual5()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", null, "Lincoln", "NE", "68500");
+            Assert.AreNotEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryNotEqual6()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Omaha", "NE", "68500");
+            Assert.AreNotEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryNotEqual7()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "IA", "68500");
+            Assert.AreNotEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryNotEqual8()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "78500");
+            Assert.AreNotEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryAccessAddress()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory();
+            factory2.AccessAddress(3);
+            Assert.AreEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryAccessAddressException()
+        {
+            IAddressFactory factory = new TestAddressFactoryCreatorEmpty().GetAddressFactory();
+            Assert.ThrowsException<AddressNotFoundException>(() => factory.AccessAddress(3));
+        }
+
+        [TestMethod]
+        public void TestAddressFactorySetAddress()
+        {
+            IAddressFactory factory1 = new TestAddressFactoryCreator().GetAddressFactory(0, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddressFactory factory2 = new TestAddressFactoryCreator().GetAddressFactory();
+            factory2.SetAddress("John Smith\t100 Main Street\tApt 101\tLincoln\tNE\t68500");
+            Assert.AreEqual(factory1, factory2);
+        }
+
+        [TestMethod]
+        public void TestAddressFactoryCreate1()
+        {
+            IAddressFactory factory = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddress address1 = new TestAddressCreator().GetAddress(1, "John Smith", "100 Main Street", "Apt 101", "Lincoln", "NE", "68500");
+            IAddress address2 = factory.Create();
             Assert.AreEqual(address1, address2);
-            Assert.AreEqual(address3, address4);
         }
 
         [TestMethod]
-        public void TestEqualsOverrideNegative()
+        public void TestAddressFactoryCreate2()
         {
-            IAddressFactory address1 = new AddressFactory(1, "John Smith", "123 Main St", null, "Lincoln", "NE", "68500");
-            IAddressFactory address2 = new AddressFactory(2, "John Smith", "123 Main St", null, "Lincoln", "NE", "68500");
-            IAddressFactory address3 = new AddressFactory(1, "Jack Smith", "123 Main St", null, "Lincoln", "NE", "68500");
-            IAddressFactory address4 = new AddressFactory(1, "John Smith", "124 Main St", null, "Lincoln", "NE", "68500");
-            IAddressFactory address5 = new AddressFactory(1, "John Smith", "123 Main St", "Apt 101", "Lincoln", "NE", "68500");
-            IAddressFactory address6 = new AddressFactory(1, "John Smith", "123 Main St", null, "Omaha", "NE", "68500");
-            IAddressFactory address7 = new AddressFactory(1, "John Smith", "123 Main St", null, "Lincoln", "IA", "68500");
-            IAddressFactory address8 = new AddressFactory(1, "John Smith", "123 Main St", null, "Lincoln", "NE", "68501");
-            Assert.AreNotEqual(address1, address2);
-            Assert.AreNotEqual(address1, address3);
-            Assert.AreNotEqual(address1, address4);
-            Assert.AreNotEqual(address1, address5);
-            Assert.AreNotEqual(address5, address1);
-            Assert.AreNotEqual(address1, address6);
-            Assert.AreNotEqual(address1, address7);
-            Assert.AreNotEqual(address1, address8);
-        }
-
-        [TestMethod]
-        public void TestAccessAddress3Lines()
-        {
-            IAddressFactory address1 = new AddressFactory();
-            IAddressFactory address2 = new AddressFactory(2, "Work Address", "456 Elm St", null, "City B", "NY", "54321");
-            address1.AccessAddress(2);
+            IAddressFactory factory = new TestAddressFactoryCreator().GetAddressFactory(1, "John Smith", "100 Main Street", null, "Lincoln", "NE", "68500");
+            IAddress address1 = new TestAddressCreator().GetAddress(1, "John Smith", "100 Main Street", "Lincoln", "NE", "68500");
+            IAddress address2 = factory.Create();
             Assert.AreEqual(address1, address2);
-        }
-
-        [TestMethod]
-        public void TestAccessAddress4Lines()
-        {
-            IAddressFactory address1 = new AddressFactory();
-            IAddressFactory address2 = new AddressFactory(1, "Home Address", "123 Main St", "Apt 4B", "City A", "CA", "12345");
-            address1.AccessAddress(1);
-            Assert.AreEqual(address1, address2);
-        }
-
-        [TestMethod]
-        public void TestAccessAddressException()
-        {
-            IAddressFactory address1 = new AddressFactory();
-            Assert.ThrowsException<AddressNotFoundException>(() => address1.AccessAddress(3));
-        }
-
-        
-
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            using (ITestDatabaseBuilder builder = new TestDatabaseBuilder())
-            {
-                builder.ClearDB();
-            }
-            SqlHelper.SetTesting(false);
         }
     }
 }

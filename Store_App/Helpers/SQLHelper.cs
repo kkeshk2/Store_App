@@ -1,4 +1,9 @@
-﻿using System.Data.SqlClient;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
+using System.Data.SqlTypes;
 
 namespace Store_App.Helpers
 {
@@ -37,7 +42,7 @@ namespace Store_App.Helpers
             SqlCommand.ExecuteNonQuery();
         }
 
-        public SqlDataReader ExecuteReader()
+        public DbDataReader ExecuteReader()
         {
             return SqlCommand.ExecuteReader();
         }

@@ -93,11 +93,6 @@ function Product() {
                     localStorage.removeItem("authtoken")
                 }
             }
-
-            if (!localStorage.getItem("authtoken")) {
-                navigate("/")
-                window.location.reload();
-            }
         }
 
         fetchData()

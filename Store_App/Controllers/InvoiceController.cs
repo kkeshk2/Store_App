@@ -21,7 +21,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                IInvoiceCreator invoiceCreator = new InvoiceCreator();
+                IInvoiceProcessor invoiceCreator = new InvoiceProcessorCreator().GetInvoiceCreator();
                 IInvoice invoice = invoiceCreator.CreateInvoice(accountId, creditCard, billingAddress, shippingAddress);
                 return JsonConvert.SerializeObject(invoice);
             } 
@@ -60,7 +60,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                IInvoice invoice = new Invoice();
+                IInvoice invoice = new InvoiceCreator().GetInvoice();
                 invoice.AccessInvoice(invoiceId, accountId);
 
                 return JsonConvert.SerializeObject(invoice);
@@ -97,7 +97,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                IInvoiceList list = new InvoiceList();
+                IInvoiceList list = new InvoiceListCreator().GetInvoiceList();
                 list.AccessInvoiceList(accountId);
 
                 return JsonConvert.SerializeObject(list);

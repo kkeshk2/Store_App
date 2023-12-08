@@ -24,7 +24,7 @@ namespace Store_App.Helpers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(httpContext);
-                var account = new Account();
+                var account = new Account(new AccountValidator(), new DataContext(), new JsonWebTokenHelper());
                 account.AccessAccount(accountId);
                 context.Succeed(requirement);
                 return Task.CompletedTask;

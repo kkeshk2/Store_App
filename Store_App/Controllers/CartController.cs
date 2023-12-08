@@ -19,7 +19,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                ICart cart = new Cart();
+                ICart cart = new CartCreator().GetCart();
                 cart.AccessCart(accountId);
                 return JsonConvert.SerializeObject(cart);
             }
@@ -50,7 +50,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                ICart cart = new Cart();
+                ICart cart = new CartCreator().GetCart();
                 cart.AccessCart(accountId);
                 cart.AddToCart(productId, quantity);
                 return new OkResult();
@@ -81,7 +81,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                ICart cart = new Cart();
+                ICart cart = new CartCreator().GetCart();
                 cart.AccessCart(accountId);
                 cart.DeleteItem(productId);
                 return new OkResult();
@@ -112,7 +112,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                ICart cart = new Cart();
+                ICart cart = new CartCreator().GetCart();
                 cart.AccessCart(accountId);
                 cart.ClearCart();
                 return new OkResult();
@@ -143,7 +143,7 @@ namespace Store_App.Controllers
             {
                 IHttpContextHelper helper = new HttpContextHelper();
                 int accountId = helper.GetAccountId(HttpContext);
-                ICart cart = new Cart();
+                ICart cart = new CartCreator().GetCart();
                 cart.AccessCart(accountId);
                 cart.UpdateCart(productId, quantity);
                 return new OkResult();

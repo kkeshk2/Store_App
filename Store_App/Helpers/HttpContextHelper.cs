@@ -47,7 +47,7 @@ namespace Store_App.Helpers
 
         private int GetAccountId(string token)
         {
-            IJWTHelper helper = new JWTHelper();
+            IJsonWebTokenHelper helper = new JsonWebTokenHelper();
             return helper.GetAccountId(token);
         }
 

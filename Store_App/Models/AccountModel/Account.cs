@@ -5,29 +5,40 @@ using System.Data.SqlClient;
 using Store_App.Exceptions;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Store_App.Models.AccountModel
 {
     public class Account : IAccount
     {
+        [JsonIgnore] private readonly IAccountValidator AccountValidator;
+        [JsonIgnore] private readonly IDataContext DataContext;
+        [JsonIgnore] private readonly IJsonWebTokenHelper JsonWebTokenHelper;
 
         [JsonIgnore] private int AccountId;
         [JsonProperty] private string? Email;
         [JsonIgnore] private string? Password;
-        [JsonIgnore] private static readonly IAccountValidator Validator = new AccountValidator();
 
-        public Account() { }
+        public Account(IAccountValidator validator, IDataContext dataContext, IJsonWebTokenHelper helper) { 
+            AccountValidator = validator;     
+            DataContext = dataContext;
+            JsonWebTokenHelper = helper;
+        }
 
-        public Account(int accountId, string? email, string? password)
+        public Account(int accountId, string? email, string? password, IAccountValidator validator, IDataContext dataContext, IJsonWebTokenHelper helper)
         {
             AccountId = accountId;
             Email = email;
             Password = password;
+            AccountValidator = validator;
+            DataContext = dataContext;
+            JsonWebTokenHelper = helper;
         }
 
         public void AccessAccount(string email, string password)
         {
-            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Account WHERE email = @email AND password = @password"))
+            using (ISqlHelper helper = DataContext.GetConnection("SELECT * FROM Account WHERE email = @email AND password = @password"))
             {
                 helper.AddParameter("@email", email);
                 helper.AddParameter("@password", password);
@@ -37,7 +48,7 @@ namespace Store_App.Models.AccountModel
 
         public void AccessAccount(int accountId)
         {
-            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Account WHERE accountId = @accountId"))
+            using (ISqlHelper helper = DataContext.GetConnection("SELECT * FROM Account WHERE accountId = @accountId"))
             {
                 helper.AddParameter("@accountId", accountId);
                 AccessAccount(helper);
@@ -53,7 +64,7 @@ namespace Store_App.Models.AccountModel
             }
         }
 
-        private void AccessAccount(SqlDataReader reader)
+        private void AccessAccount(DbDataReader reader)
         {
             if (!reader.Read())
             {
@@ -68,7 +79,7 @@ namespace Store_App.Models.AccountModel
 
         private void CheckIfEmailIsTaken(string email)
         {
-            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Account WHERE email = @email"))
+            using (ISqlHelper helper = DataContext.GetConnection("SELECT * FROM Account WHERE email = @email"))
             {
                 helper.AddParameter("@email", email);
                 CheckIfEmailIsTaken(helper);
@@ -83,7 +94,7 @@ namespace Store_App.Models.AccountModel
             }
         }
 
-        private void CheckIfEmailIsTaken(SqlDataReader reader)
+        private void CheckIfEmailIsTaken(DbDataReader reader)
         {
             if (reader.Read())
             {
@@ -93,9 +104,9 @@ namespace Store_App.Models.AccountModel
 
         public void CreateAccount(string email, string password)
         {
-            Validator.ValidateAccount(email, password);
+            AccountValidator.ValidateAccount(email, password);
             CheckIfEmailIsTaken(email);
-            using (ISqlHelper helper = new SqlHelper("INSERT INTO Account (email, password) VALUES (@email, @password)"))
+            using (ISqlHelper helper = DataContext.GetConnection("INSERT INTO Account (email, password) VALUES (@email, @password)"))
             {
                 helper.AddParameter("@email", email);
                 helper.AddParameter("@password", password);
@@ -106,15 +117,14 @@ namespace Store_App.Models.AccountModel
 
         public string GenerateToken()
         {
-            IJWTHelper helper = new JWTHelper();
-            return helper.GetToken(AccountId);
+            return JsonWebTokenHelper.GetToken(AccountId);
         }
 
         public void UpdateEmail(string email)
         {          
-            Validator.ValidateEmail(email);
+            AccountValidator.ValidateEmail(email);
             CheckIfEmailIsTaken(email);
-            using (ISqlHelper helper = new SqlHelper("UPDATE Account SET email = @email WHERE accountId = @accountId"))
+            using (ISqlHelper helper = DataContext.GetConnection("UPDATE Account SET email = @email WHERE accountId = @accountId"))
             {
                 helper.AddParameter("@email", email);
                 helper.AddParameter("@accountId", AccountId);
@@ -125,8 +135,8 @@ namespace Store_App.Models.AccountModel
 
         public void UpdatePassword(string password)
         {
-            Validator.ValidatePassword(password);
-            using (ISqlHelper helper = new SqlHelper("UPDATE Account SET password = @password WHERE accountId = @accountId"))
+            AccountValidator.ValidatePassword(password);
+            using (ISqlHelper helper = DataContext.GetConnection("UPDATE Account SET password = @password WHERE accountId = @accountId"))
             {
                 helper.AddParameter("@password", password);
                 helper.AddParameter("@accountId", AccountId);

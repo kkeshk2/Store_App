@@ -4,6 +4,7 @@ using Store_App.Helpers;
 using Store_App.Models.AddressModel;
 using Store_App.Models.CartModel;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 
@@ -11,6 +12,10 @@ namespace Store_App.Models.InvoiceModel
 {
     public class Invoice : IInvoice
     {
+        [JsonIgnore] private IAddressFactoryCreator AddressFactoryCreator;
+        [JsonIgnore] private ICartProductCreator CartProductCreator;
+        [JsonIgnore] private IDataContext DataContext;
+        
         [JsonProperty] private int InvoiceId;
         [JsonIgnore] private int AccountId;
         [JsonProperty] private int Size;
@@ -22,19 +27,39 @@ namespace Store_App.Models.InvoiceModel
         [JsonProperty] private IAddress ShippingAddress;
         [JsonProperty] private string TrackingNumber;
 
-        public Invoice()
+        public Invoice(IAddressFactoryCreator addressFactoryCreator, ICartProductCreator cartProductCreator, IDataContext dataContext)
         {
+            AddressFactoryCreator = addressFactoryCreator;
+            CartProductCreator = cartProductCreator;
+            DataContext = dataContext;
             Products = new List<ICartProduct>();
             Date = DateTime.MinValue;
             CreditCard = string.Empty;
-            BillingAddress = new AddressFactory().Create();
-            ShippingAddress = new AddressFactory().Create();
+            BillingAddress = AddressFactoryCreator.GetAddressFactory().Create();
+            ShippingAddress = AddressFactoryCreator.GetAddressFactory().Create();
             TrackingNumber = string.Empty;
+        }
+
+        public Invoice(int invoiceId, int accountId, int size, decimal total, List<ICartProduct> products, DateTime dateTime, string creditCard, IAddress billingAddress, IAddress shippingAddress, string trackingNumber, IAddressFactoryCreator addressFactoryCreator, ICartProductCreator cartProductCreator, IDataContext dataContext) 
+        {
+            InvoiceId = invoiceId;
+            AccountId = accountId;
+            Size = size;
+            Total = total;
+            Products = products;
+            Date = dateTime;
+            CreditCard = creditCard;
+            BillingAddress = billingAddress;
+            ShippingAddress = shippingAddress;
+            TrackingNumber = trackingNumber;
+            AddressFactoryCreator = addressFactoryCreator;
+            CartProductCreator = cartProductCreator;
+            DataContext = dataContext;
         }
 
         public void AccessInvoice(int invoiceId,int accountId)
         {
-            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Invoice WHERE invoiceId = @invoiceId AND accountId = @accountID"))
+            using (ISqlHelper helper = DataContext.GetConnection("SELECT * FROM Invoice WHERE invoiceId = @invoiceId AND accountId = @accountID"))
             {
                 helper.AddParameter("@invoiceId", invoiceId);
                 helper.AddParameter("@accountID", accountId);
@@ -52,7 +77,7 @@ namespace Store_App.Models.InvoiceModel
             }
         }
 
-        private void AccessInvoice(SqlDataReader reader)
+        private void AccessInvoice(DbDataReader reader)
         {     
             if (!reader.Read())
             {
@@ -73,17 +98,17 @@ namespace Store_App.Models.InvoiceModel
 
         private void AccessInvoiceAddresses(int billingAddressId, int shippingAddressId)
         {
-            IAddressFactory factory = new AddressFactory();
+            IAddressFactory factory = AddressFactoryCreator.GetAddressFactory();
             factory.AccessAddress(billingAddressId);
             BillingAddress = factory.Create();
-            factory = new AddressFactory();
+            factory = AddressFactoryCreator.GetAddressFactory();
             factory.AccessAddress(shippingAddressId);
             ShippingAddress = factory.Create();
         }
 
         private void AccessInvoiceProducts()
         {
-            using (ISqlHelper helper = new SqlHelper("SELECT * FROM InvoiceProduct WHERE invoiceId = @invoiceId"))
+            using (ISqlHelper helper = DataContext.GetConnection("SELECT * FROM InvoiceProduct WHERE invoiceId = @invoiceId"))
             {
                 helper.AddParameter("@invoiceId", InvoiceId);
                 AccessInvoiceProducts(helper);
@@ -99,15 +124,41 @@ namespace Store_App.Models.InvoiceModel
             }
         }
 
-        private void AccessInvoiceProducts(SqlDataReader reader)
+        private void AccessInvoiceProducts(DbDataReader reader)
         {
             while (reader.Read())
             {
                 var productId = reader.GetInt32("productId");
                 var quantity = reader.GetInt32("quantity");
                 var price = reader.GetDecimal("price");
-                Products.Add(new CartProduct(productId, quantity, price));
+                Products.Add(CartProductCreator.GetCartProduct(productId, quantity, price));
             }
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not null && obj is Invoice creator)
+            {
+                bool equals = true;
+                equals = equals && creator.InvoiceId == InvoiceId;
+                equals = equals && creator.AccountId == AccountId;
+                equals = equals && creator.Size == Size;
+                equals = equals && creator.Total == Total;
+                equals = equals && creator.Products.SequenceEqual(Products);
+                equals = equals && creator.Date.Equals(Date);
+                equals = equals && creator.CreditCard == CreditCard;
+                equals = equals && creator.BillingAddress.Equals(BillingAddress);
+                equals = equals && creator.ShippingAddress.Equals(ShippingAddress);
+                equals = equals && creator.TrackingNumber == TrackingNumber;
+                return equals;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

@@ -1,30 +1,37 @@
-﻿using Store_App.Exceptions;
+﻿using Newtonsoft.Json;
+using Store_App.Exceptions;
 using Store_App.Helpers;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace Store_App.Models.AddressModel
 {
     public class AddressFactory : IAddressFactory
     {
-        private int AddressId;
-        private string Name;
-        private string Line1;
-        private string? Line2;
-        private string City;
-        private string State;
-        private string Postal;
+        [JsonIgnore] private IAddressCreator AddressCreator;
+        [JsonIgnore] private IDataContext DataContext;
+        
+        [JsonProperty] private int AddressId;
+        [JsonProperty] private string Name;
+        [JsonProperty] private string Line1;
+        [JsonProperty] private string? Line2;
+        [JsonProperty] private string City;
+        [JsonProperty] private string State;
+        [JsonProperty] private string Postal;
 
-        public AddressFactory()
+        public AddressFactory(IDataContext dataContext, IAddressCreator addressFactoryCreator)
         {
             Name = string.Empty;
             Line1 = string.Empty;
             City = string.Empty;
             State = string.Empty;
             Postal = string.Empty;
+            DataContext = dataContext;
+            AddressCreator = addressFactoryCreator;
         }
 
-        public AddressFactory(int addressId, string name, string line1, string? line2, string city, string state, string postal)
+        public AddressFactory(int addressId, string name, string line1, string? line2, string city, string state, string postal, IDataContext dataContext, IAddressCreator addressFactoryCreator)
         {
             AddressId = addressId;
             Name = name;
@@ -33,11 +40,13 @@ namespace Store_App.Models.AddressModel
             City = city;
             State = state;
             Postal = postal;
+            DataContext = dataContext;
+            AddressCreator = addressFactoryCreator;
         }
 
         public void AccessAddress(int addressId)
         {
-            using (ISqlHelper helper = new SqlHelper("SELECT * FROM Address WHERE addressId = @addressId"))
+            using (ISqlHelper helper = DataContext.GetConnection("SELECT * FROM Address WHERE addressId = @addressId"))
             {
                 helper.AddParameter("@addressId", addressId);
                 AccessAddress(helper);
@@ -53,7 +62,7 @@ namespace Store_App.Models.AddressModel
             }
         }
 
-        private void AccessAddress(SqlDataReader reader)
+        private void AccessAddress(DbDataReader reader)
         {
             if (!reader.Read())
             {
@@ -73,10 +82,10 @@ namespace Store_App.Models.AddressModel
         {
             if (Line2 == null)
             {
-                return new Address3Lines(AddressId, Name, Line1, City, State, Postal);
+                return AddressCreator.GetAddress(AddressId, Name, Line1, City, State, Postal);
             }
 
-            return new Address4Lines(AddressId, Name, Line1, Line2, City, State, Postal);
+            return AddressCreator.GetAddress(AddressId, Name, Line1, Line2, City, State, Postal);
         }
 
         public void SetAddress(string addressString)
